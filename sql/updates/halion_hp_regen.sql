@@ -1,0 +1,1 @@
+UPDATE creature_template SET RegenHealth = 0 WHERE entry IN (40142, 40143, 40144, 40145);

@@ -750,7 +750,7 @@ class npc_halion_controller : public CreatureScript
                                     twilightHalion->CastSpell((Unit*)NULL, SPELL_TWILIGHT_MENDING, true);
 								if (Creature* physicalHalion = ObjectAccessor::GetCreature(*me, _instance->GetData64(DATA_HALION)))
 									physicalHalion->CastSpell((Unit*)NULL, SPELL_TWILIGHT_MENDING, true);
-							}
+                            }
                             break;
                         case EVENT_TRIGGER_BERSERK:
                             for (uint8 i = DATA_HALION; i <= DATA_TWILIGHT_HALION; i++)
