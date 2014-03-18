@@ -561,17 +561,39 @@ class boss_twilight_halion : public CreatureScript
             {
                 switch (eventId)
                 {
+					case EVENT_CLEAVE:
+							DoCastVictim(SPELL_CLEAVE);
+							events.ScheduleEvent(EVENT_CLEAVE, urand(8000, 10000));
+						break;
+					case EVENT_TAIL_LASH:
+							DoCastAOE(SPELL_TAIL_LASH);
+							events.ScheduleEvent(EVENT_TAIL_LASH, 10000);
+						break;
+					case EVENT_BREATH:
+							DoCast(me, me->GetEntry() == NPC_HALION ? SPELL_FLAME_BREATH : SPELL_DARK_BREATH);
+							events.ScheduleEvent(EVENT_BREATH, urand(10000, 12000));
+						break;
                     case EVENT_SOUL_CONSUMPTION:
                         if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, 0.0f, true, SPELL_TWILIGHT_REALM))
                             DoCast(target, SPELL_SOUL_CONSUMPTION);
                         events.ScheduleEvent(EVENT_SOUL_CONSUMPTION, 20000);
                         break;
-                    default:
-                        generic_halionAI::ExecuteEvent(eventId);
-                        break;
                 }
             }
+			
+			void UpdateAI(uint32 diff)
+			{
+				if (!UpdateVictim() || me->HasUnitState(UNIT_STATE_CASTING))
+				return;
 
+				events.Update(diff);
+
+				while (uint32 eventId = events.ExecuteEvent())
+					ExecuteEvent(eventId);
+
+				DoMeleeAttackIfReady();
+			}
+			
         private:
             EventMap events;
         };
@@ -723,8 +745,12 @@ class npc_halion_controller : public CreatureScript
                             break;
                         case EVENT_TWILIGHT_MENDING:
                             if (ObjectAccessor::GetCreature(*me, _instance->GetData64(DATA_HALION))) // Just check if physical Halion is spawned
-                                if (Creature* twilightHalion = ObjectAccessor::GetCreature(*me, _instance->GetData64(DATA_TWILIGHT_HALION)))
+                            {
+								if (Creature* twilightHalion = ObjectAccessor::GetCreature(*me, _instance->GetData64(DATA_TWILIGHT_HALION)))
                                     twilightHalion->CastSpell((Unit*)NULL, SPELL_TWILIGHT_MENDING, true);
+								if (Creature* physicalHalion = ObjectAccessor::GetCreature(*me, _instance->GetData64(DATA_HALION)))
+									physicalHalion->CastSpell((Unit*)NULL, SPELL_TWILIGHT_MENDING, true);
+							}
                             break;
                         case EVENT_TRIGGER_BERSERK:
                             for (uint8 i = DATA_HALION; i <= DATA_TWILIGHT_HALION; i++)
@@ -820,6 +846,12 @@ class npc_halion_controller : public CreatureScript
                         if (_materialCorporealityValue >= (MAX_CORPOREALITY_STATE - 1))
                             return;
                         ++_materialCorporealityValue;
+						
+						if (_materialDamageTaken == 0)                           // If we got no material damage then do twilight mending
+							_events.ScheduleEvent(EVENT_TWILIGHT_MENDING, 100);
+							
+						_materialDamageTaken = 0;
+						_twilightDamageTaken = 0;
                         break;
                     }
                     case CORPOREALITY_DECREASE:
@@ -827,6 +859,12 @@ class npc_halion_controller : public CreatureScript
                         if (_materialCorporealityValue <= 0)
                             return;
                         --_materialCorporealityValue;
+						
+						if (_twilightDamageTaken == 0)                          // If we got no twilight damage then do twilight mending
+							_events.ScheduleEvent(EVENT_TWILIGHT_MENDING, 100);
+							
+                        _materialDamageTaken = 0;
+                        _twilightDamageTaken = 0;
                         break;
                     }
                     case CORPOREALITY_TWILIGHT_MENDING:
