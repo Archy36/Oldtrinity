@@ -418,7 +418,7 @@ class spell_hun_masters_call : public SpellScriptLoader
                 Unit* caster = GetCaster();
                     if (Player* caster = GetCaster()->ToPlayer())
                         if (Pet* target = caster->GetPet())
-							if (target->isAlive())
+							if (target->IsAlive())
 								return SPELL_CAST_OK;
 							return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
 					                

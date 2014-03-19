@@ -879,6 +879,77 @@ void Battleground::EndBattleground(uint32 winner)
         uint32 loser_kills = player->GetRandomWinner() ? sWorld->getIntConfig(CONFIG_BG_REWARD_LOSER_HONOR_LAST) : sWorld->getIntConfig(CONFIG_BG_REWARD_LOSER_HONOR_FIRST);
         uint32 winner_arena = player->GetRandomWinner() ? sWorld->getIntConfig(CONFIG_BG_REWARD_WINNER_ARENA_LAST) : sWorld->getIntConfig(CONFIG_BG_REWARD_WINNER_ARENA_FIRST);
 
+		//Paddo-Head MOD: Pvp BG reward token
+		if (team == winner)
+			{
+				uint32 reward_winner_count = 3,
+				reward_wsg = 20558,
+				reward_ab = 20559,
+				reward_av = 20560,
+				reward_IOQ = 47395,
+				reward_SOTA = 42425,
+				reward_eos = 29024;
+
+			switch(player->GetZoneId())
+            {
+                case 3277: // Warsong Gulch
+                    player->AddItem(reward_wsg, reward_winner_count);
+                    break;
+                case 3358: // Arathi Basin
+                   player->AddItem(reward_ab, reward_winner_count);
+                    break;
+                case 3820: // Eye of the Storm
+                    player->AddItem(reward_eos, reward_winner_count);
+                    break;
+				case 4710: // IOQ	
+                    player->AddItem(reward_IOQ, reward_winner_count);
+					break;
+				case 4384: // reward_SOTA
+                    player->AddItem(reward_SOTA, reward_winner_count);
+					break;
+				case 2597: // AV
+                    player->AddItem(reward_av, reward_winner_count);
+					break;
+                default:
+                    break;
+            }
+		}
+		else                 // Losers
+		{
+			uint32	reward_loser_count = 1,
+				reward_wsg = 20558,
+				reward_ab = 20559,
+				reward_av = 20560,
+				reward_IOQ = 47395,
+				reward_SOTA = 42425,
+				reward_eos = 29024;
+
+			switch(player->GetZoneId())
+			{
+                case 3277: // Warsong Gulch
+                    player->AddItem(reward_wsg, reward_loser_count);
+                    break;
+                case 3358: // Arathi Basin
+                   player->AddItem(reward_ab, reward_loser_count);
+                    break;
+                case 3820: // Eye of the Storm
+                    player->AddItem(reward_eos, reward_loser_count);
+                    break;
+				case 4710: // IOQ
+                    player->AddItem(reward_IOQ, reward_loser_count);
+					break;
+				case 4384: // SOTA
+                    player->AddItem(reward_SOTA, reward_loser_count);
+					break;
+				case 2597: // AV
+                    player->AddItem(reward_av, reward_loser_count);
+					break;
+                default:
+                    break;
+			}
+		}                 // DONT RETURN, Else below wont encounter.
+		//Paddo-Head MOD: END
+		
         // Reward winner team
         if (team == winner)
         {
