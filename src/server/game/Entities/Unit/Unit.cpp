@@ -11628,6 +11628,14 @@ void Unit::Dismount()
         }
         else
             player->ResummonPetTemporaryUnSummonedIfAny();
+            Pet* plPet = player->GetPet();
+			if (plPet != NULL)
+			{
+				uint32 uclass;
+				uclass=(player->getClassMask());
+				if ((uclass==256) || (uclass==32)) //Warlock and DK pets
+					plPet->SetHealth(plPet->GetMaxHealth());
+			}
     }
 }
 

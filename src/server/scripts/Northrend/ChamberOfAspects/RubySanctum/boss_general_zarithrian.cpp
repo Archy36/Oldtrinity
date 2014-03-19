@@ -67,7 +67,8 @@ Position const FlamecallerWaypoints[MAX_PATH_FLAMECALLER_WAYPOINTS*2] =
     {3040.907f, 462.0790f, 88.45601f, 0.0f},
     {3038.907f, 464.0790f, 89.20601f, 0.0f},
     {3025.907f, 478.0790f, 89.70601f, 0.0f},
-    {3003.832f, 501.2510f, 89.47303f, 0.0f},
+    //{3003.832f, 501.2510f, 89.47303f, 0.0f},
+	{3031.596f, 530.5484f, 89.51860f, 0.0f},
     // West
     {3062.596f, 636.9980f, 82.50338f, 0.0f},
     {3062.514f, 624.9980f, 83.70634f, 0.0f},
@@ -80,7 +81,8 @@ Position const FlamecallerWaypoints[MAX_PATH_FLAMECALLER_WAYPOINTS*2] =
     {3043.958f, 593.4001f, 87.64581f, 0.0f},
     {3040.458f, 589.9001f, 88.39581f, 0.0f},
     {3034.458f, 583.1501f, 88.89581f, 0.0f},
-    {3014.970f, 561.8073f, 88.83527f, 0.0f},
+    //{3014.970f, 561.8073f, 88.83527f, 0.0f},
+	{3031.621f, 529.6799f, 89.47883f, 0.0f},
 };
 
 class boss_general_zarithrian : public CreatureScript
