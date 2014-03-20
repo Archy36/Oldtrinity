@@ -27,6 +27,7 @@ void AddSC_example_commandscript();
 
 // Custom
 void AddSC_arena_spectator_script();
+void AddSC_DuelReset();
 
 // spells
 void AddSC_deathknight_spell_scripts();
@@ -1452,5 +1453,6 @@ void AddCustomScripts()
 //custom
 	AddSC_arena_spectator_script();
     AddSC_CPWS_Transmogrification();
+	AddSC_DuelReset();
 #endif
 }

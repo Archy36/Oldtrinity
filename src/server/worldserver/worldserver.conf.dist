@@ -3079,3 +3079,34 @@ Transmogrification.SetCopperCost = 0
 
 #
 ###################################################################################################
+
+################################################################################################### 
+# DUEL RESET COOLDOWN
+# 
+#     DuelReset.Cooldown.OnStart 
+#     Reseting cooldown and restore health to start of duel 
+#     Default: 0 - Disable 
+#              1 - Enable 
+# 
+ 
+DuelReset.Cooldown.OnStart = 0 
+ 
+#     DuelReset.Cooldown.OnFinish 
+#     Reseting cooldown and restore health to finish of duel 
+#     Default: 0 - Disable 
+#              1 - Enable 
+# 
+ 
+DuelReset.Cooldown.OnFinish = 1 
+ 
+#     DuelReset.Cooldown.Only.in.Elwynn.and.Durotar 
+#     Reseting cooldown only in Elwynn forest and Durotar location 
+#     Default: 0 - Disable 
+#              1 - Enable 
+# 
+ 
+DuelReset.Cooldown.Only.in.Elwynn.and.Durotar = 0 
+ 
+# 
+###################################################################################################
+

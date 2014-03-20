@@ -14,6 +14,7 @@ set(scripts_STAT_SRCS
 	Custom/Transmogrification.cpp
 	Custom/Transmogrifier.cpp
 	Custom/ArenaSpectator.cpp
+        Custom/duel_reset.cpp
 )
 
 message("  -> Prepared: Custom")
