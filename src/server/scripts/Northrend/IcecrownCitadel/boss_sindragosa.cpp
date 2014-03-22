@@ -227,7 +227,7 @@ class boss_sindragosa : public CreatureScript
             void Reset() OVERRIDE
             {
                 BossAI::Reset();
-                me->SetReactState(REACT_DEFENSIVE);
+                me->SetReactState(REACT_AGGRESSIVE);
                 DoCast(me, SPELL_TANK_MARKER, true);
                 events.ScheduleEvent(EVENT_BERSERK, 600000);
                 events.ScheduleEvent(EVENT_CLEAVE, 10000, EVENT_GROUP_LAND_PHASE);
@@ -237,6 +237,7 @@ class boss_sindragosa : public CreatureScript
                 events.ScheduleEvent(EVENT_ICY_GRIP, 33500, EVENT_GROUP_LAND_PHASE);
                 events.ScheduleEvent(EVENT_AIR_PHASE, 50000);
 				events.ScheduleEvent(EVENT_CHECK_PLAYERS, 5000);
+				_iceTombCounter = 0;
                 _mysticBuffetStack = 0;
                 _isInAirPhase = false;
                 _isThirdPhase = false;
@@ -266,13 +267,11 @@ class boss_sindragosa : public CreatureScript
                     instance->DoCastSpellOnPlayers(LIGHT_S_HAMMER_TELEPORT);
                     return;
                 }
-
                 BossAI::EnterCombat(victim);
                 DoCast(me, SPELL_FROST_AURA);
                 DoCast(me, SPELL_PERMAEATING_CHILL);
                 Talk(SAY_AGGRO);
             }
-			
 			bool CanAIAttack(Unit const* target) const
 			{
 				if (target->GetPositionZ() >= 211.0f && !me->IsWithinLOS(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ()))
@@ -280,7 +279,7 @@ class boss_sindragosa : public CreatureScript
 					
 				return true;
 			}
-
+			
             void JustReachedHome() OVERRIDE
             {
                 BossAI::JustReachedHome();
@@ -344,9 +343,10 @@ class boss_sindragosa : public CreatureScript
                         me->SetHomePosition(SindragosaLandPos);
                         me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                         me->SetSpeed(MOVE_FLIGHT, 2.5f);
-
+						
                         // Sindragosa enters combat as soon as she lands
                         DoZoneInCombat(me, 100.0f);
+						
 						// Sindragosa should be in combat here, otherwise EnterEvadeMode and despawn
 						if (!me->IsInCombat())
 							EnterEvadeMode();	
@@ -372,7 +372,7 @@ class boss_sindragosa : public CreatureScript
                         me->SetCanFly(false);
                         me->SetDisableGravity(false);
                         me->RemoveByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_ALWAYS_STAND | UNIT_BYTE1_FLAG_HOVER);
-                        me->SetReactState(REACT_DEFENSIVE);
+                        me->SetReactState(REACT_AGGRESSIVE);
                         if (me->GetMotionMaster()->GetCurrentMovementGeneratorType() == POINT_MOTION_TYPE)
                             me->GetMotionMaster()->MovementExpired();
                         _isInAirPhase = false;
@@ -417,13 +417,17 @@ class boss_sindragosa : public CreatureScript
             void SpellHitTarget(Unit* target, SpellInfo const* spell) OVERRIDE
             {
                 if (uint32 spellId = sSpellMgr->GetSpellIdForDifficulty(70127, me))
-                    if (spellId == spell->Id)
+                {
+					if (spellId == spell->Id)
+					{
                         if (Aura const* mysticBuffet = target->GetAura(spell->Id))
                             _mysticBuffetStack = std::max<uint8>(_mysticBuffetStack, mysticBuffet->GetStackAmount());
-
+							
+						return;
+					}
+				}
             }
-
-            void CheckPlayerPositions()
+			void CheckPlayerPositions()
 			{
 				Map* map = me->GetMap();
                 if (map && map->IsDungeon())
@@ -481,8 +485,15 @@ class boss_sindragosa : public CreatureScript
                             DoCast(me, SPELL_ICY_GRIP);
                             events.ScheduleEvent(EVENT_BLISTERING_COLD, 1000, EVENT_GROUP_LAND_PHASE);
                             break;
-						if (_isThirdPhase) // Need to reschedule in phase three, since it cannot be done via movement any longer
-							events.RescheduleEvent(EVENT_ICY_GRIP, 40000);
+						// Need to reschedule in phase three, since it cannot be done via movement any longer
+						// Reset Ice Tomb counter, and schedule Ice Tombs again in phase 3
+                            if (_isThirdPhase)
+                            {
+								events.RescheduleEvent(EVENT_ICY_GRIP, 40000);
+                                _iceTombCounter = 0;
+                                events.ScheduleEvent(EVENT_ICE_TOMB, urand(7000, 10000));
+                            }
+							break;
                         case EVENT_BLISTERING_COLD:
                             Talk(EMOTE_WARN_BLISTERING_COLD);
                             DoCast(me, SPELL_BLISTERING_COLD);
@@ -520,7 +531,11 @@ class boss_sindragosa : public CreatureScript
                                 Talk(EMOTE_WARN_FROZEN_ORB, target);
                                 DoCast(target, SPELL_ICE_TOMB_DUMMY, true);
                             }
-                            events.ScheduleEvent(EVENT_ICE_TOMB, urand(16000, 23000));
+							_iceTombCounter++;
+                            if (_iceTombCounter < 4) // Avoid casting ice tomb more than 4 times between icy grips
+								events.ScheduleEvent(EVENT_ICE_TOMB, urand(16000, 23000));
+							else // We are done with all ice tombs, start icy grip timer
+                                events.ScheduleEvent(EVENT_ICY_GRIP, 20000);
                             break;
                         case EVENT_FROST_BOMB:
                         {
@@ -551,8 +566,11 @@ class boss_sindragosa : public CreatureScript
                         {
                             if (!_isInAirPhase)
                             {
-                                Talk(SAY_PHASE_2);
-                                events.ScheduleEvent(EVENT_ICE_TOMB, urand(7000, 10000));
+								events.CancelEvent(EVENT_ICY_GRIP);
+                                _isThirdPhase = true;
+								Talk(SAY_PHASE_2);
+                                _iceTombCounter = 2; // Set to 2 here, so we get 2 casts until first icy grip
+								events.ScheduleEvent(EVENT_ICE_TOMB, urand(7000, 10000));
                                 events.RescheduleEvent(EVENT_ICY_GRIP, urand(35000, 40000));
                                 DoCast(me, SPELL_MYSTIC_BUFFET, true);
                             }
@@ -573,6 +591,7 @@ class boss_sindragosa : public CreatureScript
             }
 
         private:
+			uint8 _iceTombCounter;
             uint8 _mysticBuffetStack;
             bool _isInAirPhase;
             bool _isThirdPhase;
@@ -690,7 +709,7 @@ class npc_spinestalker : public CreatureScript
                 _events.ScheduleEvent(EVENT_BELLOWING_ROAR, urand(20000, 25000));
                 _events.ScheduleEvent(EVENT_CLEAVE_SPINESTALKER, urand(10000, 15000));
                 _events.ScheduleEvent(EVENT_TAIL_SWEEP, urand(8000, 12000));
-                me->SetReactState(REACT_DEFENSIVE);
+                me->SetReactState(REACT_AGGRESSIVE);
 
                 if (!_summoned)
                 {
@@ -819,7 +838,7 @@ class npc_rimefang : public CreatureScript
                 _events.Reset();
                 _events.ScheduleEvent(EVENT_FROST_BREATH_RIMEFANG, urand(12000, 15000));
                 _events.ScheduleEvent(EVENT_ICY_BLAST, urand(30000, 35000));
-                me->SetReactState(REACT_DEFENSIVE);
+                me->SetReactState(REACT_AGGRESSIVE);
                 _icyBlastCounter = 0;
 
                 if (!_summoned)
@@ -924,7 +943,7 @@ class npc_rimefang : public CreatureScript
                             }
                             else if (Unit* victim = me->SelectVictim())
                             {
-                                me->SetReactState(REACT_DEFENSIVE);
+                                me->SetReactState(REACT_AGGRESSIVE);
                                 AttackStart(victim);
                                 me->SetCanFly(false);
                             }
