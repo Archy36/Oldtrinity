@@ -494,6 +494,8 @@ inline void Battleground::_ProcessJoin(uint32 diff)
     else if (GetStartDelayTime() <= 0 && !(m_Events & BG_STARTING_EVENT_4))
     {
         m_Events |= BG_STARTING_EVENT_4;
+		
+		DespawnCrystals();
 
         StartingEventOpenDoors();
 
@@ -2050,3 +2052,61 @@ bool Battleground::CheckAchievementCriteriaMeet(uint32 criteriaId, Player const*
     TC_LOG_ERROR("bg.battleground", "Battleground::CheckAchievementCriteriaMeet: No implementation for criteria %u", criteriaId);
     return false;
 }
+
+uint8 Battleground::ClickFastStart(Player *player, GameObject *go)
+{
+    if (!isArena())
+        return 0;
+
+    std::set<uint64>::iterator pIt = m_playersWantsFastStart.find(player->GetGUID());
+    if (pIt != m_playersWantsFastStart.end() || GetStartDelayTime() < BG_START_DELAY_15S)
+        return m_playersWantsFastStart.size();
+
+    m_playersWantsFastStart.insert(player->GetGUID());
+
+    std::set<GameObject*>::iterator goIt = m_crystals.find(go);
+    if (goIt == m_crystals.end())
+        m_crystals.insert(go);
+
+    uint8 playersNeeded = 0;
+    switch(GetArenaType())
+    {
+        case ARENA_TYPE_2v2:
+            playersNeeded = 4;
+            break;
+        case ARENA_TYPE_3v3:
+            playersNeeded = 6;
+            break;
+        case ARENA_TYPE_5v5:
+            playersNeeded = 10;
+            break;
+    }
+
+    if (sBattlegroundMgr->isTesting() && isArena())
+       playersNeeded = 2;
+
+    if (m_playersWantsFastStart.size() == playersNeeded)
+    {
+        DespawnCrystals();
+        if (GetStartDelayTime() > BG_START_DELAY_15S)
+            SetStartDelayTime(BG_START_DELAY_15S);
+        else
+            DespawnCrystals();
+    }
+
+    return m_playersWantsFastStart.size();
+}
+
+void Battleground::DespawnCrystals()
+{
+    if (m_crystals.empty())
+        return;
+
+    for (std::set<GameObject*>::iterator itr = m_crystals.begin(); itr != m_crystals.end(); ++itr)
+    {
+        GameObject *go = *itr;
+        go->Delete();
+        m_crystals.erase(itr);
+    }
+}
+

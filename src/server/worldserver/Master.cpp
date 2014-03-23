@@ -135,15 +135,15 @@ int Master::Run()
     TC_LOG_INFO("server.worldserver", "%s (worldserver-daemon)", _FULLVERSION);
     TC_LOG_INFO("server.worldserver", "<Ctrl-C> to stop.\n");
 
-    TC_LOG_INFO("server.worldserver", " ______                       __");
-    TC_LOG_INFO("server.worldserver", "/\\__  _\\       __          __/\\ \\__");
-    TC_LOG_INFO("server.worldserver", "\\/_/\\ \\/ _ __ /\\_\\    ___ /\\_\\ \\, _\\  __  __");
-    TC_LOG_INFO("server.worldserver", "   \\ \\ \\/\\`'__\\/\\ \\ /' _ `\\/\\ \\ \\ \\/ /\\ \\/\\ \\");
-    TC_LOG_INFO("server.worldserver", "    \\ \\ \\ \\ \\/ \\ \\ \\/\\ \\/\\ \\ \\ \\ \\ \\_\\ \\ \\_\\ \\");
-    TC_LOG_INFO("server.worldserver", "     \\ \\_\\ \\_\\  \\ \\_\\ \\_\\ \\_\\ \\_\\ \\__\\\\/`____ \\");
-    TC_LOG_INFO("server.worldserver", "      \\/_/\\/_/   \\/_/\\/_/\\/_/\\/_/\\/__/ `/___/> \\");
-    TC_LOG_INFO("server.worldserver", "                                 C O R E  /\\___/");
-    TC_LOG_INFO("server.worldserver", "http://TrinityCore.org                    \\/__/\n");
+    TC_LOG_INFO("server.worldserver", "#######\\   ######\\   ######\\                                ");
+    TC_LOG_INFO("server.worldserver", "##  __##\\ ##  __##\\ ##  __##\\                               ");
+    TC_LOG_INFO("server.worldserver", "## |  ## |## /  \\__|## /  \\__| ######\\   ######\\   ######\\  ");
+    TC_LOG_INFO("server.worldserver", "#######  |## |####\\ ## |      ##  __##\\ ##  __##\\ ##  __##\\ ");
+    TC_LOG_INFO("server.worldserver", "##  ____/ ## |\\_## |## |      ## /  ## |## |  \\__|######## |");
+    TC_LOG_INFO("server.worldserver", "## |      ## |  ## |## |  ##\\ ## |  ## |## |      ##   ____|");
+    TC_LOG_INFO("server.worldserver", "## |      \\######  |\\######  |\\######  |## |      \\#######\\ ");
+    TC_LOG_INFO("server.worldserver", "\\__|       \\______/  \\______/  \\______/ \\__|       \\_______|");
+    TC_LOG_INFO("server.worldserver", "                                            http://wow.pg.uz");
 
     /// worldserver PID file creation
     std::string pidFile = sConfigMgr->GetStringDefault("PidFile", "");

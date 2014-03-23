@@ -28,6 +28,7 @@ void AddSC_example_commandscript();
 // Custom
 void AddSC_arena_spectator_script();
 void AddSC_DuelReset();
+void AddSC_fast_arena_start();
 
 // spells
 void AddSC_deathknight_spell_scripts();
@@ -540,6 +541,7 @@ void AddSC_boss_the_lich_king();
 void AddSC_icecrown_citadel_teleport();
 void AddSC_instance_icecrown_citadel();
 void AddSC_icecrown_citadel();
+void AddSC_icc_trash();
 void AddSC_instance_ruby_sanctum();      // Ruby Sanctum
 void AddSC_ruby_sanctum();
 void AddSC_boss_baltharus_the_warborn();
@@ -1381,6 +1383,7 @@ void AddNorthrendScripts()
     AddSC_icecrown_citadel_teleport();
     AddSC_instance_icecrown_citadel();
     AddSC_icecrown_citadel();
+	AddSC_icc_trash();
     AddSC_instance_ruby_sanctum();      // Ruby Sanctum
     AddSC_ruby_sanctum();
     AddSC_boss_baltharus_the_warborn();
@@ -1454,5 +1457,6 @@ void AddCustomScripts()
 	AddSC_arena_spectator_script();
     AddSC_CPWS_Transmogrification();
 	AddSC_DuelReset();
+	AddSC_fast_arena_start();
 #endif
 }

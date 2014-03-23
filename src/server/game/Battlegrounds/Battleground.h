@@ -545,6 +545,9 @@ class Battleground
         uint32 GetTeamScore(uint32 TeamID) const;
 
         virtual uint32 GetPrematureWinner();
+		
+		uint8 ClickFastStart(Player *player, GameObject *go);
+		void DespawnCrystals();
 
     protected:
         // this method is called, when BG cannot spawn its own spirit guide, or something is wrong, It correctly ends Battleground
@@ -609,6 +612,9 @@ class Battleground
         uint32 m_PrematureCountDownTimer;
         char const* m_Name;
 
+		std::set<uint64> m_playersWantsFastStart;
+		std::set<GameObject*> m_crystals;
+		
         /* Pre- and post-update hooks */
 
         /**

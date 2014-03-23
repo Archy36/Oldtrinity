@@ -107,7 +107,8 @@ enum Spells
     SPELL_DEATH_PLAGUE_AURA         = 72865,
     SPELL_RECENTLY_INFECTED         = 72884,
     SPELL_DEATH_PLAGUE_KILL         = 72867,
-    SPELL_STOMP                     = 64652,
+    SPELL_STOMP                     = 64639,
+	SPELL_STOMP_H                   = 64652,
     SPELL_ARCTIC_BREATH             = 72848,
 
     // Frost Freeze Trap
@@ -255,6 +256,11 @@ enum EventTypes
 
     // Invisible Stalker (Float, Uninteractible, LargeAOI)
     EVENT_SOUL_MISSILE                  = 55,
+	    
+	// Sindragosas Ward
+    EVENT_SUB_WAVE_1                    = 56,
+    EVENT_SUB_WAVE_2                    = 57,
+    EVENT_UPDATE_CHECK                  = 58
 };
 
 enum DataTypesICC
@@ -283,6 +289,22 @@ enum EventIds
 enum MovementPoints
 {
     POINT_LAND  = 1,
+};
+	
+const Position SindragosaGauntletSpawn[12] =
+{
+    { 4130.71f, 2484.10f, 211.033f, 0 },
+    { 4137.93f, 2505.52f, 211.033f, 0 },
+    { 4160.64f, 2528.13f, 211.033f, 0 },
+    { 4180.81f, 2533.88f, 211.033f, 0 },
+    { 4200.92f, 2527.18f, 211.033f, 0 },
+    { 4222.23f, 2503.56f, 211.033f, 0 },
+    { 4229.40f, 2484.63f, 211.033f, 0 },
+    { 4222.01f, 2464.93f, 211.033f, 0 },
+    { 4201.55f, 2441.03f, 211.033f, 0 },
+    { 4181.29f, 2433.38f, 211.033f, 0 },
+    { 4161.86f, 2441.94f, 211.033f, 0 },
+    { 4138.78f, 2463.95f, 211.033f, 0 },
 };
 
 class FrostwingVrykulSearcher
@@ -634,7 +656,7 @@ class npc_rotting_frost_giant : public CreatureScript
                             _events.ScheduleEvent(EVENT_DEATH_PLAGUE, 15000);
                             break;
                         case EVENT_STOMP:
-                            DoCastVictim(SPELL_STOMP);
+                            DoCast(me, RAID_MODE(SPELL_STOMP, SPELL_STOMP_H, SPELL_STOMP, SPELL_STOMP_H), false);
                             _events.ScheduleEvent(EVENT_STOMP, urand(15000, 18000));
                             break;
                         case EVENT_ARCTIC_BREATH:
@@ -770,7 +792,7 @@ class boss_sister_svalna : public CreatureScript
                 _EnterCombat();
                 if (Creature* crok = ObjectAccessor::GetCreature(*me, instance->GetData64(DATA_CROK_SCOURGEBANE)))
                     crok->AI()->Talk(SAY_CROK_COMBAT_SVALNA);
-                events.ScheduleEvent(EVENT_SVALNA_COMBAT, 9000);
+                events.ScheduleEvent(EVENT_SVALNA_COMBAT, 1);
                 events.ScheduleEvent(EVENT_IMPALING_SPEAR, urand(40000, 50000));
                 events.ScheduleEvent(EVENT_AETHER_SHIELD, urand(100000, 110000));
             }
@@ -943,6 +965,7 @@ class npc_crok_scourgebane : public CreatureScript
                 SetDespawnAtFar(false);
                 _isEventActive = false;
                 _isEventDone = _instance->GetBossState(DATA_SISTER_SVALNA) == DONE;
+				me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                 _didUnderTenPercentText = false;
             }
 
@@ -999,6 +1022,7 @@ class npc_crok_scourgebane : public CreatureScript
                         if (_currentWPid == 4 && _isEventActive)
                         {
                             _isEventActive = false;
+							me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                             me->setActive(false);
                             Talk(SAY_CROK_FINAL_WP);
                             if (Creature* svalna = ObjectAccessor::GetCreature(*me, _instance->GetData64(DATA_SISTER_SVALNA)))
@@ -1027,6 +1051,7 @@ class npc_crok_scourgebane : public CreatureScript
                         if (_aliveTrash.empty() && _isEventActive)
                         {
                             _isEventActive = false;
+							me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                             me->setActive(false);
                             Talk(SAY_CROK_FINAL_WP);
                             if (Creature* svalna = ObjectAccessor::GetCreature(*me, _instance->GetData64(DATA_SISTER_SVALNA)))
@@ -1155,6 +1180,7 @@ class npc_crok_scourgebane : public CreatureScript
                             Talk(SAY_CROK_INTRO_3);
                             break;
                         case EVENT_START_PATHING:
+							me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                             Start(true, true);
                             break;
                         case EVENT_SCOURGE_STRIKE:
@@ -1811,7 +1837,7 @@ class spell_icc_sprit_alarm : public SpellScriptLoader
                     {
                         (*itr)->AI()->Talk(SAY_TRAP_ACTIVATE);
                         (*itr)->RemoveAurasDueToSpell(SPELL_STONEFORM);
-                        if (Unit* target = (*itr)->SelectNearestTarget(150.0f))
+                        if (Unit* target = (*itr)->SelectNearestTarget(80.0f))
                             (*itr)->AI()->AttackStart(target);
                         break;
                     }
@@ -2137,6 +2163,214 @@ class at_icc_start_frostwing_gauntlet : public AreaTriggerScript
         }
 };
 
+class npc_sindragosas_ward : public CreatureScript
+{
+    public:
+        npc_sindragosas_ward() : CreatureScript("npc_sindragosas_ward") { }
+
+        struct npc_sindragosas_wardAI : public BossAI
+        {
+            npc_sindragosas_wardAI(Creature* creature) : BossAI(creature, DATA_SINDRAGOSA_GAUNTLET)
+            {
+            }
+
+            void Reset()
+            {
+                _Reset();
+                _isEventInProgressOrDone = false;
+                _spawnCountToBeSummonedInWave = 0;
+                _waveNumber = 0;
+            }
+
+            void DoAction(int32 action)
+            {
+                if (action == ACTION_START_GAUNTLET)
+                    if (!_isEventInProgressOrDone)
+                        if (!IsAnyPlayerOutOfRange())
+                            DoZoneInCombat(me, 150.0f);
+            }
+
+            void EnterCombat(Unit* /*attacker*/)
+            {
+                _EnterCombat();
+                _isEventInProgressOrDone = true;
+                _spawnCountToBeSummonedInWave = 32;
+                _waveNumber = 1;
+                DoSummonWave(_waveNumber);
+                events.ScheduleEvent(EVENT_SUB_WAVE_1, 10000);
+                events.ScheduleEvent(EVENT_SUB_WAVE_2, 25000);
+                events.ScheduleEvent(EVENT_UPDATE_CHECK, 5000);
+            }
+
+            void DoSummonWave(uint8 number)
+            {
+                switch (number)
+                {
+                    case 1:
+                    case 3:
+                        me->SummonCreature(NPC_NERUBAR_WEBWEAVER, SindragosaGauntletSpawn[1], TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 120000);
+                        me->SummonCreature(NPC_NERUBAR_WEBWEAVER, SindragosaGauntletSpawn[4], TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 120000);
+                        me->SummonCreature(NPC_NERUBAR_WEBWEAVER, SindragosaGauntletSpawn[7], TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 120000);
+                        me->SummonCreature(NPC_NERUBAR_WEBWEAVER, SindragosaGauntletSpawn[10], TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 120000);
+                        me->SummonCreature(NPC_NERUBAR_CHAMPION, SindragosaGauntletSpawn[2], TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 120000);
+                        me->SummonCreature(NPC_NERUBAR_CHAMPION, SindragosaGauntletSpawn[5], TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 120000);
+                        me->SummonCreature(NPC_NERUBAR_CHAMPION, SindragosaGauntletSpawn[8], TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 120000);
+                        me->SummonCreature(NPC_NERUBAR_CHAMPION, SindragosaGauntletSpawn[11], TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 120000);
+                        break;
+                    case 2:
+                        me->SummonCreature(NPC_FROSTWARDEN_SORCERESS, SindragosaGauntletSpawn[3], TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 120000);
+                        me->SummonCreature(NPC_FROSTWARDEN_SORCERESS, SindragosaGauntletSpawn[9], TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 120000);
+                        me->SummonCreature(NPC_FROSTWARDEN_WARRIOR, SindragosaGauntletSpawn[3], TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 120000);
+                        me->SummonCreature(NPC_FROSTWARDEN_WARRIOR, SindragosaGauntletSpawn[9], TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 120000);
+                        me->SummonCreature(NPC_FROSTWARDEN_WARRIOR, SindragosaGauntletSpawn[3], TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 120000);
+                        me->SummonCreature(NPC_FROSTWARDEN_WARRIOR, SindragosaGauntletSpawn[9], TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 120000);
+                        break;
+                    case EVENT_SUB_WAVE_1:
+                    case EVENT_SUB_WAVE_2:
+                        for (uint8 i = 0; i < 12; i++)
+                            me->SummonCreature(NPC_NERUBAR_BROODLING, SindragosaGauntletSpawn[i], TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 120000);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            bool IsAnyPlayerOutOfRange()
+            {
+                if (!me->GetMap())
+                    return true;
+
+                Map::PlayerList const& playerList = me->GetMap()->GetPlayers();
+
+                if (playerList.isEmpty())
+                    return true;
+
+                for (Map::PlayerList::const_iterator itr = playerList.begin(); itr != playerList.end(); ++itr)
+                {
+                    if (Player* player = itr->GetSource())
+                    {
+                        if (player->IsGameMaster())
+                            continue;
+
+                        if (player->IsAlive() && me->GetDistance(player) > 125.0f)
+                            return true;
+                    }
+                }
+
+                return false;
+            }
+
+            void JustSummoned(Creature* summon)
+            {
+                summons.Summon(summon);
+                DoZoneInCombat(summon, 150.0f);
+            }
+
+            void SummonedCreatureDies(Creature* summon, Unit* /*who*/)
+            {
+                _spawnCountToBeSummonedInWave--;
+                summon->DespawnOrUnsummon(30000);
+            }
+
+            void SummonedCreatureDespawn(Creature* summon)
+            {
+                // This one should never happen, if summoned creature despawns alive, reset!
+                if (summon->IsAlive())
+                {
+                    EnterEvadeMode();
+                    return;
+                }
+
+                summons.Despawn(summon);
+            }
+
+            void UpdateAI(uint32 diff)
+            {
+                if (!UpdateVictim() || !_isEventInProgressOrDone)
+                    return;
+
+                events.Update(diff);
+
+                while (uint32 eventId = events.ExecuteEvent())
+                {
+                    switch (eventId)
+                    {
+                        case EVENT_SUB_WAVE_1:
+                            DoSummonWave(EVENT_SUB_WAVE_1);
+                            break;
+                        case EVENT_SUB_WAVE_2:
+                            DoSummonWave(EVENT_SUB_WAVE_2);
+                            break;
+                        case EVENT_UPDATE_CHECK:
+                        {
+                            if (_spawnCountToBeSummonedInWave <= 5)
+                            {
+                                if (summons.size() < _spawnCountToBeSummonedInWave)
+                                    _spawnCountToBeSummonedInWave = summons.size();
+
+                                if (!_spawnCountToBeSummonedInWave)
+                                {
+                                    switch (_waveNumber)
+                                    {
+                                        case 1:
+                                            _spawnCountToBeSummonedInWave += 30;
+                                            break;
+                                        case 2:
+                                            _spawnCountToBeSummonedInWave += 32;
+                                            break;
+                                        case 3:
+                                            me->Kill(me);
+                                            return;
+                                    }
+
+                                    _waveNumber++;
+                                    DoSummonWave(_waveNumber);
+                                    events.ScheduleEvent(EVENT_SUB_WAVE_1, 10000);
+                                    events.ScheduleEvent(EVENT_SUB_WAVE_2, 25000);
+                                }
+                            }
+
+                            if (IsAnyPlayerOutOfRange())
+                            {
+                                EnterEvadeMode();
+                                return;
+                            }
+
+                            events.ScheduleEvent(EVENT_UPDATE_CHECK, 5000);
+                            break;
+                        }
+                        default:
+                            break;
+                    }
+                }
+            }
+
+        private:
+            bool _isEventInProgressOrDone;
+            uint32 _spawnCountToBeSummonedInWave;
+            uint8 _waveNumber;
+        };
+
+        CreatureAI* GetAI(Creature* creature) const
+        {
+            return GetIcecrownCitadelAI<npc_sindragosas_wardAI>(creature);
+        }
+};
+
+class at_icc_start_sindragosa_gauntlet : public AreaTriggerScript
+{
+    public:
+        at_icc_start_sindragosa_gauntlet() : AreaTriggerScript("at_icc_start_sindragosa_gauntlet") { }
+
+        bool OnTrigger(Player* player, AreaTriggerEntry const* /*areaTrigger*/)
+        {
+            if (InstanceScript* instance = player->GetInstanceScript())
+                if (Creature* ward = ObjectAccessor::GetCreature(*player, instance->GetData64(DATA_SINDRAGOSA_GAUNTLET)))
+                    ward->AI()->DoAction(ACTION_START_GAUNTLET);
+            return true;
+        }
+};
+
 void AddSC_icecrown_citadel()
 {
     new npc_highlord_tirion_fordring_lh();
@@ -2164,4 +2398,6 @@ void AddSC_icecrown_citadel()
     new at_icc_shutdown_traps();
     new at_icc_start_blood_quickening();
     new at_icc_start_frostwing_gauntlet();
+	new npc_sindragosas_ward();
+	new at_icc_start_sindragosa_gauntlet();
 }
