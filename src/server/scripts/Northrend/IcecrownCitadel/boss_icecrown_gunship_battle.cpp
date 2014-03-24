@@ -2333,12 +2333,10 @@ class spell_igb_gunship_fall_teleport : public SpellScriptLoader
 
             void RelocateDest(SpellEffIndex /*effIndex*/)
             {
-				Position offset1 = {0.0f, 0.0f, 36.0f, 0.0f};
-				Position offset2 = {0.0f, 0.0f, 21.0f, 0.0f};
                 if (GetCaster()->GetInstanceScript()->GetData(DATA_TEAM_IN_INSTANCE) == HORDE)    
-					GetHitDest()->RelocateOffset(offset1);
+					GetHitDest()->RelocateOffset({ 0.0f, 0.0f, 36.0f, 0.0f });
                 else
-                    GetHitDest()->RelocateOffset(offset2);
+					GetHitDest()->RelocateOffset({ 0.0f, 0.0f, 21.0f, 0.0f });
             }
 
             void Register() OVERRIDE
