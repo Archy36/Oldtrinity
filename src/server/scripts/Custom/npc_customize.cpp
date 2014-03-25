@@ -38,7 +38,6 @@ class npc_customize : public CreatureScript
 {
 public:
     npc_customize() : CreatureScript("npc_customize") { }
-
     bool OnGossipHello(Player* pPlayer, Creature* pCreature)
     {
         pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_RENAME_HELLO, GOSSIP_SENDER_MAIN, ACT_RENAME);
@@ -46,7 +45,7 @@ public:
         pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_CUSTOMIZE_RACE_CHANGE_HELLO, GOSSIP_SENDER_MAIN, ACT_CHANGE_RACE);
         pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_CUSTOMIZE_RACE_HELLO, GOSSIP_SENDER_MAIN, ACT_CUSTOMIZE_RACE);		
         pPlayer->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, pCreature->GetGUID());
-        return true;
+		return true;
     }
 
     bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 uiSender, uint32 uiAction)
@@ -77,9 +76,9 @@ public:
         case ACT_CONFIRM_RENAME:
             if (pPlayer->GetMoney() < PRISE_RENAME_CHAR_AP)
             {
-                pCreature->MonsterWhisper(MSG_NOT_MONEY_FOR_RENAME, pPlayer->GetGUID());
+                pCreature->MonsterWhisper(MSG_NOT_MONEY_FOR_RENAME, pPlayer);
             }else{
-                pCreature->MonsterWhisper(MSG_COMPLETE_RENAME, pPlayer->GetGUID());
+                pCreature->MonsterWhisper(MSG_COMPLETE_RENAME, pPlayer);
                 pPlayer->ModifyMoney(-PRISE_RENAME_CHAR_AP);
                 pPlayer->SetAtLoginFlag(AT_LOGIN_RENAME);
             }
@@ -88,9 +87,9 @@ public:
         case ACT_CONFIRM_CUSTOMIZE:
             if (pPlayer->GetMoney() < PRISE_CUSTOMIZE_CHAR_AP)
             {
-                pCreature->MonsterWhisper(MSG_NOT_MONEY_FOR_RENAME, pPlayer->GetGUID());
+                pCreature->MonsterWhisper(MSG_NOT_MONEY_FOR_RENAME, pPlayer);
             }else{
-                pCreature->MonsterWhisper(MSG_COMPLETE_CUSTOMIZE, pPlayer->GetGUID());
+                pCreature->MonsterWhisper(MSG_COMPLETE_CUSTOMIZE, pPlayer);
                 pPlayer->ModifyMoney(-PRISE_CUSTOMIZE_CHAR_AP);
                 pPlayer->SetAtLoginFlag(AT_LOGIN_CUSTOMIZE);
             }
@@ -99,9 +98,9 @@ public:
         case ACT_CONFIRM_CUSTOMIZE_RACE_CHANGE:
             if (pPlayer->GetMoney() < PRISE_CUSTOMIZE_RACE_CHANGE_AP)
             {  
-                pCreature->MonsterWhisper(MSG_NOT_MONEY_FOR_RENAME, pPlayer->GetGUID());
+                pCreature->MonsterWhisper(MSG_NOT_MONEY_FOR_RENAME, pPlayer);
             }else{
-                pCreature->MonsterWhisper(MSG_COMPLETE_RACE_CHANGE, pPlayer->GetGUID());
+                pCreature->MonsterWhisper(MSG_COMPLETE_RACE_CHANGE, pPlayer);
                 pPlayer->ModifyMoney(-PRISE_CUSTOMIZE_RACE_CHANGE_AP);
                 pPlayer->SetAtLoginFlag(AT_LOGIN_CHANGE_RACE);
             }
@@ -110,9 +109,9 @@ public:
         case ACT_CONFIRM_CUSTOMIZE_RACE:
             if (pPlayer->GetMoney() < PRISE_CUSTOMIZE_RACE_CHAR_AP)
             {
-                pCreature->MonsterWhisper(MSG_NOT_MONEY_FOR_RENAME, pPlayer->GetGUID());
+                pCreature->MonsterWhisper(MSG_NOT_MONEY_FOR_RENAME, pPlayer);
             }else{
-                pCreature->MonsterWhisper(MSG_COMPLETE_RACE_CUSTOMIZE, pPlayer->GetGUID());
+                pCreature->MonsterWhisper(MSG_COMPLETE_RACE_CUSTOMIZE, pPlayer);
                 pPlayer->ModifyMoney(-PRISE_CUSTOMIZE_RACE_CHAR_AP);
                 pPlayer->SetAtLoginFlag(AT_LOGIN_CHANGE_FACTION);
             }
