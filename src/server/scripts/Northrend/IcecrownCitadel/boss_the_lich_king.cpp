@@ -2462,7 +2462,7 @@ class spell_the_lich_king_defile : public SpellScriptLoader
 
             void CorrectRange(std::list<WorldObject*>& targets)
             {
-                targets.remove_if(ExactDistanceCheck(GetCaster(), 10.0f * GetCaster()->GetObjectScale()));
+                targets.remove_if(ExactDistanceCheck(GetCaster(), 5.0f * GetCaster()->GetObjectScale()));
             }
 
             void ChangeDamageAndGrow()
@@ -2583,7 +2583,8 @@ class spell_the_lich_king_valkyr_target_search : public SpellScriptLoader
             {
                 if (targets.empty())
                     return;
-
+				
+				targets.remove_if(HeightFilterValkyrTargetSelection());
                 targets.remove_if(Trinity::UnitAuraCheck(true, GetSpellInfo()->Id));
                 if (targets.empty())
                     return;

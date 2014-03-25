@@ -126,7 +126,7 @@ enum WorldStatesRS
 
 enum InstanceSpell
 {
-    SPELL_BERSERK                       = 26662,
+    SPELL_BERSERK                       = 47008,
 };
 
 template<class AI>

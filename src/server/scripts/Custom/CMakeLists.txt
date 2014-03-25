@@ -16,6 +16,7 @@ set(scripts_STAT_SRCS
 	Custom/ArenaSpectator.cpp
         Custom/duel_reset.cpp
         Custom/arena_fast_start.cpp
+        Custom/npc_customize.cpp
 )
 
 message("  -> Prepared: Custom")
