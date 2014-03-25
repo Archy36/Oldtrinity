@@ -1,1 +1,1 @@
-UPDATE creature_template SET InhabitType = InhabitType 4 WHERE `entry` IN (27829); -- Ebon Gargyole
+UPDATE creature_template SET InhabitType = 4 WHERE `entry` IN (27829); -- Ebon Gargyole
