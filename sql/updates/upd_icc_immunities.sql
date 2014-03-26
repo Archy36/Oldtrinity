@@ -18,3 +18,6 @@ UPDATE `creature_template` SET `speed_walk` = 0.5, `speed_run` = 0.5, `InhabitTy
 -- gas cloud & volatile ooze immunities
 UPDATE `creature_template` SET `mechanic_immune_mask` = 885735291 WHERE `entry` IN (37697, 38604, 38758, 38759);
 UPDATE `creature_template` SET `mechanic_immune_mask` = 885735291 WHERE `entry` IN (37652, 38602, 38760, 38761);
+-- RS bosses immunities
+UPDATE `creature_template` SET `mechanic_immune_mask` = 769605631 WHERE `entry` IN (39746, 39805, 39747, 39823,39751,39920,39863,39864,39944,39945);
+

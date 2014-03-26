@@ -7590,7 +7590,7 @@ void Player::UpdateArea(uint32 newArea)
 
     // previously this was in UpdateZone (but after UpdateArea) so nothing will break
     pvpInfo.IsInNoPvPArea = false;
-    if (area && area->IsSanctuary())    // in sanctuary
+    if (area && area->IsSanctuary() || GetAreaId() == 2397 || GetAreaId() == 2318)    // in sanctuary
     {
         SetByteFlag(UNIT_FIELD_BYTES_2, 1, UNIT_BYTE2_FLAG_SANCTUARY);
         pvpInfo.IsInNoPvPArea = true;

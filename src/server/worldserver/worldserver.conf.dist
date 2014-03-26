@@ -1557,6 +1557,13 @@ PreserveCustomChannels = 1
 PreserveCustomChannelDuration = 14
 
 #
+#    AllowTwoSide.Interaction.Chat.Area
+#        Description: Allow say chat between factions on specific area.
+#        Default:    -1 - (Disabled)
+
+AllowTwoSide.Interaction.Chat.Area = 2397
+
+#
 ###################################################################################################
 
 ###################################################################################################
