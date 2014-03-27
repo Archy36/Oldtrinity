@@ -972,11 +972,6 @@ void Battleground::EndBattleground(uint32 winner)
                 UpdatePlayerScore(player, SCORE_BONUS_HONOR, GetBonusHonorFromKill(loser_kills));
         }
 		
-		if (isArena())
-		{
-			player->SetGMVisible(true);
-			player->SetGameMaster(false);
-		}		
         player->ResetAllPowers();
         player->CombatStopWithPets(true);
 
