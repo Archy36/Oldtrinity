@@ -246,6 +246,9 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
         }
     }
 
+	if (sender->IsGMChat() && !msg.empty()))
+		msg = "|cff2998ff" + msg + "|r";
+	
     switch (type)
     {
         case CHAT_MSG_SAY:
