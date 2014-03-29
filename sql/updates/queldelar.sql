@@ -1,4 +1,4 @@
-UPDATE `creature_template` SET `gossip_menu_id`='37523',`npcflag`='1' WHERE (`entry`='37523')  
+UPDATE `creature_template` SET `gossip_menu_id`='37523',`npcflag`='1' WHERE (`entry`='37523');  
 
 SET @NPC_MYRALION_SUNBLAZE        := 36642;
 SET @NPC_CALADIS_BRIGHTSPEAR      := 36624;
