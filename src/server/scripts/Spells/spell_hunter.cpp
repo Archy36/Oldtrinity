@@ -420,7 +420,7 @@ class spell_hun_masters_call : public SpellScriptLoader
                         if (Pet* target = caster->GetPet())
 							if (target->IsAlive())
 								return SPELL_CAST_OK;
-							return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+							return SPELL_FAILED_NO_PET;
 					                
             }
 			
