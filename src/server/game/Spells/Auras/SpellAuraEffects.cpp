@@ -3194,6 +3194,7 @@ void AuraEffect::HandleModStateImmunityMask(AuraApplication const* aurApp, uint8
                 aura_immunity_list.push_back(SPELL_AURA_MOD_ROOT);
                 aura_immunity_list.push_back(SPELL_AURA_MOD_CONFUSE);
                 aura_immunity_list.push_back(SPELL_AURA_MOD_FEAR);
+				target->ApplySpellImmune(0, IMMUNITY_ID, 33786, apply); // Bladestorm cannot be cycloned
             }
             break;
         }
