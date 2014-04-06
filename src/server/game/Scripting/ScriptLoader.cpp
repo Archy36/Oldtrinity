@@ -26,7 +26,6 @@ void AddSC_example_misc();
 void AddSC_example_commandscript();
 
 // Custom
-void AddSC_arena_spectator_script();
 void AddSC_DuelReset();
 void AddSC_fast_arena_start();
 void AddSC_mob_resurrect();
@@ -1458,7 +1457,6 @@ void AddCustomScripts()
 #ifdef SCRIPTS
     /* This is where custom scripts should be added. */
 //custom
-	AddSC_arena_spectator_script();
     AddSC_CPWS_Transmogrification();
 	AddSC_DuelReset();
 	AddSC_fast_arena_start();
