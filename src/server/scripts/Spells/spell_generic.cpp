@@ -712,7 +712,7 @@ class spell_gen_clone : public SpellScriptLoader
             void HandleScriptEffect(SpellEffIndex effIndex)
             {
                 PreventHitDefaultEffect(effIndex);
-                GetHitUnit()->CastSpell(GetCaster(), GetEffectValue(), true);
+                GetHitUnit()->CastSpell(GetCaster(), uint32(GetEffectValue()), true);
             }
 
             void Register() OVERRIDE
@@ -752,10 +752,7 @@ class spell_gen_clone_weapon : public SpellScriptLoader
             void HandleScriptEffect(SpellEffIndex effIndex)
             {
                 PreventHitDefaultEffect(effIndex);
-                Unit* caster = GetCaster();
-
-                if (Unit* target = GetHitUnit())
-                    caster->CastSpell(target, GetEffectValue(), true);
+                GetHitUnit()->CastSpell(GetCaster(), uint32(GetEffectValue()), true);
             }
 
             void Register() OVERRIDE
@@ -779,8 +776,6 @@ class spell_gen_clone_weapon_aura : public SpellScriptLoader
         {
             PrepareAuraScript(spell_gen_clone_weapon_auraScript);
 
-            uint32 prevItem;
-
             bool Validate(SpellInfo const* /*spellInfo*/) OVERRIDE
             {
                 if (!sSpellMgr->GetSpellInfo(SPELL_COPY_WEAPON_AURA) ||
@@ -790,6 +785,12 @@ class spell_gen_clone_weapon_aura : public SpellScriptLoader
                     !sSpellMgr->GetSpellInfo(SPELL_COPY_OFFHAND_2_AURA) ||
                     !sSpellMgr->GetSpellInfo(SPELL_COPY_RANGED_AURA))
                     return false;
+                return true;
+            }
+
+            bool Load() OVERRIDE
+            {
+                prevItem = 0;
                 return true;
             }
 
@@ -889,6 +890,8 @@ class spell_gen_clone_weapon_aura : public SpellScriptLoader
                 OnEffectRemove += AuraEffectRemoveFn(spell_gen_clone_weapon_auraScript::OnRemove, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
             }
 
+        private:
+            uint32 prevItem;
         };
 
         AuraScript* GetAuraScript() const OVERRIDE
@@ -3294,6 +3297,33 @@ class spell_gen_summon_tournament_mount : public SpellScriptLoader
         }
 };
 
+// 41213, 43416, 69222, 73076 - Throw Shield
+class spell_gen_throw_shield : public SpellScriptLoader
+{
+    public:
+        spell_gen_throw_shield() : SpellScriptLoader("spell_gen_throw_shield") { }
+
+        class spell_gen_throw_shield_SpellScript : public SpellScript
+        {
+            PrepareSpellScript(spell_gen_throw_shield_SpellScript);
+
+            void HandleScriptEffect(SpellEffIndex effIndex)
+            {
+                PreventHitDefaultEffect(effIndex);
+                GetCaster()->CastSpell(GetHitUnit(), uint32(GetEffectValue()), true);
+            }
+
+            void Register() OVERRIDE
+            {
+                OnEffectHitTarget += SpellEffectFn(spell_gen_throw_shield_SpellScript::HandleScriptEffect, EFFECT_1, SPELL_EFFECT_SCRIPT_EFFECT);
+            }
+        };
+
+        SpellScript* GetSpellScript() const OVERRIDE
+        {
+            return new spell_gen_throw_shield_SpellScript();
+        }
+};
 
 enum MountedDuelSpells
 {
@@ -3794,6 +3824,7 @@ void AddSC_generic_spell_scripts()
     new spell_gen_summon_elemental("spell_gen_summon_fire_elemental", SPELL_SUMMON_FIRE_ELEMENTAL);
     new spell_gen_summon_elemental("spell_gen_summon_earth_elemental", SPELL_SUMMON_EARTH_ELEMENTAL);
     new spell_gen_summon_tournament_mount();
+    new spell_gen_throw_shield();
     new spell_gen_tournament_duel();
     new spell_gen_tournament_pennant();
     new spell_pvp_trinket_wotf_shared_cd();
