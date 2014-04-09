@@ -686,6 +686,21 @@ void Spell::EffectDummy(SpellEffIndex effIndex)
     // selection by spell family
     switch (m_spellInfo->SpellFamilyName)
     {
+		case SPELLFAMILY_GENERIC:
+			switch (m_spellInfo->Id)
+			{
+				case 58984: //shadowmeld
+				{
+					if (Player *pCaster = m_caster->ToPlayer()) // if is a creature instant exits combat, else check if someone in party is in combat in visibility distance
+						pCaster->SendAttackSwingCancelAttack();
+					if (!m_caster->GetInstanceScript() || !m_caster->GetInstanceScript()->IsEncounterInProgress()) //Don't leave combat if you are in combat with a boss
+						m_caster->CombatStop();
+					m_caster->InterruptSpell(CURRENT_AUTOREPEAT_SPELL); // break Auto Shot and autohit
+					unitTarget->InterruptSpell(CURRENT_CHANNELED_SPELL); // break channeled spells
+					return;
+				}
+			}
+			break;
         case SPELLFAMILY_PALADIN:
             switch (m_spellInfo->Id)
             {
