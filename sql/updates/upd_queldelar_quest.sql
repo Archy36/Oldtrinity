@@ -40,3 +40,7 @@ INSERT INTO `gossip_menu_option` VALUES(37523, 2, 0, 'I''m ready to enter the Su
 INSERT INTO `gossip_menu_option` VALUES(37523, 3, 0, 'I''m ready to enter the Sunwell.', 1, 1, 0, 0, 0, 0, NULL);
 INSERT INTO `gossip_menu_option` VALUES(37523, 4, 0, 'I''m ready to enter the Sunwell.', 1, 1, 0, 0, 0, 0, NULL);
 INSERT INTO `gossip_menu_option` VALUES(37523, 5, 0, 'I''m ready to enter the Sunwell.', 1, 1, 0, 0, 0, 0, NULL);
+
+INSERT INTO `gameobject_loot_template` (`entry`, `item`, `ChanceOrQuestChance`, `lootmode`, `groupid`, `mincountOrRef`, `maxcount`) VALUES(201794, 49871, -100, 1, 0, 1, 1);
+
+INSERT INTO `event_scripts` (`id`, `delay`, `command`, `datalong`, `datalong2`, `dataint`, `x`, `y`, `z`, `o`) VALUES(22833, 0, 9, 72796, 600, 0, 0, 0, 0, 0);
