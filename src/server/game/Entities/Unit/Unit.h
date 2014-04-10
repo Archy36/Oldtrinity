@@ -270,8 +270,6 @@ enum UnitRename
 #define MAX_SPELL_VEHICLE       6
 #define MAX_SPELL_POSSESS       8
 #define MAX_SPELL_CONTROL_BAR   10
-
-#define MAX_AGGRO_RESET_TIME 10 // in seconds
 #define MAX_AGGRO_RADIUS 45.0f  // yards
 
 enum Swing
@@ -2270,7 +2268,6 @@ class Unit : public WorldObject
         uint32 _oldFactionId;           ///< faction before charm
         bool _isWalkingBeforeCharm;     ///< Are we walking before we were charmed?
 
-        time_t _lastDamagedTime; // Part of Evade mechanics
 };
 
 namespace Trinity
