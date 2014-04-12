@@ -265,6 +265,8 @@ void Vehicle::ApplyAllImmunities()
         case 244: // Wintergrasp
         case 510: // Isle of Conquest
             _me->SetControlled(true, UNIT_STATE_ROOT);
+			_me->SetSpeed(MOVE_WALK, 0.0f);
+			_me->SetSpeed(MOVE_RUN, 0.0f);
             // why we need to apply this? we can simple add immunities to slow mechanic in DB
             _me->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_MOD_DECREASE_SPEED, true);
             break;

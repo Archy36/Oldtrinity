@@ -414,15 +414,36 @@ class spell_hun_masters_call : public SpellScriptLoader
         {
             PrepareSpellScript(spell_hun_masters_call_SpellScript);
 			SpellCastResult CheckCast()
-            {
-                Unit* caster = GetCaster();
-                    if (Player* caster = GetCaster()->ToPlayer())
-                        if (Pet* target = caster->GetPet())
-							if (target->IsAlive())
-								return SPELL_CAST_OK;
-							return SPELL_FAILED_NO_PET;
-					                
-            }
+			{
+				if (Player* caster = GetCaster()->ToPlayer())
+					{
+						if (Pet* pet = caster->GetPet())
+						{
+							if (!pet->IsAlive())
+							{
+								return SPELL_FAILED_NO_PET;
+							}
+
+							if (pet->HasUnitState(UNIT_STATE_STUNNED) || caster->HasUnitState(UNIT_STATE_STUNNED))
+							{
+								return SPELL_FAILED_STUNNED;
+							}
+
+							if (!pet->IsWithinLOS(caster->GetPositionX(), caster->GetPositionY(), caster->GetPositionZ()))
+							{
+								return SPELL_FAILED_LINE_OF_SIGHT;
+							}
+
+							if (Unit* target = GetExplTargetUnit())
+							{
+								if (!pet->IsWithinLOS(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ()))
+									return SPELL_FAILED_LINE_OF_SIGHT;
+							}
+						}
+					}
+
+					return SPELL_CAST_OK;
+				}
 			
             bool Validate(SpellInfo const* spellInfo) OVERRIDE
             {
