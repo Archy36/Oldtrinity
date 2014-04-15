@@ -21818,7 +21818,7 @@ void Player::UpdateHomebindTime(uint32 time)
     }
     else if (m_HomebindTimer > 0)
     {
-        if (time >= m_HomebindTimer)
+        if (time >= 1)
         {
             // teleport to nearest graveyard
             RepopAtGraveyard();
@@ -21835,7 +21835,7 @@ void Player::UpdateHomebindTime(uint32 time)
         data << uint32(m_HomebindTimer);
         data << uint32(1);
         GetSession()->SendPacket(&data);
-        TC_LOG_DEBUG("maps", "PLAYER: Player '%s' (GUID: %u) will be teleported to homebind in 60 seconds", GetName().c_str(), GetGUIDLow());
+        TC_LOG_DEBUG("maps", "PLAYER: Player '%s' (GUID: %u) will be teleported to homebind instantly", GetName().c_str(), GetGUIDLow());
     }
 }
 
