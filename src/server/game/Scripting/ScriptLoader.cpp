@@ -29,6 +29,8 @@ void AddSC_example_commandscript();
 void AddSC_DuelReset();
 void AddSC_fast_arena_start();
 void AddSC_mob_resurrect();
+// Arena Spectator
+void AddSC_arena_spectator_script();
 
 // spells
 void AddSC_deathknight_spell_scripts();
@@ -1462,5 +1464,6 @@ void AddCustomScripts()
 	AddSC_fast_arena_start();
 	AddSC_npc_customize();
 	AddSC_mob_resurrect();
+	AddSC_arena_spectator_script();
 #endif
 }

@@ -17,6 +17,7 @@ set(scripts_STAT_SRCS
         Custom/arena_fast_start.cpp
         Custom/npc_customize.cpp
         Custom/mob_resurrect.cpp
+	Custom/arena_spectator.cpp
 )
 
 message("  -> Prepared: Custom")
