@@ -27,28 +27,28 @@ class arena_spectator_commands : public CommandScript
             Player* player = handler->GetSession()->GetPlayer();
             if (target == player || target_guid == player->GetGUID())
             {
-                handler->PSendSysMessage(LANG_CANT_TELEPORT_SELF);
+                handler->PSendSysMessage("Нельзя просто так взять и...наблюдать за собой :)");
                 handler->SetSentErrorMessage(true);
                 return false;
             }
 
             if (player->IsInCombat())
             {
-                handler->PSendSysMessage("Can't do that while in combat");
+                handler->PSendSysMessage("Нельзя сделать это находясь в бою");
                 handler->SetSentErrorMessage(true);
                 return false;
             }
 
             if (!target)
             {
-                handler->PSendSysMessage("Player not found");
+                handler->PSendSysMessage("Игрок не найден");
                 handler->SetSentErrorMessage(true);
                 return false;
             }
 			
 			if (player->IsMounted())
             {
-                handler->PSendSysMessage("Cannot spectate while mounted.");
+                handler->PSendSysMessage("Невозможно сделать это находясь на средстве передвижения");
                 handler->SetSentErrorMessage(true);
                 return false;
             }			
@@ -62,14 +62,14 @@ class arena_spectator_commands : public CommandScript
             */
             if (player->GetPet())
             {
-                handler->PSendSysMessage("You must hide your pet.");
+                handler->PSendSysMessage("Вы должны убрать питомца");
                 handler->SetSentErrorMessage(true);
                 return false;
             }
 
             if (player->GetMap()->IsBattlegroundOrArena() && !player->IsSpectator())
             {
-                handler->PSendSysMessage("You are already on battleground or arena.");
+                handler->PSendSysMessage("Невозможно сделать это находясь на арене или поле боя");
                 handler->SetSentErrorMessage(true);
                 return false;
             }
@@ -77,14 +77,14 @@ class arena_spectator_commands : public CommandScript
             Map* cMap = target->GetMap();
             if (!cMap->IsBattleArena())
             {
-                handler->PSendSysMessage("Player was not found in arena.");
+                handler->PSendSysMessage("Игрок не на арене");
                 handler->SetSentErrorMessage(true);
                 return false;
             }
 
             if (player->GetMap()->IsBattleground())
             {
-                handler->PSendSysMessage("Cant do that while you are on battleground.");
+                handler->PSendSysMessage("Невозможно сделать это находясь на поле боя");
                 handler->SetSentErrorMessage(true);
                 return false;
             }
@@ -98,7 +98,7 @@ class arena_spectator_commands : public CommandScript
 
             if (target->IsSpectator())
             {
-                handler->PSendSysMessage("Can`t do that. Your target is spectator.");
+                handler->PSendSysMessage("Невозможно, т.к. выбранный вами игрок - зритель");
                 handler->SetSentErrorMessage(true);
                 return false;
             }
@@ -145,8 +145,8 @@ class arena_spectator_commands : public CommandScript
                     ArenaTeam *secondTeam = sArenaTeamMgr->GetArenaTeamById(secondTeamID);
                     if (firstTeam && secondTeam)
                     {
-                        handler->PSendSysMessage("You entered to rated arena.");
-                        handler->PSendSysMessage("Teams:");
+                        handler->PSendSysMessage("Рейтинговый бой");
+                        handler->PSendSysMessage("Команды:");
                         handler->PSendSysMessage("%s - %s", firstTeam->GetName().c_str(), secondTeam->GetName().c_str());
                         handler->PSendSysMessage("%u(%u) - %u(%u)", firstTeam->GetRating(), firstTeam->GetAverageMMR(firstTeamMember->GetGroup()),
                         secondTeam->GetRating(), secondTeam->GetAverageMMR(secondTeamMember->GetGroup()));
@@ -171,7 +171,7 @@ class arena_spectator_commands : public CommandScript
 
             if (!player->IsSpectator())
             {
-                handler->PSendSysMessage("You are not spectator.");
+                handler->PSendSysMessage("Вы не зритель");
                 handler->SetSentErrorMessage(true);
                 return false;
             }
@@ -195,21 +195,21 @@ class arena_spectator_commands : public CommandScript
 
             if (!target)
             {
-                handler->PSendSysMessage("Can't find player.");
+                handler->PSendSysMessage("Игрок не найден");
                 handler->SetSentErrorMessage(true);
                 return false;
             }
 
             if (!player->IsSpectator())
             {
-                handler->PSendSysMessage("You are not spectator, spectate someone first.");
+                handler->PSendSysMessage("Вы не зритель, для начала войдите в режим зрителя");
                 handler->SetSentErrorMessage(true);
                 return false;
             }
 
             if (target->IsSpectator() && target != player)
             {
-                handler->PSendSysMessage("Can`t do that. Your target is spectator.");
+                handler->PSendSysMessage("Невозможно, т.к. выбранный вами игрок - зритель");
                 handler->SetSentErrorMessage(true);
                 return false;
             }
@@ -241,14 +241,14 @@ class arena_spectator_commands : public CommandScript
 
             if (!player)
             {
-                handler->PSendSysMessage("Can't find player.");
+                handler->PSendSysMessage("Игрок не найден");
                 handler->SetSentErrorMessage(true);
                 return false;
             }
 
             if (!player->IsSpectator())
             {
-                handler->PSendSysMessage("You are not spectator!");
+                handler->PSendSysMessage("Вы не зритель, для начала войдите в режим зрителя");
                 handler->SetSentErrorMessage(true);
                 return false;
             }
@@ -334,9 +334,9 @@ class npc_arena_spectator : public CreatureScript
 
         bool OnGossipHello(Player* pPlayer, Creature* pCreature)
         {
-			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Смотреть игры с рейтингом выше 1800...", GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_LIST_TOP_GAMES);
-			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Смотреть игры с рейтингом до 1800.....", GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_LIST_GAMES);
-            pPlayer->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, pCreature->GetGUID());
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface/ICONS/Achievement_PVP_G_06:30:30:-18:0|tСмотреть бои до 1800", GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_LIST_GAMES);
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface/ICONS/Achievement_PVP_A_13:30:30:-18:0|tСмотреть бои 1800+", GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_LIST_TOP_GAMES);
+			pPlayer->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, pCreature->GetGUID());
             return true;
         }
 
