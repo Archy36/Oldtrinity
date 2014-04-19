@@ -25,11 +25,9 @@ class fast_arena_start : public GameObjectScript
 
         bool OnGossipHello(Player* player, GameObject* go)
         {
-			if (player->IsSpectator())
-				return false;
 
             if (Battleground *bg = player->GetBattleground())
-                if (bg->isArena())
+                if (bg->isArena() && !player->IsSpectator())
                     ChatHandler(player->GetSession()).PSendSysMessage("Players clicked: %u", bg->ClickFastStart(player, go));
             return false;
         }
