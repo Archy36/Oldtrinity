@@ -28,6 +28,8 @@ enum ActNpcRename
 #define GOSSIP_CUSTOMIZE_RACE_CHANGE_CONFIRM "Стоимость смены рассы 75.000 золотых. Вас устраивает? (Требуется перезайти в игру, чтобы изменения вступили в силу)."
 #define GOSSIP_CUSTOMIZE_RACE_CONFIRM "Стоимость смены фракции 100.000 золотых. Вас устраивает? (Требуется перезайти в игру, чтобы изменения вступили в силу, возможны необратимые последствия – потеря магических навыков, и одежды, обмену не подлежит)."
 
+#define MSG_DRUID_CHANGE_RACE "Вы друид, и не можете сменить расу не меняя фракции!"
+#define MSG_CHANGE_RACE_ERROR "Вы не можете сменить расу не меняя фракции!" 
 #define MSG_NOT_MONEY_FOR_RENAME "Вы банкрот! Проваливайте..."
 #define MSG_COMPLETE_RENAME "Готово, теперь выйди из игры и зайди снова. Тебе будет предложено ввести новое Имя!"
 #define MSG_COMPLETE_CUSTOMIZE "Готово! Теперь выйди из игры и зайди снова. Тебе будет предложено изменить свой Внешний вид и Пол!"
@@ -66,6 +68,21 @@ public:
             pPlayer->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, pCreature->GetGUID());
             break;
         case ACT_CHANGE_RACE:
+			if (pPlayer->getClassMask() == 1024)
+			{
+				pCreature->MonsterWhisper(MSG_DRUID_CHANGE_RACE, pPlayer);
+				break;
+			}
+			if (pPlayer->getClassMask() == 2 && pPlayer->getRaceMask() == 512)
+			{
+				pCreature->MonsterWhisper(MSG_CHANGE_RACE_ERROR, pPlayer);
+				break;
+			}
+			if (pPlayer->getClassMask() == 64 && pPlayer->getRaceMask() == 1024)
+			{
+				pCreature->MonsterWhisper(MSG_CHANGE_RACE_ERROR, pPlayer);
+				break;
+			}
             pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_CUSTOMIZE_RACE_CHANGE_CONFIRM, GOSSIP_SENDER_MAIN, ACT_CONFIRM_CUSTOMIZE_RACE_CHANGE);
             pPlayer->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, pCreature->GetGUID());
             break;
@@ -99,7 +116,9 @@ public:
             if (pPlayer->GetMoney() < PRISE_CUSTOMIZE_RACE_CHANGE_AP)
             {  
                 pCreature->MonsterWhisper(MSG_NOT_MONEY_FOR_RENAME, pPlayer);
-            }else{
+            }
+			else
+			{
                 pCreature->MonsterWhisper(MSG_COMPLETE_RACE_CHANGE, pPlayer);
                 pPlayer->ModifyMoney(-PRISE_CUSTOMIZE_RACE_CHANGE_AP);
                 pPlayer->SetAtLoginFlag(AT_LOGIN_CHANGE_RACE);
