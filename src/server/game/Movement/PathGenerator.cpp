@@ -552,8 +552,7 @@ void PathGenerator::BuildPointPath(const float *startPoint, const float *endPoin
         }
 
         _type = PathType(PATHFIND_NORMAL | PATHFIND_NOT_USING_PATH);
-    }
-
+    }   
     TC_LOG_DEBUG("maps", "++ PathGenerator::BuildPointPath path type %d size %d poly-size %d\n", _type, pointCount, _polyLength);
 }
 
