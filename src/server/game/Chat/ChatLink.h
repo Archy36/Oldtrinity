@@ -44,6 +44,8 @@ public:
 
     virtual bool Initialize(std::istringstream& iss) = 0;
     virtual bool ValidateName(char* buffer, const char* context) = 0;
+	
+	void RemoveLink(std::string& msg) { msg.erase(_startPos, _endPos - _startPos); }
 
 protected:
     uint32 _color;
@@ -162,9 +164,11 @@ class LinkExtractor
 {
 public:
     explicit LinkExtractor(const char* msg);
+	explicit LinkExtractor(const std::string& msg);
     ~LinkExtractor();
 
     bool IsValidMessage();
+	std::string RemoveLinks() const;
 
 private:
     typedef std::list<ChatLink*> Links;
