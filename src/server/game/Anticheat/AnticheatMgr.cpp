@@ -159,9 +159,7 @@ void AnticheatMgr::ClimbHackDetection(Player *player, MovementInfo movementInfo,
         player->IsFalling())
         return;
 
-    Position playerPos;
-    player->GetPosition(&playerPos);
-
+	Position playerPos = player->GetPosition();
     float deltaZ = fabs(playerPos.GetPositionZ() - movementInfo.pos.GetPositionZ());
     float deltaXY = movementInfo.pos.GetExactDist2d(&playerPos);
 
