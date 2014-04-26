@@ -955,6 +955,7 @@ void BattlegroundSA::UpdateDemolisherSpawns()
                         {
                             Demolisher->Relocate(BG_SA_NpcSpawnlocs[i]);
                             Demolisher->Respawn();
+                            Demolisher->setFaction(BG_SA_Factions[Attackers]);
                             DemoliserRespawnList.erase(i);
                         }
                     }
