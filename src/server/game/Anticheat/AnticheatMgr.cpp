@@ -121,9 +121,6 @@ void AnticheatMgr::StartHackDetection(Player* player, MovementInfo movementInfo,
     if (player->IsGameMaster())
         return;
 
-	if (player->GetAreaId() == 4384 || 4610)
-		return;
-
     uint32 key = player->GetGUIDLow();
 
     if (player->IsInFlight() || player->GetTransport() || player->GetVehicle())
@@ -162,7 +159,7 @@ void AnticheatMgr::ClimbHackDetection(Player *player, MovementInfo movementInfo,
         player->IsFalling())
         return;
 
-	Position playerPos = player->GetPosition();
+    Position playerPos = player->GetPosition();
     float deltaZ = fabs(playerPos.GetPositionZ() - movementInfo.pos.GetPositionZ());
     float deltaXY = movementInfo.pos.GetExactDist2d(&playerPos);
 
