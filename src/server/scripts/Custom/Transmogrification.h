@@ -34,11 +34,11 @@ public:
 #ifdef PRESETS
     typedef std::map<uint8, uint32> slotMap;
     typedef std::map<uint8, slotMap> presetData;
-    typedef UNORDERED_MAP<uint64, presetData> presetDataMap;
-    presetDataMap presetById; // presetById[pGUID][presetID][slot] = entry
+	typedef std::map<uint64, presetData> presetDataMap;
+    presetDataMap presetById; //presetById[pGUID][presetID][slot] = entry
     typedef std::map<uint8, std::string> presetIdMap;
-    typedef UNORDERED_MAP<uint64, presetIdMap> presetNameMap;
-    presetNameMap presetByName; // presetByName[pGUID][presetID] = presetName
+	typedef std::map<uint64, presetIdMap> presetNameMap;
+    presetNameMap presetByName; //presetByName[pGUID][presetID] = presetName
 
     bool EnableSetInfo;
     uint32 SetNpcText;
@@ -53,16 +53,15 @@ public:
 
     void PresetTransmog(Player* player, Item* itemTransmogrified, uint32 fakeEntry, uint8 slot);
 #endif
-
-    typedef UNORDERED_MAP<uint64, uint64> transmogData;
-    typedef UNORDERED_MAP<uint64, transmogData> transmogMap;
-    transmogMap entryMap; // entryMap[pGUID][iGUID] = entry
-    transmogData dataMap; // dataMap[iGUID] = pGUID
+	typedef std::map<uint64, uint64> transmogData;
+	typedef std::map<uint64, transmogData> transmogMap;
+    transmogMap entryMap; //entryMap[pGUID][iGUID] = entry
+    transmogData dataMap; //dataMap[iGUID] = pGUID
 
     bool EnableTransmogInfo;
     uint32 TransmogNpcText;
 
-    // Use IsAllowed() and IsNotAllowed()
+    //Use IsAllowed() and IsNotAllowed()
     std::set<uint32> Allowed;
     std::set<uint32> NotAllowed;
 
