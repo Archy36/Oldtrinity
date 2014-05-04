@@ -19,6 +19,7 @@
 #include "ObjectMgr.h"                                      // for normalizePlayerName
 #include "ChannelMgr.h"
 #include "Player.h"
+#include "Chat.h"
 
 void WorldSession::HandleJoinChannel(WorldPacket& recvPacket)
 {
@@ -43,6 +44,9 @@ void WorldSession::HandleJoinChannel(WorldPacket& recvPacket)
     }
 
     if (channelName.empty())
+        return;
+
+    if (!ChatHandler(this).isValidChatMessage(channelName.c_str()))
         return;
 
     if (ChannelMgr* cMgr = ChannelMgr::forTeam(GetPlayer()->GetTeam()))
@@ -77,7 +81,10 @@ void WorldSession::HandleChannelList(WorldPacket& recvPacket)
 {
     std::string channelName;
     recvPacket >> channelName;
-
+	
+    if (!ChatHandler(this).isValidChatMessage(channelName.c_str()))
+        return;
+	
     TC_LOG_DEBUG("chat.system", "%s %s Channel: %s",
         recvPacket.GetOpcode() == CMSG_CHANNEL_DISPLAY_LIST ? "CMSG_CHANNEL_DISPLAY_LIST" : "CMSG_CHANNEL_LIST",
         GetPlayerInfo().c_str(), channelName.c_str());
@@ -198,6 +205,9 @@ void WorldSession::HandleChannelInvite(WorldPacket& recvPacket)
     std::string channelName, targetName;
     recvPacket >> channelName >> targetName;
 
+	if (!ChatHandler(this).isValidChatMessage(channelName.c_str()))
+        return;
+		
     TC_LOG_DEBUG("chat.system", "CMSG_CHANNEL_INVITE %s Channel: %s, Target: %s",
         GetPlayerInfo().c_str(), channelName.c_str(), targetName.c_str());
 
