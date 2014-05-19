@@ -30,6 +30,7 @@
 #include "Unit.h"
 #include "Battleground.h"
 
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -845,7 +846,8 @@ enum PlayerDelayedOperations
 
 // Player summoning auto-decline time (in secs)
 #define MAX_PLAYER_SUMMON_DELAY                   (2*MINUTE)
-#define MAX_MONEY_AMOUNT                       (0x7FFFFFFF-1)
+// Maximum money amount : 2^31 - 1
+extern uint32 const MAX_MONEY_AMOUNT;
 
 struct InstancePlayerBind
 {

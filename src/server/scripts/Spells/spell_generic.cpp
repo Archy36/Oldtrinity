@@ -510,7 +510,7 @@ class spell_gen_break_shield: public SpellScriptLoader
 
         class spell_gen_break_shield_SpellScript : public SpellScript
         {
-            PrepareSpellScript(spell_gen_break_shield_SpellScript)
+            PrepareSpellScript(spell_gen_break_shield_SpellScript);
 
             void HandleScriptEffect(SpellEffIndex effIndex)
             {
@@ -672,7 +672,7 @@ class spell_gen_chaos_blast : public SpellScriptLoader
 
         class spell_gen_chaos_blast_SpellScript : public SpellScript
         {
-            PrepareSpellScript(spell_gen_chaos_blast_SpellScript)
+            PrepareSpellScript(spell_gen_chaos_blast_SpellScript);
 
             bool Validate(SpellInfo const* /*spellInfo*/) override
             {
@@ -907,7 +907,7 @@ class spell_gen_count_pct_from_max_hp : public SpellScriptLoader
 
         class spell_gen_count_pct_from_max_hp_SpellScript : public SpellScript
         {
-            PrepareSpellScript(spell_gen_count_pct_from_max_hp_SpellScript)
+            PrepareSpellScript(spell_gen_count_pct_from_max_hp_SpellScript);
 
         public:
             spell_gen_count_pct_from_max_hp_SpellScript(int32 damagePct) : SpellScript(), _damagePct(damagePct) { }
@@ -1458,6 +1458,7 @@ class spell_gen_elune_candle : public SpellScriptLoader
         class spell_gen_elune_candle_SpellScript : public SpellScript
         {
             PrepareSpellScript(spell_gen_elune_candle_SpellScript);
+
             bool Validate(SpellInfo const* /*spellInfo*/) override
             {
                 if (!sSpellMgr->GetSpellInfo(SPELL_ELUNE_CANDLE_OMEN_HEAD) ||
@@ -1523,7 +1524,7 @@ class spell_gen_gadgetzan_transporter_backfire : public SpellScriptLoader
 
         class spell_gen_gadgetzan_transporter_backfire_SpellScript : public SpellScript
         {
-            PrepareSpellScript(spell_gen_gadgetzan_transporter_backfire_SpellScript)
+            PrepareSpellScript(spell_gen_gadgetzan_transporter_backfire_SpellScript);
 
             bool Validate(SpellInfo const* /*spellInfo*/) override
             {
@@ -1624,7 +1625,7 @@ class spell_gen_gnomish_transporter : public SpellScriptLoader
 
         class spell_gen_gnomish_transporter_SpellScript : public SpellScript
         {
-            PrepareSpellScript(spell_gen_gnomish_transporter_SpellScript)
+            PrepareSpellScript(spell_gen_gnomish_transporter_SpellScript);
 
             bool Validate(SpellInfo const* /*spellInfo*/) override
             {
@@ -2105,7 +2106,7 @@ class spell_gen_mounted_charge: public SpellScriptLoader
 
         class spell_gen_mounted_charge_SpellScript : public SpellScript
         {
-            PrepareSpellScript(spell_gen_mounted_charge_SpellScript)
+            PrepareSpellScript(spell_gen_mounted_charge_SpellScript);
 
             void HandleScriptEffect(SpellEffIndex effIndex)
             {
@@ -2806,7 +2807,7 @@ class spell_gen_parachute_ic : public SpellScriptLoader
 
         class spell_gen_parachute_ic_AuraScript : public AuraScript
         {
-            PrepareAuraScript(spell_gen_parachute_ic_AuraScript)
+            PrepareAuraScript(spell_gen_parachute_ic_AuraScript);
 
             void HandleTriggerSpell(AuraEffect const* /*aurEff*/)
             {
@@ -2854,30 +2855,28 @@ class spell_gen_pet_summoned : public SpellScriptLoader
                 if (player->GetLastPetNumber())
                 {
                     PetType newPetType = (player->getClass() == CLASS_HUNTER) ? HUNTER_PET : SUMMON_PET;
-                    if (Pet* newPet = new Pet(player, newPetType))
+                    Pet* newPet = new Pet(player, newPetType);
+                    if (newPet->LoadPetFromDB(player, 0, player->GetLastPetNumber(), true))
                     {
-                        if (newPet->LoadPetFromDB(player, 0, player->GetLastPetNumber(), true))
+                        // revive the pet if it is dead
+                        if (newPet->getDeathState() == DEAD)
+                            newPet->setDeathState(ALIVE);
+
+                        newPet->SetFullHealth();
+                        newPet->SetPower(newPet->getPowerType(), newPet->GetMaxPower(newPet->getPowerType()));
+
+                        switch (newPet->GetEntry())
                         {
-                            // revive the pet if it is dead
-                            if (newPet->getDeathState() == DEAD)
-                                newPet->setDeathState(ALIVE);
-
-                            newPet->SetFullHealth();
-                            newPet->SetPower(newPet->getPowerType(), newPet->GetMaxPower(newPet->getPowerType()));
-
-                            switch (newPet->GetEntry())
-                            {
-                                case NPC_DOOMGUARD:
-                                case NPC_INFERNAL:
-                                    newPet->SetEntry(NPC_IMP);
-                                    break;
-                                default:
-                                    break;
-                            }
+                            case NPC_DOOMGUARD:
+                            case NPC_INFERNAL:
+                                newPet->SetEntry(NPC_IMP);
+                                break;
+                            default:
+                                break;
                         }
-                        else
-                            delete newPet;
                     }
+                    else
+                        delete newPet;
                 }
             }
 
@@ -3135,7 +3134,7 @@ class spell_gen_spectator_cheer_trigger : public SpellScriptLoader
 
         class spell_gen_spectator_cheer_trigger_SpellScript : public SpellScript
         {
-            PrepareSpellScript(spell_gen_spectator_cheer_trigger_SpellScript)
+            PrepareSpellScript(spell_gen_spectator_cheer_trigger_SpellScript);
 
             void HandleDummy(SpellEffIndex /*effIndex*/)
             {
@@ -3635,7 +3634,7 @@ class spell_gen_vendor_bark_trigger : public SpellScriptLoader
 
         class spell_gen_vendor_bark_trigger_SpellScript : public SpellScript
         {
-            PrepareSpellScript(spell_gen_vendor_bark_trigger_SpellScript)
+            PrepareSpellScript(spell_gen_vendor_bark_trigger_SpellScript);
 
             void HandleDummy(SpellEffIndex /* effIndex */)
             {
