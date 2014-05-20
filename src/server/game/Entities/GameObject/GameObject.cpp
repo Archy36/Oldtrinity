@@ -506,11 +506,6 @@ void GameObject::Update(uint32 diff)
 
                     if (target)
                         SetLootState(GO_ACTIVATED, target);
-						if (Player *tmpPlayer = target->ToPlayer())
-                            if (tmpPlayer->IsSpectator())
-                                return;
-						// some traps do not have spell but should be triggered
-
                 }
                 else if (uint32 max_charges = goInfo->GetCharges())
                 {
@@ -567,6 +562,10 @@ void GameObject::Update(uint32 diff)
                     }
                     else if (Unit* target = Unit::GetUnit(*this, m_lootStateUnitGUID))
                     {
+                        if (Player *tmpPlayer = target->ToPlayer())
+                            if (tmpPlayer->IsSpectator())
+                                return;
+                        
                         // Some traps do not have a spell but should be triggered
                         if (goInfo->trap.spellId)
                             CastSpell(target, goInfo->trap.spellId);
