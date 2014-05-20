@@ -506,7 +506,7 @@ void GameObject::Update(uint32 diff)
 
                     if (target)
                         SetLootState(GO_ACTIVATED, target);
-						if (Player *tmpPlayer = ok->ToPlayer())
+						if (Player *tmpPlayer = target->ToPlayer())
                             if (tmpPlayer->IsSpectator())
                                 return;
 						// some traps do not have spell but should be triggered
