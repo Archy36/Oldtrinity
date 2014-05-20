@@ -1302,7 +1302,7 @@ void Spell::SelectImplicitCasterDestTargets(SpellEffIndex effIndex, SpellImplici
                     m_caster->MovePositionToFirstCollision(pos, dist, angle);
                     break;
                 default:
-                    m_caster->MovePosition(pos, dist, angle);
+                    m_caster->MovePositionToFirstCollision(pos, dist, angle);
                     break;
             }
             dest.Relocate(pos);
