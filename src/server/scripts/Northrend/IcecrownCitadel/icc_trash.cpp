@@ -592,7 +592,7 @@ public:
                         break;
                     case EVENT_DARKRECKONING_EFFECT:
                         if (targetGuid)
-                            if (Unit *target = me->GetUnit((*me), targetGuid))
+                            if (Unit *target = ObjectAccessor::GetUnit((*me), targetGuid))
                                 if (me->IsValidAttackTarget(target))
                                     DoCast(target, SPELL_DARKRECKONING_EFFECT);
 

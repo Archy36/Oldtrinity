@@ -91,6 +91,12 @@ void BattlegroundNA::HandleKillPlayer(Player* player, Player* killer)
     CheckArenaWinConditions();
 }
 
+bool BattlegroundNA::HandlePlayerUnderMap(Player* player)
+{
+    player->TeleportTo(GetMapId(), 4055.504395f, 2919.660645f, 13.611241f, player->GetOrientation());
+    return true;
+}
+
 void BattlegroundNA::HandleAreaTrigger(Player* player, uint32 trigger)
 {
     if (GetStatus() != STATUS_IN_PROGRESS)
