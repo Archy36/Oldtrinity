@@ -121,7 +121,10 @@ WorldSession::WorldSession(uint32 id, WorldSocket* sock, AccountTypes sec, uint8
     m_TutorialsChanged(false),
     recruiterId(recruiter),
     isRecruiter(isARecruiter),
-    _RBACData(NULL)
+    _RBACData(NULL),
+    expireTime(60000), // 1 min after socket loss, session is deleted
+    forceExit(false),
+    m_currentBankerGUID(0)
 {
     memset(m_Tutorials, 0, sizeof(m_Tutorials));
 
@@ -419,8 +422,12 @@ bool WorldSession::Update(uint32 diff, PacketFilter& updater)
         ///- Cleanup socket pointer if need
         if (m_Socket && m_Socket->IsClosed())
         {
-            m_Socket->RemoveReference();
-            m_Socket = NULL;
+            expireTime -= expireTime > diff ? diff : expireTime;
+            if (expireTime < diff || forceExit)
+            {
+                m_Socket->RemoveReference();
+                m_Socket = NULL;
+            }
         }
 
         if (!m_Socket)
@@ -446,7 +453,6 @@ void WorldSession::LogoutPlayer(bool save)
             DoLootRelease(lguid);
 
         ///- If the player just died before logging out, make him appear as a ghost
-        //FIXME: logout must be delayed in case lost connection with client in time of combat
         if (_player->GetDeathTimer())
         {
             _player->getHostileRefManager().deleteReferences();
@@ -576,7 +582,10 @@ void WorldSession::LogoutPlayer(bool save)
 void WorldSession::KickPlayer()
 {
     if (m_Socket)
+    {
         m_Socket->CloseSocket();
+        forceExit = true;
+    }
 }
 
 void WorldSession::SendNotification(const char *format, ...)
@@ -1251,8 +1260,8 @@ bool WorldSession::DosProtection::EvaluateOpcode(WorldPacket& p, time_t time) co
     if (++packetCounter.amountCounter > maxPacketCounterAllowed)
     {
         dosTriggered = true;
-        TC_LOG_WARN("network", "AntiDOS: Account %u, IP: %s, Character: %s, flooding packet (opc: %s (0x%X), count: %u)",
-            Session->GetAccountId(), Session->GetRemoteAddress().c_str(), Session->GetPlayerName().c_str(),
+        TC_LOG_WARN("network", "AntiDOS: Account %u, IP: %s, Ping: %u, Character: %s, flooding packet (opc: %s (0x%X), count: %u)",
+            Session->GetAccountId(), Session->GetRemoteAddress().c_str(), Session->GetLatency(), Session->GetPlayerName().c_str(),
             opcodeTable[p.GetOpcode()].name, p.GetOpcode(), packetCounter.amountCounter);
     }
     

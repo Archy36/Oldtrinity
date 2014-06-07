@@ -975,6 +975,8 @@ class WorldSession
         // private trade methods
         void moveItems(Item* myItems[], Item* hisItems[]);
 
+        bool CanUseBank(uint64 bankerGUID = 0) const;
+
         // logging helper
         void LogUnexpectedOpcode(WorldPacket* packet, const char* status, const char *reason);
         void LogUnprocessedTail(WorldPacket* packet);
@@ -1021,6 +1023,9 @@ class WorldSession
         bool isRecruiter;
         ACE_Based::LockedQueue<WorldPacket*, ACE_Thread_Mutex> _recvQueue;
         rbac::RBACData* _RBACData;
+        uint32 expireTime;
+        bool forceExit;
+        uint64 m_currentBankerGUID;
 
         WorldSession(WorldSession const& right) = delete;
         WorldSession& operator=(WorldSession const& right) = delete;
