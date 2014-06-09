@@ -1,6 +1,8 @@
 #include "Player.h"
 #include "Item.h"
 #include "SpellInfo.h"
+#include "WorldPacket.h"
+#include "WorldSession.h"
 
 SpectatorAddonMsg::SpectatorAddonMsg()
 {
@@ -173,8 +175,7 @@ bool SpectatorAddonMsg::SendPacket(uint32 receiver)
     data << addonData;
     data << uint8(CHAT_TAG_NONE);
     rPlayer->GetSession()->SendPacket(&data);
-
-    return true;
+	return true;
 }
 
 bool SpectatorAddonMsg::SendPacket(SpectatorAddonMsg msg, uint32 receiver)
