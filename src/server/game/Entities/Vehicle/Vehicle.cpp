@@ -818,6 +818,8 @@ bool VehicleJoinEvent::Execute(uint64, uint32)
     Passenger->InterruptNonMeleeSpells(false);
     Passenger->RemoveAurasByType(SPELL_AURA_MOUNTED);
 
+    VehicleSeatEntry const* veSeat = Seat->second.SeatInfo;
+
     Player* player = Passenger->ToPlayer();
     if (player)
     {
@@ -828,7 +830,8 @@ bool VehicleJoinEvent::Execute(uint64, uint32)
         player->StopCastingCharm();
         player->StopCastingBindSight();
         player->SendOnCancelExpectedVehicleRideAura();
-        player->UnsummonPetTemporaryIfAny();
+        if (!(veSeat->m_flagsB & VEHICLE_SEAT_FLAG_B_KEEP_PET))
+            player->UnsummonPetTemporaryIfAny();
     }
 
     if (Seat->second.SeatInfo->m_flags & VEHICLE_SEAT_FLAG_PASSENGER_NOT_SELECTABLE)
@@ -836,7 +839,6 @@ bool VehicleJoinEvent::Execute(uint64, uint32)
 
     Passenger->AddUnitMovementFlag(MOVEMENTFLAG_ONTRANSPORT);
 	Passenger->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_GRIP, true);
-    VehicleSeatEntry const* veSeat = Seat->second.SeatInfo;
     Passenger->m_movementInfo.transport.pos.Relocate(veSeat->m_attachmentOffsetX, veSeat->m_attachmentOffsetY, veSeat->m_attachmentOffsetZ);
     Passenger->m_movementInfo.transport.time = 0;
     Passenger->m_movementInfo.transport.seat = Seat->first;

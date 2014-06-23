@@ -1824,6 +1824,12 @@ void Spell::EffectEnergize(SpellEffIndex effIndex)
 
     Powers power = Powers(m_spellInfo->Effects[effIndex].MiscValue);
 
+    if (unitTarget->GetTypeId() == TYPEID_PLAYER && unitTarget->getPowerType() != power && !(m_spellInfo->AttributesEx7 & SPELL_ATTR7_CAN_RESTORE_SECONDARY_POWER))
+        return;
+
+    if (unitTarget->GetMaxPower(power) == 0)
+        return;
+
     // Some level depends spells
     int level_multiplier = 0;
     int level_diff = 0;
@@ -1867,9 +1873,6 @@ void Spell::EffectEnergize(SpellEffIndex effIndex)
         damage -= level_multiplier * level_diff;
 
     if (damage < 0)
-        return;
-
-    if (unitTarget->GetMaxPower(power) == 0)
         return;
 
     m_caster->EnergizeBySpell(unitTarget, m_spellInfo->Id, damage, power);
@@ -1935,6 +1938,9 @@ void Spell::EffectEnergizePct(SpellEffIndex effIndex)
         return;
 
     Powers power = Powers(m_spellInfo->Effects[effIndex].MiscValue);
+
+    if (unitTarget->GetTypeId() == TYPEID_PLAYER && unitTarget->getPowerType() != power && !(m_spellInfo->AttributesEx7 & SPELL_ATTR7_CAN_RESTORE_SECONDARY_POWER))
+        return;
 
     uint32 maxPower = unitTarget->GetMaxPower(power);
     if (maxPower == 0)
@@ -4118,26 +4124,6 @@ void Spell::EffectScriptEffect(SpellEffIndex effIndex)
                     m_caster->CastSpell(m_caster, spellPlayer[urand(0, 4)], true);
                     unitTarget->CastSpell(unitTarget, spellTarget[urand(0, 4)], true);
                     break;
-                }
-            }
-            break;
-        }
-        case SPELLFAMILY_DEATHKNIGHT:
-        {
-            // Pestilence
-            if (m_spellInfo->SpellFamilyFlags[1]&0x10000)
-            {
-                // Get diseases on target of spell
-                if (m_targets.GetUnitTarget() &&  // Glyph of Disease - cast on unit target too to refresh aura
-                    (m_targets.GetUnitTarget() != unitTarget || m_caster->GetAura(63334)))
-                {
-                    // And spread them on target
-                    // Blood Plague
-                    if (m_targets.GetUnitTarget()->GetAura(55078))
-                        m_caster->CastSpell(unitTarget, 55078, true);
-                    // Frost Fever
-                    if (m_targets.GetUnitTarget()->GetAura(55095))
-                        m_caster->CastSpell(unitTarget, 55095, true);
                 }
             }
             break;
