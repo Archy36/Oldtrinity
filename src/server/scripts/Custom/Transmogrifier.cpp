@@ -368,7 +368,7 @@ class PS_Transmogrification : public PlayerScript
 public:
     PS_Transmogrification() : PlayerScript("Player_Transmogrify") { }
 
-    void OnLogin(Player* player)
+    void OnLogin(Player* player, bool firstLogin)
     {
         uint64 playerGUID = player->GetGUID();
         sT->entryMap.erase(playerGUID);
