@@ -536,9 +536,9 @@ void SmartAI::JustRespawned()
     me->SetVisible(true);
     if (me->getFaction() != me->GetCreatureTemplate()->faction)
         me->RestoreFaction();
-    GetScript()->ProcessEventsFor(SMART_EVENT_RESPAWN);
     mJustReset = true;
     JustReachedHome();
+    GetScript()->ProcessEventsFor(SMART_EVENT_RESPAWN);
     mFollowGuid = 0;//do not reset follower on Reset(), we need it after combat evade
     mFollowDist = 0;
     mFollowAngle = 0;
@@ -943,7 +943,7 @@ class SmartTrigger : public AreaTriggerScript
         }
 };
 
-void AddSC_SmartSCripts()
+void AddSC_SmartScripts()
 {
     new SmartTrigger();
 }
