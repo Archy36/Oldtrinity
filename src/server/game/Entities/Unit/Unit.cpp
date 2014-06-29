@@ -6381,26 +6381,31 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                     triggered_spell_id = procSpell->IsRankOf(sSpellMgr->GetSpellInfo(635)) ? 53652 : 53654;
                 }
                 else
-                {    // Check Party/Raid Group
-                    if (Group* group = ToPlayer()->GetGroup())
+				{
+					Group* group = IsPet() ? GetOwner()->ToPlayer()->GetGroup() : ToPlayer()->GetGroup();
+					// Check Party/Raid Group
+					if (!group) return false;
+					for (GroupReference* itr = group->GetFirstMember(); itr != NULL; itr = itr->next())
                     {
-                        for (GroupReference* itr = group->GetFirstMember(); itr != NULL; itr = itr->next())
+						if (Player* member = itr->GetSource())
                         {
-                            if (Player* member = itr->GetSource())
+							// check if it was heal by paladin which casted this beacon of light
+							if (member->GetAura(53563, victim->GetGUID()))
                             {
-                                // check if it was heal by paladin which cast this beacon of light
-                                if (member->GetAura(53563, victim->GetGUID()))
-                                {
-                                    // do not proc when target of beacon of light is healed
-                                    if (member == this)
-                                        return false;
-
-                                    beaconTarget = member;
-                                    basepoints0 = int32(damage);
-                                    triggered_spell_id = procSpell->IsRankOf(sSpellMgr->GetSpellInfo(635)) ? 53652 : 53654;
-                                    break;
-                                }
+								// do not proc when target of beacon of light is healed
+								if (member == this)
+									return false;
+								beaconTarget = member;
                             }
+							else if (Pet* pet = member->GetPet())
+							if (pet->GetAura(53563, victim->GetGUID()))
+								beaconTarget = pet;
+							if (beaconTarget)
+							{
+								basepoints0 = int32(damage);
+								triggered_spell_id = procSpell->IsRankOf(sSpellMgr->GetSpellInfo(635)) ? 53652 : 53654;
+								break;
+							}
                         }
                     }
                 }
