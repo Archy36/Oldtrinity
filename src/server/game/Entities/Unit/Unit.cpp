@@ -164,7 +164,7 @@ Unit::Unit(bool isWorldObject) :
     i_AI(NULL), i_disabledAI(NULL), m_AutoRepeatFirstCast(false), m_procDeep(0),
     m_removedAurasCount(0), i_motionMaster(new MotionMaster(this)), m_regenTimer(0), m_ThreatManager(this),
     m_vehicle(NULL), m_vehicleKit(NULL), m_unitTypeMask(UNIT_MASK_NONE),
-    m_HostileRefManager(this)
+    m_HostileRefManager(this), _lastDamagedTime(0)
 {
     m_objectType |= TYPEMASK_UNIT;
     m_objectTypeId = TYPEID_UNIT;
@@ -790,8 +790,8 @@ uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDam
         if (damagetype == DIRECT_DAMAGE || damagetype == SPELL_DIRECT_DAMAGE)
         {
             victim->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_DIRECT_DAMAGE, spellProto ? spellProto->Id : 0);
-			//if (victim->GetTypeId() == TYPEID_UNIT && !victim->IsPet());
-                //victim->SetLastDamagedTime(time(NULL));
+			if (victim->GetTypeId() == TYPEID_UNIT && !victim->IsPet());
+                victim->SetLastDamagedTime(time(NULL));
         }
 
         if (victim->GetTypeId() != TYPEID_PLAYER)
@@ -6379,31 +6379,31 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                     triggered_spell_id = procSpell->IsRankOf(sSpellMgr->GetSpellInfo(635)) ? 53652 : 53654;
                 }
                 else
-				{
-					Group* group = IsPet() ? GetOwner()->ToPlayer()->GetGroup() : ToPlayer()->GetGroup();
-					// Check Party/Raid Group
-					if (!group) return false;
-					for (GroupReference* itr = group->GetFirstMember(); itr != NULL; itr = itr->next())
+                {
+                    Group* group = IsPet() ? GetOwner()->ToPlayer()->GetGroup() : ToPlayer()->GetGroup();
+                    // Check Party/Raid Group
+                    if (!group) return false;
+                    for (GroupReference* itr = group->GetFirstMember(); itr != NULL; itr = itr->next())
                     {
-						if (Player* member = itr->GetSource())
+                        if (Player* member = itr->GetSource())
                         {
-							// check if it was heal by paladin which casted this beacon of light
-							if (member->GetAura(53563, victim->GetGUID()))
+                            // check if it was heal by paladin which casted this beacon of light
+                            if (member->GetAura(53563, victim->GetGUID()))
                             {
-								// do not proc when target of beacon of light is healed
-								if (member == this)
-									return false;
-								beaconTarget = member;
+                                // do not proc when target of beacon of light is healed
+                                if (member == this)
+                                    return false;
+                                beaconTarget = member;
                             }
-							else if (Pet* pet = member->GetPet())
-							if (pet->GetAura(53563, victim->GetGUID()))
-								beaconTarget = pet;
-							if (beaconTarget)
-							{
-								basepoints0 = int32(damage);
-								triggered_spell_id = procSpell->IsRankOf(sSpellMgr->GetSpellInfo(635)) ? 53652 : 53654;
-								break;
-							}
+                            else if (Pet* pet = member->GetPet())
+                            if (pet->GetAura(53563, victim->GetGUID()))
+                                beaconTarget = pet;
+                            if (beaconTarget)
+                            {
+                                basepoints0 = int32(damage);
+                                triggered_spell_id = procSpell->IsRankOf(sSpellMgr->GetSpellInfo(635)) ? 53652 : 53654;
+                                break;
+                            }
                         }
                     }
                 }
@@ -12095,6 +12095,9 @@ int32 Unit::ModifyHealth(int32 dVal)
 
     if (dVal == 0)
         return 0;
+	// Part of Evade mechanics. Only track health lost, not gained.
+	if (dVal < 0 && GetTypeId() != TYPEID_PLAYER && !IsPet())
+		SetLastDamagedTime(time(NULL));
 
     int32 curHealth = (int32)GetHealth();
 
@@ -12755,7 +12758,13 @@ Unit* Creature::SelectVictim()
         SetInFront(target);
         return target;
     }
-
+	// Case where mob is being kited.
+	// Mob may not be in range to attack or may have dropped target. In any case,
+	// don't evade if damage received within the last 10 seconds
+	// Does not apply to world bosses to prevent kiting to cities
+	if (!isWorldBoss() && !GetInstanceId())
+		if (time(NULL) - GetLastDamagedTime() <= MAX_AGGRO_RESET_TIME)
+			return target;
     // last case when creature must not go to evade mode:
     // it in combat but attacker not make any damage and not enter to aggro radius to have record in threat list
     // for example at owner command to pet attack some far away creature

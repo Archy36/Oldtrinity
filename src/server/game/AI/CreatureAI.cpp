@@ -159,14 +159,21 @@ void CreatureAI::EnterEvadeMode()
             me->GetMotionMaster()->Clear(false);
             me->GetMotionMaster()->MoveFollow(owner, PET_FOLLOW_DIST, me->GetFollowAngle(), MOTION_SLOT_ACTIVE);
         }
-        else
-            me->GetMotionMaster()->MoveTargetedHome();
+		else
+		{
+			// Required to prevent attacking creatures that are evading and cause them to reenter combat
+			// Does not apply to MoveFollow
+			me->AddUnitState(UNIT_STATE_EVADE);
+			me->GetMotionMaster()->MoveTargetedHome();
+		}
     }
 
     Reset();
 
     if (me->IsVehicle()) // use the same sequence of addtoworld, aireset may remove all summons!
         me->GetVehicleKit()->Reset(true);
+
+	me->SetLastDamagedTime(0);
 }
 
 /*void CreatureAI::AttackedBy(Unit* attacker)
