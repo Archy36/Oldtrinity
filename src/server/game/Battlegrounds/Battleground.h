@@ -24,6 +24,7 @@
 #include "DBCEnums.h"
 #include "SpectatorAddon.h"
 #include "WorldPacket.h"
+#include "Object.h"
 
 class Creature;
 class GameObject;
@@ -35,7 +36,6 @@ class WorldPacket;
 class BattlegroundMap;
 
 struct BattlegroundScore;
-struct Position;
 struct PvPDifficultyEntry;
 struct WorldSafeLocsEntry;
 
