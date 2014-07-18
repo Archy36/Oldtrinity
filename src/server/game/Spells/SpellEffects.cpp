@@ -4131,6 +4131,8 @@ void Spell::EffectScriptEffect(SpellEffIndex effIndex)
             }
             break;
         }
+                    if (m_targets.GetUnitTarget()->GetAura(55078))
+                    if (m_targets.GetUnitTarget()->GetAura(55095))
     }
 
     // normal DB scripted effect
