@@ -16,7 +16,7 @@
 #ifndef SC_ACMGR_H
 #define SC_ACMGR_H
 
-#include <ace/Singleton.h>
+//#include <ace/Singleton.h>
 #include "Common.h"
 #include "SharedDefines.h"
 #include "ScriptPCH.h"
@@ -53,11 +53,16 @@ typedef std::map<uint32, AnticheatData> AnticheatPlayersDataMap;
 
 class AnticheatMgr
 {
-    friend class ACE_Singleton<AnticheatMgr, ACE_Null_Mutex>;
+//    friend class ACE_Singleton<AnticheatMgr, ACE_Null_Mutex>;
     AnticheatMgr();
     ~AnticheatMgr();
 
     public:
+    static AnticheatMgr* instance()
+        {
+           static AnticheatMgr* instance = new AnticheatMgr();
+           return instance;
+        }
 
         void StartHackDetection(Player* player, MovementInfo movementInfo, uint32 opcode);
         void DeletePlayerReport(Player* player, bool login);
@@ -93,6 +98,6 @@ class AnticheatMgr
         AnticheatPlayersDataMap m_Players;                        ///< Player data
 };
 
-#define sAnticheatMgr ACE_Singleton<AnticheatMgr, ACE_Null_Mutex>::instance()
+#define sAnticheatMgr AnticheatMgr::instance()
 
 #endif
