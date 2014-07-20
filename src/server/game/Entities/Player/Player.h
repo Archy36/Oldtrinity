@@ -2347,7 +2347,7 @@ class Player : public Unit, public GridObject<Player>
         std::string GetCoordsMapAreaAndZoneString();
 
         bool IsLoading() const;
-
+        
     protected:
         // Gamemaster whisper whitelist
         WhisperListContainer WhisperList;
@@ -2681,6 +2681,7 @@ class Player : public Unit, public GridObject<Player>
         Unit *spectateFrom;
 		
         uint32 _activeCheats;
+
 };
 
 void AddItemsSetItem(Player* player, Item* item);

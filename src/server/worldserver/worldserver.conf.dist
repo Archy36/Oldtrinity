@@ -2809,51 +2809,14 @@ PacketSpoof.BanDuration = 86400
 ###################################################################################################
 
 ###################################################################################################
-# Passive Anticheat System!
-#
-#     Anticheat.Enable
-#        Description: Enables or disables the Anticheat System functionality
-#        Default:     1 - (Enabled)
-#                     0 - (Disabled)
-#
-#     Anticheat.ReportsForIngameWarnings
-#        Description: How many reports the player must have to notify to GameMasters ingame when he generates a new report.
-#        Default:     70
-#
-#     Anticheat.DetectionsEnabled
-#        Description: It represents which detections are enabled.
-#
-#        SPEED_HACK_DETECTION            = 1
-#        FLY_HACK_DETECTION              = 2
-#        WALK_WATER_HACK_DETECTION       = 4
-#        JUMP_HACK_DETECTION             = 8
-#        TELEPORT_PLANE_HACK_DETECTION   = 16
-#        CLIMB_HACK_DETECTION            = 32
-#
-#        Default:     31
-#
-#     Anticheat.MaxReportsForDailyReport
-#        Description: How many reports must the player have to make a report that it is in DB for a day (not only during the player's session).
-#        Default:     70
-#
-#     Anticheat.Ban
-#        Description: Make anticheat active (Ban cheaters character for 1 hour.)
-#        Default: 1 - (Enabled)
-#                 0 - (Disabled)
-#
-###################################################################################################
-
-Anticheat.Enable = 1
-Anticheat.ReportsForIngameWarnings = 70
-Anticheat.DetectionsEnabled = 31
-Anticheat.MaxReportsForDailyReport = 70
-Anticheat.Ban = 1
-
-###################################################################################################
 #    Transmogrification config
 ###################################################################################################
 #
 #    SETTINGS
+#
+#    Logger.custom.transmog
+#        Description: Transmogrification logging setting, see logger settings
+#        Default:    3, Console Server
 #
 #    Transmogrification.EnableTransmogInfo
 #        Description: Enables / Disables the info button for transmogrification
@@ -2872,6 +2835,8 @@ Anticheat.Ban = 1
 #        Description: A list of item entries that are NOT allowed for transmogrification
 #					  Example: "25 35674 5623"
 #        Default:    ""
+
+Logger.custom.transmog = 3, Console Server
 
 Transmogrification.EnableTransmogInfo = 1
 Transmogrification.TransmogNpcText = 50000
@@ -2984,6 +2949,10 @@ Transmogrification.TokenAmount = 1
 #    Transmogrification.IgnoreReqEvent
 #        Description: Ignore required event for source items
 #        Default:    0
+#
+#    Transmogrification.IgnoreReqStats
+#        Description: Ignore stat count > 0 requirement for source items
+#        Default:    0
 
 Transmogrification.AllowPoor = 0
 Transmogrification.AllowCommon = 0
@@ -3004,6 +2973,7 @@ Transmogrification.IgnoreReqSkill = 0
 Transmogrification.IgnoreReqSpell = 0
 Transmogrification.IgnoreReqLevel = 0
 Transmogrification.IgnoreReqEvent = 0
+Transmogrification.IgnoreReqStats = 0
 
 #
 #    SET FEATURE
@@ -3043,6 +3013,47 @@ Transmogrification.SetCopperCost = 0
 
 #
 ###################################################################################################
+
+###################################################################################################
+# Passive Anticheat System!
+#
+#     Anticheat.Enable
+#        Description: Enables or disables the Anticheat System functionality
+#        Default:     1 - (Enabled)
+#                     0 - (Disabled)
+#
+#     Anticheat.ReportsForIngameWarnings
+#        Description: How many reports the player must have to notify to GameMasters ingame when he generates a new report.
+#        Default:     70
+#
+#     Anticheat.DetectionsEnabled
+#        Description: It represents which detections are enabled.
+#
+#        SPEED_HACK_DETECTION            = 1
+#        FLY_HACK_DETECTION              = 2
+#        WALK_WATER_HACK_DETECTION       = 4
+#        JUMP_HACK_DETECTION             = 8
+#        TELEPORT_PLANE_HACK_DETECTION   = 16
+#        CLIMB_HACK_DETECTION            = 32
+#
+#        Default:     31
+#
+#     Anticheat.MaxReportsForDailyReport
+#        Description: How many reports must the player have to make a report that it is in DB for a day (not only during the player's session).
+#        Default:     70
+#
+#     Anticheat.Ban
+#        Description: Make anticheat active (Ban cheaters character for 1 hour.)
+#        Default: 1 - (Enabled)
+#                 0 - (Disabled)
+#
+###################################################################################################
+
+Anticheat.Enable = 1
+Anticheat.ReportsForIngameWarnings = 70
+Anticheat.DetectionsEnabled = 31
+Anticheat.MaxReportsForDailyReport = 70
+Anticheat.Ban = 1
 
 ################################################################################################### 
 # DUEL RESET COOLDOWN

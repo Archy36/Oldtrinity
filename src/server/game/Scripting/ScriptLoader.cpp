@@ -1452,7 +1452,6 @@ void AddBattlegroundScripts()
 #ifdef SCRIPTS
 /* This is where custom scripts' loading functions should be declared. */
 
-void AddSC_CPWS_Transmogrification();
 void AddSC_npc_customize();
 #endif
 
@@ -1460,8 +1459,7 @@ void AddCustomScripts()
 {
 #ifdef SCRIPTS
     /* This is where custom scripts should be added. */
-//custom
-    AddSC_CPWS_Transmogrification();
+
 	AddSC_DuelReset();
 	AddSC_fast_arena_start();
 	AddSC_npc_customize();
