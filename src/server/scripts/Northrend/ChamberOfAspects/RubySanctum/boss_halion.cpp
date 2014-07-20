@@ -204,17 +204,17 @@ struct CorporealityEntry
 };
 
 CorporealityEntry const _corporealityReference[MAX_CORPOREALITY_STATE] = {
-    {74836, 74831},
-    {74835, 74830},
-    {74834, 74829},
-    {74833, 74828},
-    {74832, 74827},
-    {74826, 74826},
-    {74827, 74832},
-    {74828, 74833},
-    {74829, 74834},
+    {74831, 74836},
     {74830, 74835},
-    {74831, 74836}
+    {74829, 74834},
+    {74828, 74833},
+    {74827, 74832},
+    {74826, 74826},
+    {74832, 74827},
+    {74833, 74828},
+    {74834, 74829},
+    {74835, 74830},
+    {74836, 74831} 
 };
 
 struct generic_halionAI : public BossAI
@@ -491,9 +491,9 @@ class boss_twilight_halion : public CreatureScript
                 events.SetPhase(PHASE_TWO);
 
                 generic_halionAI::EnterCombat(who);
-				events.ScheduleEvent(EVENT_CLEAVE, urand(8000, 10000));
-				events.ScheduleEvent(EVENT_TAIL_LASH, 10000);
-				events.ScheduleEvent(EVENT_BREATH, urand(10000, 15000));
+                events.ScheduleEvent(EVENT_CLEAVE, urand(8000, 10000));
+                events.ScheduleEvent(EVENT_TAIL_LASH, 10000);
+                events.ScheduleEvent(EVENT_BREATH, urand(10000, 15000));
                 events.ScheduleEvent(EVENT_SOUL_CONSUMPTION, 20000);
 
                 instance->SendEncounterUnit(ENCOUNTER_FRAME_ENGAGE, me, 2);
@@ -573,18 +573,18 @@ class boss_twilight_halion : public CreatureScript
             {
                 switch (eventId)
                 {
-					case EVENT_CLEAVE:
-							DoCastVictim(SPELL_CLEAVE);
-							events.ScheduleEvent(EVENT_CLEAVE, urand(8000, 10000));
-						break;
-					case EVENT_TAIL_LASH:
-							DoCastAOE(SPELL_TAIL_LASH);
-							events.ScheduleEvent(EVENT_TAIL_LASH, 10000);
-						break;
-					case EVENT_BREATH:
-							DoCast(me, me->GetEntry() == NPC_HALION ? SPELL_FLAME_BREATH : SPELL_DARK_BREATH);
-							events.ScheduleEvent(EVENT_BREATH, urand(10000, 12000));
-						break;
+                    case EVENT_CLEAVE:
+                        DoCastVictim(SPELL_CLEAVE);
+                        events.ScheduleEvent(EVENT_CLEAVE, urand(8000, 10000));
+                        break;
+                    case EVENT_TAIL_LASH:
+                        DoCastAOE(SPELL_TAIL_LASH);
+                        events.ScheduleEvent(EVENT_TAIL_LASH, 10000);
+                        break;
+                    case EVENT_BREATH:
+                        DoCast(me, me->GetEntry() == NPC_HALION ? SPELL_FLAME_BREATH : SPELL_DARK_BREATH);
+                        events.ScheduleEvent(EVENT_BREATH, urand(10000, 12000));
+                        break;
                     case EVENT_SOUL_CONSUMPTION:
                         if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, 0.0f, true, SPELL_TWILIGHT_REALM))
                             DoCast(target, SPELL_SOUL_CONSUMPTION);
@@ -592,20 +592,20 @@ class boss_twilight_halion : public CreatureScript
                         break;
                 }
             }
-			
-			void UpdateAI(uint32 diff)
-			{
-				if (!UpdateVictim() || me->HasUnitState(UNIT_STATE_CASTING))
-				return;
+            
+            void UpdateAI(uint32 diff)
+            {
+            if (!UpdateVictim() || me->HasUnitState(UNIT_STATE_CASTING))
+                return;
 
-				events.Update(diff);
+                events.Update(diff);
 
-				while (uint32 eventId = events.ExecuteEvent())
-					ExecuteEvent(eventId);
+                while (uint32 eventId = events.ExecuteEvent())
+                    ExecuteEvent(eventId);
 
-				DoMeleeAttackIfReady();
-			}
-			
+                DoMeleeAttackIfReady();
+            }
+            
         private:
             EventMap events;
         };
@@ -758,10 +758,10 @@ class npc_halion_controller : public CreatureScript
                         case EVENT_TWILIGHT_MENDING:
                             if (ObjectAccessor::GetCreature(*me, _instance->GetData64(DATA_HALION))) // Just check if physical Halion is spawned
                             {
-								if (Creature* twilightHalion = ObjectAccessor::GetCreature(*me, _instance->GetData64(DATA_TWILIGHT_HALION)))
+                                if (Creature* twilightHalion = ObjectAccessor::GetCreature(*me, _instance->GetData64(DATA_TWILIGHT_HALION)))
                                     twilightHalion->CastSpell((Unit*)NULL, SPELL_TWILIGHT_MENDING, true);
-								if (Creature* physicalHalion = ObjectAccessor::GetCreature(*me, _instance->GetData64(DATA_HALION)))
-									physicalHalion->CastSpell((Unit*)NULL, SPELL_TWILIGHT_MENDING, true);
+                                if (Creature* physicalHalion = ObjectAccessor::GetCreature(*me, _instance->GetData64(DATA_HALION)))
+                                    physicalHalion->CastSpell((Unit*)NULL, SPELL_TWILIGHT_MENDING, true);
                             }
                             break;
                         case EVENT_TRIGGER_BERSERK:
@@ -819,42 +819,38 @@ class npc_halion_controller : public CreatureScript
 
         private:
             // [0   , 0.98[: Corporeality goes down
-			// [0.98, 1.02]: Do nothing
+            // [0.98, 1.02]: Do nothing
             // ]1.02, +oo [: Corporeality goes up
-			// If we got 0 damge in the other phase do twilight mending
+            // If we got 0 damage in the other phase do twilight mending
             void UpdateCorporeality()
             {
                 uint8 oldValue = _materialCorporealityValue;
-				CorporealityEvent action = CORPOREALITY_NONE;
-				
-                /*if (_twilightDamageTaken == 0 || _materialDamageTaken == 0)
-                {
-                    _events.ScheduleEvent(EVENT_TWILIGHT_MENDING, 100);
-                    _twilightDamageTaken = 0;
-                    _materialDamageTaken = 0;
-                    return;
-                }*/
-				if (_twilightDamageTaken != 0 && _materialDamageTaken != 0)         // Prevent division by zero
-				{
-					float damageRatio = float(_materialDamageTaken) / float(_twilightDamageTaken);
-
+                CorporealityEvent action = CORPOREALITY_NONE;
                 
-					if (0.98f < damageRatio)                                        // [0   , 0.98[: Corporeality goes down
-						action = CORPOREALITY_DECREASE;
-					else if (damageRatio < 1.02f)                                   // ]1.02, +oo [: Corporeality goes up
-						action = CORPOREALITY_INCREASE;
-					else if ((0.99f < damageRatio) && (damageRatio < 1.01f))        // [0.98, 1.02] DO Nothing
-						action = CORPOREALITY_NONE;
-					
-				}
-				else if (_materialDamageTaken == 0 && _twilightDamageTaken != 0)    // Increase corporeality if there is no damage in material Phase
-				{
-					action = CORPOREALITY_INCREASE;
-				}
-				else if (_twilightDamageTaken == 0 && _materialDamageTaken != 0)    // Decrease corporeality if there is no damage in twilight Phase
-				{
-					action = CORPOREALITY_DECREASE;
-				}
+                if (_twilightDamageTaken == 0 || _materialDamageTaken == 0)
+                {
+                    action = CORPOREALITY_TWILIGHT_MENDING;
+                    //_events.ScheduleEvent(EVENT_TWILIGHT_MENDING, 100);
+                    //return;
+                }
+                if (_twilightDamageTaken != 0)         // Prevent division by zero
+                {
+                    float damageRatio = float(_materialDamageTaken) / float(_twilightDamageTaken);
+                    if (0.98f > damageRatio)                                        // [0   , 0.98[: Corporeality goes down
+                        action = CORPOREALITY_INCREASE;
+                    else if (damageRatio > 1.02f)                                   // ]1.02, +oo [: Corporeality goes up
+                        action = CORPOREALITY_DECREASE;
+                    else if ((0.99f < damageRatio) && (damageRatio < 1.01f))        // [0.98, 1.02] DO Nothing
+                        action = CORPOREALITY_NONE;
+                }
+                else if (_materialDamageTaken == 0 && _twilightDamageTaken != 0)    // Increase corporeality if there is no damage in material Phase
+                {
+                    action = CORPOREALITY_INCREASE;
+                }
+                else if (_twilightDamageTaken == 0 && _materialDamageTaken != 0)    // Decrease corporeality if there is no damage in twilight Phase
+                {
+                    action = CORPOREALITY_DECREASE;
+                }
 
                 switch (action)
                 {
@@ -869,12 +865,12 @@ class npc_halion_controller : public CreatureScript
                         if (_materialCorporealityValue >= (MAX_CORPOREALITY_STATE - 1))
                             return;
                         ++_materialCorporealityValue;
-						
-						if (_materialDamageTaken == 0)                           // If we got no material damage then do twilight mending
-							_events.ScheduleEvent(EVENT_TWILIGHT_MENDING, 100);
-							
-						_materialDamageTaken = 0;
-						_twilightDamageTaken = 0;
+                        
+                        if (_materialDamageTaken == 0)                           // If we got no material damage then do twilight mending
+                            _events.ScheduleEvent(EVENT_TWILIGHT_MENDING, 100);
+                            
+                        _materialDamageTaken = 0;
+                        _twilightDamageTaken = 0;
                         break;
                     }
                     case CORPOREALITY_DECREASE:
@@ -882,10 +878,10 @@ class npc_halion_controller : public CreatureScript
                         if (_materialCorporealityValue <= 0)
                             return;
                         --_materialCorporealityValue;
-						
-						if (_twilightDamageTaken == 0)                          // If we got no twilight damage then do twilight mending
-							_events.ScheduleEvent(EVENT_TWILIGHT_MENDING, 100);
-							
+                        
+                        if (_twilightDamageTaken == 0)                          // If we got no twilight damage then do twilight mending
+                            _events.ScheduleEvent(EVENT_TWILIGHT_MENDING, 100);
+                            
                         _materialDamageTaken = 0;
                         _twilightDamageTaken = 0;
                         break;
@@ -928,7 +924,7 @@ class npc_halion_controller : public CreatureScript
             EventMap _events;
             InstanceScript* _instance;
             SummonList _summons;
-			bool _corporealityCheck;
+            bool _corporealityCheck;
 
             uint32 _twilightDamageTaken;
             uint32 _materialDamageTaken;
