@@ -1449,6 +1449,8 @@ void AddBattlegroundScripts()
 /* This is where custom scripts' loading functions should be declared. */
 
 void AddSC_npc_customize();
+void AddSC_PWS_Transmogrification();
+void AddSC_CS_Transmogrification();
 #endif
 
 void AddCustomScripts()
@@ -1457,9 +1459,11 @@ void AddCustomScripts()
     /* This is where custom scripts should be added. */
 
 	AddSC_DuelReset();
+    AddSC_PWS_Transmogrification();
 	AddSC_fast_arena_start();
 	AddSC_npc_customize();
 	AddSC_mob_resurrect();
 	AddSC_arena_spectator_script();
+    AddSC_CS_Transmogrification();
 #endif
 }

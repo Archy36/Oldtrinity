@@ -18,6 +18,9 @@ set(scripts_STAT_SRCS
         Custom/npc_customize.cpp
         Custom/mob_resurrect.cpp
 	Custom/arena_spectator.cpp
+    Custom/Transmog/Transmogrification.h
+    Custom/Transmog/Transmogrification.cpp
+    Custom/Transmog/Transmogrifier.cpp
 )
 
 message("  -> Prepared: Custom")
