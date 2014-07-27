@@ -32,6 +32,8 @@ void AddSC_fast_arena_start();
 void AddSC_mob_resurrect();
 // Arena Spectator
 void AddSC_arena_spectator_script();
+// NPC Vendor
+void AddSC_npc_vendor_script();
 
 // spells
 void AddSC_deathknight_spell_scripts();
@@ -1465,5 +1467,6 @@ void AddCustomScripts()
 	AddSC_mob_resurrect();
 	AddSC_arena_spectator_script();
     AddSC_CS_Transmogrification();
+    AddSC_npc_vendor_script();
 #endif
 }
