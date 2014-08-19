@@ -3215,7 +3215,8 @@ void SpellMgr::LoadSpellInfoCorrections()
                 spellInfo->Effects[EFFECT_1].Effect = SPELL_EFFECT_MODIFY_THREAT_PERCENT;
                 spellInfo->Effects[EFFECT_1].BasePoints = -6; // -5%
                 break;
-            case 63675: // Improved Devouring Plague
+            case 50526: // Wandering Plague
+            //case 63675: // Improved Devouring Plague
                 spellInfo->AttributesEx3 |= SPELL_ATTR3_NO_DONE_BONUS;
                 break;
             case 12721: // Deep Wounds shouldnt ignore resillience or damage taken auras because its damage is not based off a spell.

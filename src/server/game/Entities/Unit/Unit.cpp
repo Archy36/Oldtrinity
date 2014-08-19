@@ -12095,9 +12095,6 @@ int32 Unit::ModifyHealth(int32 dVal)
 
     if (dVal == 0)
         return 0;
-	// Part of Evade mechanics. Only track health lost, not gained.
-	if (dVal < 0 && GetTypeId() != TYPEID_PLAYER && !IsPet())
-		SetLastDamagedTime(time(NULL));
 
     int32 curHealth = (int32)GetHealth();
 
