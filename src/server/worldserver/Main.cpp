@@ -37,6 +37,7 @@
 #include "RealmList.h"
 #include "World.h"
 #include "MapManager.h"
+#include "InstanceSaveMgr.h"
 #include "ObjectAccessor.h"
 #include "ScriptMgr.h"
 #include "OutdoorPvP/OutdoorPvPMgr.h"
@@ -86,6 +87,7 @@ bool StartDB();
 void StopDB();
 void WorldUpdateLoop();
 void ClearOnlineAccounts();
+void ShutdownThreadPool(std::vector<std::thread>& threadPool);
 variables_map GetConsoleArguments(int argc, char** argv, std::string& cfg_file, std::string& cfg_service);
 
 /// Launch the Trinity server
@@ -108,10 +110,10 @@ extern int main(int argc, char** argv)
         WinServiceRun();
 #endif
 
-    if (!sConfigMgr->LoadInitial(configFile))
+    std::string configError;
+    if (!sConfigMgr->LoadInitial(configFile, configError))
     {
-        printf("Invalid or missing configuration file : %s\n", configFile.c_str());
-        printf("Verify that the file exists and has \'[worldserver]' written in the top of the file!\n");
+        printf("Error in config file: %s\n", configError.c_str());
         return 1;
     }
 
@@ -178,7 +180,10 @@ extern int main(int argc, char** argv)
 
     // Start the databases
     if (!StartDB())
+    {
+        ShutdownThreadPool(threadPool);
         return 1;
+    }
 
     // Set server offline (not connectable)
     LoginDatabase.DirectPExecute("UPDATE realmlist SET flag = (flag & ~%u) | %u WHERE id = '%d'", REALM_FLAG_OFFLINE, REALM_FLAG_INVALID, realmID);
@@ -216,7 +221,7 @@ extern int main(int argc, char** argv)
 
     AsyncAcceptor<WorldSocket> worldAcceptor(_ioService, worldListener, worldPort, tcpNoDelay);
 
-    sScriptMgr->OnStartup();
+    sScriptMgr->OnNetworkStart();
 
     // Set server online (allow connecting now)
     LoginDatabase.DirectPExecute("UPDATE realmlist SET flag = flag & ~%u, population = 0 WHERE id = '%u'", REALM_FLAG_INVALID, realmID);
@@ -232,16 +237,12 @@ extern int main(int argc, char** argv)
 
     TC_LOG_INFO("server.worldserver", "%s (worldserver-daemon) ready...", _FULLVERSION);
 
+    sScriptMgr->OnStartup();
+
     WorldUpdateLoop();
 
     // Shutdown starts here
-
-    _ioService.stop();
-
-    for (auto& thread : threadPool)
-    {
-        thread.join();
-    }
+    ShutdownThreadPool(threadPool);
 
     sScriptMgr->OnShutdown();
 
@@ -251,6 +252,7 @@ extern int main(int argc, char** argv)
     // unload battleground templates before different singletons destroyed
     sBattlegroundMgr->DeleteAllBattlegrounds();
 
+    sInstanceSaveMgr->Unload();
     sMapMgr->UnloadAll();                     // unload all grids (including locked in memory)
     sObjectAccessor->UnloadAll();             // unload 'i_player2corpse' storage and remove from world
     sScriptMgr->Unload();
@@ -279,41 +281,7 @@ extern int main(int argc, char** argv)
     if (cliThread != nullptr)
     {
 #ifdef _WIN32
-
-        // this only way to terminate CLI thread exist at Win32 (alt. way exist only in Windows Vista API)
-        //_exit(1);
-        // send keyboard input to safely unblock the CLI thread
-        INPUT_RECORD b[4];
-        HANDLE hStdIn = GetStdHandle(STD_INPUT_HANDLE);
-        b[0].EventType = KEY_EVENT;
-        b[0].Event.KeyEvent.bKeyDown = TRUE;
-        b[0].Event.KeyEvent.uChar.AsciiChar = 'X';
-        b[0].Event.KeyEvent.wVirtualKeyCode = 'X';
-        b[0].Event.KeyEvent.wRepeatCount = 1;
-
-        b[1].EventType = KEY_EVENT;
-        b[1].Event.KeyEvent.bKeyDown = FALSE;
-        b[1].Event.KeyEvent.uChar.AsciiChar = 'X';
-        b[1].Event.KeyEvent.wVirtualKeyCode = 'X';
-        b[1].Event.KeyEvent.wRepeatCount = 1;
-
-        b[2].EventType = KEY_EVENT;
-        b[2].Event.KeyEvent.bKeyDown = TRUE;
-        b[2].Event.KeyEvent.dwControlKeyState = 0;
-        b[2].Event.KeyEvent.uChar.AsciiChar = '\r';
-        b[2].Event.KeyEvent.wVirtualKeyCode = VK_RETURN;
-        b[2].Event.KeyEvent.wRepeatCount = 1;
-        b[2].Event.KeyEvent.wVirtualScanCode = 0x1c;
-
-        b[3].EventType = KEY_EVENT;
-        b[3].Event.KeyEvent.bKeyDown = FALSE;
-        b[3].Event.KeyEvent.dwControlKeyState = 0;
-        b[3].Event.KeyEvent.uChar.AsciiChar = '\r';
-        b[3].Event.KeyEvent.wVirtualKeyCode = VK_RETURN;
-        b[3].Event.KeyEvent.wVirtualScanCode = 0x1c;
-        b[3].Event.KeyEvent.wRepeatCount = 1;
-        DWORD numb;
-        WriteConsoleInput(hStdIn, b, 4, &numb);
+        CancelSynchronousIo(cliThread->native_handle());
 #endif
         cliThread->join();
         delete cliThread;
@@ -328,6 +296,17 @@ extern int main(int argc, char** argv)
     return World::GetExitCode();
 }
 
+void ShutdownThreadPool(std::vector<std::thread>& threadPool)
+{
+    sScriptMgr->OnNetworkStop();
+
+    _ioService.stop();
+
+    for (auto& thread : threadPool)
+    {
+        thread.join();
+    }
+}
 
 void WorldUpdateLoop()
 {
@@ -535,6 +514,9 @@ void ClearOnlineAccounts()
 
 variables_map GetConsoleArguments(int argc, char** argv, std::string& configFile, std::string& configService)
 {
+    // Silences warning about configService not be used if the OS is not Windows
+    (void)configService;
+
     options_description all("Allowed options");
     all.add_options()
         ("help,h", "print usage message")

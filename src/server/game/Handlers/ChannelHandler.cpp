@@ -21,6 +21,8 @@
 #include "Player.h"
 #include "Chat.h"
 
+#include <cctype>
+
 void WorldSession::HandleJoinChannel(WorldPacket& recvPacket)
 {
     uint32 channelId;
@@ -44,6 +46,9 @@ void WorldSession::HandleJoinChannel(WorldPacket& recvPacket)
     }
 
     if (channelName.empty())
+        return;
+
+    if (isdigit(channelName[0]))
         return;
 
     if (!ChatHandler(this).isValidChatMessage(channelName.c_str()))

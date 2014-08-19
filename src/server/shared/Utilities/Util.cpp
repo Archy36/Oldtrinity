@@ -18,13 +18,14 @@
 
 #include "Util.h"
 #include "Common.h"
+#include "CompilerDefs.h"
 #include "utf8.h"
 #include "SFMT.h"
 #include "Errors.h" // for ASSERT
 #include <stdarg.h>
 #include <boost/thread/tss.hpp>
 
-#if PLATFORM == PLATFORM_UNIX
+#if COMPILER == COMPILER_GNU
   #include <sys/socket.h>
   #include <netinet/in.h>
   #include <arpa/inet.h>
@@ -63,17 +64,17 @@ float frand(float min, float max)
     return float(GetRng()->Random() * (max - min) + min);
 }
 
-int32 rand32()
+uint32 rand32()
 {
-    return int32(GetRng()->BRandom());
+    return GetRng()->BRandom();
 }
 
-double rand_norm(void)
+double rand_norm()
 {
     return GetRng()->Random();
 }
 
-double rand_chance(void)
+double rand_chance()
 {
     return GetRng()->Random() * 100.0;
 }
