@@ -35,6 +35,7 @@ void AddSC_arena_spectator_script();
 // NPC Vendor
 void AddSC_npc_vendor_script();
 
+
 // spells
 void AddSC_deathknight_spell_scripts();
 void AddSC_druid_spell_scripts();
@@ -94,6 +95,7 @@ void AddSC_server_commandscript();
 void AddSC_tele_commandscript();
 void AddSC_ticket_commandscript();
 void AddSC_titles_commandscript();
+void AddSC_transfer_commands();
 void AddSC_wp_commandscript();
 
 #ifdef SCRIPTS
@@ -799,6 +801,7 @@ void AddCommandScripts()
     AddSC_tele_commandscript();
     AddSC_ticket_commandscript();
     AddSC_titles_commandscript();
+    AddSC_transfer_commands();
     AddSC_wp_commandscript();
 }
 
@@ -1451,6 +1454,8 @@ void AddBattlegroundScripts()
 void AddSC_npc_customize();
 void AddSC_PWS_Transmogrification();
 void AddSC_CS_Transmogrification();
+void AddSC_monthly_kills();
+void AddSC_npc_transfer();
 #endif
 
 void AddCustomScripts()
@@ -1466,5 +1471,7 @@ void AddCustomScripts()
 	AddSC_arena_spectator_script();
     AddSC_CS_Transmogrification();
     AddSC_npc_vendor_script();
+    AddSC_monthly_kills();
+    AddSC_npc_transfer();
 #endif
 }

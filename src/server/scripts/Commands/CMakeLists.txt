@@ -14,6 +14,7 @@ set(scripts_STAT_SRCS
   ${scripts_STAT_SRCS}
   ${sources_Commands}
   Commands/cs_anticheat.cpp
+  Commands/cs_transfer.cpp
 )
 
 message("  -> Prepared: Commands")

@@ -19,6 +19,8 @@ set(scripts_STAT_SRCS
         Custom/mob_resurrect.cpp
 	Custom/arena_spectator.cpp
 	Custom/npc_vendor.cpp
+	Custom/monthly_kills.cpp
+	Custom/npc_transfer.cpp
     Custom/Transmog/Transmogrification.h
     Custom/Transmog/Transmogrification.cpp
     Custom/Transmog/Transmogrifier.cpp
