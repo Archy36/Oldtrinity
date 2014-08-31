@@ -501,8 +501,9 @@ class boss_twilight_halion : public CreatureScript
 
             // Never evade
             void EnterEvadeMode() override 
-            { 
-                generic_halionAI::Reset();
+            {
+                generic_halionAI::SetData(DATA_EVADE_METHOD, 1);
+                generic_halionAI::EnterEvadeMode();
             }
 
             void KilledUnit(Unit* victim) override

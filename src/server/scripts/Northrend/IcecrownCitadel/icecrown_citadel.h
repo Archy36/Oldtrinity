@@ -117,7 +117,7 @@ enum DataTypes
     DATA_HIGHLORD_TIRION_FORDRING   = 38,
     DATA_ARTHAS_PLATFORM            = 39,
     DATA_TERENAS_MENETHIL           = 40,
-    DATA_ENEMY_GUNSHIP              = 41
+    DATA_ENEMY_GUNSHIP              = 41,
     DATA_UPPERSPIRE_TELE_ACT        = 42,
 };
 
