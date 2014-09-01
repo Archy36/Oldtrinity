@@ -491,9 +491,6 @@ class boss_twilight_halion : public CreatureScript
                 events.SetPhase(PHASE_TWO);
 
                 generic_halionAI::EnterCombat(who);
-                events.ScheduleEvent(EVENT_CLEAVE, urand(8000, 10000));
-                events.ScheduleEvent(EVENT_TAIL_LASH, 10000);
-                events.ScheduleEvent(EVENT_BREATH, urand(10000, 15000));
                 events.ScheduleEvent(EVENT_SOUL_CONSUMPTION, 20000);
 
                 instance->SendEncounterUnit(ENCOUNTER_FRAME_ENGAGE, me, 2);
@@ -573,41 +570,17 @@ class boss_twilight_halion : public CreatureScript
             {
                 switch (eventId)
                 {
-                    case EVENT_CLEAVE:
-                        DoCastVictim(SPELL_CLEAVE);
-                        events.ScheduleEvent(EVENT_CLEAVE, urand(8000, 10000));
-                        break;
-                    case EVENT_TAIL_LASH:
-                        DoCastAOE(SPELL_TAIL_LASH);
-                        events.ScheduleEvent(EVENT_TAIL_LASH, 10000);
-                        break;
-                    case EVENT_BREATH:
-                        DoCast(me, me->GetEntry() == NPC_HALION ? SPELL_FLAME_BREATH : SPELL_DARK_BREATH);
-                        events.ScheduleEvent(EVENT_BREATH, urand(10000, 12000));
-                        break;
                     case EVENT_SOUL_CONSUMPTION:
                         if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, 0.0f, true, SPELL_TWILIGHT_REALM))
                             DoCast(target, SPELL_SOUL_CONSUMPTION);
                         events.ScheduleEvent(EVENT_SOUL_CONSUMPTION, 20000);
                         break;
+                    default:
+                        generic_halionAI::ExecuteEvent(eventId);
+                        break;
+
                 }
-            }
-            
-            void UpdateAI(uint32 diff)
-            {
-            if (!UpdateVictim() || me->HasUnitState(UNIT_STATE_CASTING))
-                return;
-
-                events.Update(diff);
-
-                while (uint32 eventId = events.ExecuteEvent())
-                    ExecuteEvent(eventId);
-
-                DoMeleeAttackIfReady();
-            }
-            
-        private:
-            EventMap events;
+            }        
         };
 
         CreatureAI* GetAI(Creature* creature) const override
