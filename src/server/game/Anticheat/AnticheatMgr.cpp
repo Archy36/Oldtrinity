@@ -120,6 +120,9 @@ void AnticheatMgr::StartHackDetection(Player* player, MovementInfo movementInfo,
 
     if (player->IsGameMaster())
         return;
+    
+    if (player->GetAreaId() == 4384 || player->GetAreaId() == 4610)
+		return;
 
     uint32 key = player->GetGUIDLow();
 
@@ -333,7 +336,8 @@ void AnticheatMgr::BuildReport(Player* player,uint8 reportType)
     {
         // display warning at the center of the screen, hacky way?
         std::string str = "";
-        str = "|cFFFFFC00[AC]|cFF00FFFF[|cFF60FF00" + std::string(player->GetName().c_str()) + "|cFF00FFFF] Possible cheater!";
+        //str = "|cFFFFFC00[AC]|cFF00FFFF[|cFF60FF00" + std::string(player->GetName().c_str()) + "|cFF00FFFF] Possible cheater!";
+        str = "|cFFFFFC00[АНТИЧИТ]|cFF00FFFF[|cFF60FF00" + std::string(player->GetName().c_str()) + "|cFF00FFFF] Обнаружен читер!";
         WorldPacket data(SMSG_NOTIFICATION, (str.size()+1));
         data << str;
         sWorld->SendGlobalGMMessage(&data);
