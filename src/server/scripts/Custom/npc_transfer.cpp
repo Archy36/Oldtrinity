@@ -332,7 +332,7 @@ public:
             case 1:
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, "Здравствуйте, уважаемый игрок! Рады приветствовать вас на нашем сервере - WOW.PG.UZ! Данный нпц поможет вам перенести персонажа с другого сервера!", GOSSIP_SENDER_MAIN, 99);
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "|cFF006400[ Начать перенос ]|h|r", GOSSIP_SENDER_MAIN, 2);
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|cFF0000CD[ Информация о переносе ]", GOSSIP_SENDER_MAIN, 124);
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|cFF0000CD[ Информация о переносе ]|r", GOSSIP_SENDER_MAIN, 124);
                 player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
                 break;
             case 2:
@@ -553,7 +553,7 @@ public:
         else
         {
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, "Здравствуйте, уважаемый игрок! Рады приветствовать вас на нашем сервере - WOW.PG.UZ!\nУслуги данного НПЦ доступны только для персонажей, у которых активирована услуга Перенос.", GOSSIP_SENDER_MAIN, 99);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|cFF0000CD[ Информация о переносе ]", GOSSIP_SENDER_MAIN, 124);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|cFF0000CD[ Информация о переносе ]|r", GOSSIP_SENDER_MAIN, 124);
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "[ Ладно, пока ]", GOSSIP_SENDER_MAIN, 126);
             player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
         }
