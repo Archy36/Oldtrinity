@@ -2,6 +2,9 @@
 #include "ScriptMgr.h"
 #include "SharedDefines.h"
 #include "Player.h"
+#include "BattlegroundMgr.h"
+#include "WorldSession.h"
+#include "Chat.h"
 
 class monthly_kills : public PlayerScript
 {
@@ -10,15 +13,27 @@ public:
     uint32 kills = 1;
     void OnPVPKill(Player* killer, Player* killed)
     {
-        QueryResult resultDB = CharacterDatabase.PQuery("SELECT * FROM char_monthly_kills WHERE guid=%u;", killer->GetGUIDLow());
-        if (resultDB)
+        if (Battleground *bg = killer->GetBattleground())
         {
-            Field *fieldsDB = resultDB->Fetch();
-            uint32 killsnew = fieldsDB[5].GetUInt32() + kills;
-            CharacterDatabase.PExecute("REPLACE INTO `char_monthly_kills` (name,race,guid,gender,class,monthly) VALUES (\"%s\",%u,%u,%u,%u,%u);", killer->GetName().c_str(), killer->getRace(), killer->GetGUIDLow(), killer->getGender(), killer->getClass(), killsnew);
+            if (bg->isArena())
+                return;
         }
         else
-            CharacterDatabase.PExecute("REPLACE INTO `char_monthly_kills` (name,race,guid,gender,class,monthly) VALUES (\"%s\",%u,%u,%u,%u,%u);", killer->GetName().c_str(), killer->getRace(), killer->GetGUIDLow(), killer->getGender(), killer->getClass(), kills);
+        {
+            QueryResult resultDB = CharacterDatabase.PQuery("SELECT * FROM char_monthly_kills WHERE guid=%u;", killer->GetGUIDLow());
+            if (resultDB)
+            {
+                Field *fieldsDB = resultDB->Fetch();
+                uint32 killsnew = fieldsDB[5].GetUInt32() + kills;
+                CharacterDatabase.PExecute("REPLACE INTO `char_monthly_kills` (name,race,guid,gender,class,monthly) VALUES (\"%s\",%u,%u,%u,%u,%u);", killer->GetName().c_str(), killer->getRace(), killer->GetGUIDLow(), killer->getGender(), killer->getClass(), killsnew);
+                ChatHandler(killer->GetSession()).PSendSysMessage("|cff00ff00Псих:|h|r Ещё один килл!");
+            }
+            else
+            {
+                CharacterDatabase.PExecute("REPLACE INTO `char_monthly_kills` (name,race,guid,gender,class,monthly) VALUES (\"%s\",%u,%u,%u,%u,%u);", killer->GetName().c_str(), killer->getRace(), killer->GetGUIDLow(), killer->getGender(), killer->getClass(), kills);
+                ChatHandler(killer->GetSession()).PSendSysMessage("|cff00ff00Псих:|h|r Ещё один килл!");
+            }
+        }
     }
 };
 
@@ -113,14 +128,21 @@ public:
                 ss.clear();
                 if (team == 0)
                 {
-                    if (number < 6) //NUM: ally top 5 tomato |cFFFF6347; self springgreen |cFF00FF7F; NAME: others blue;
+                    /*if (number == 1)
+                    {
+                        if (player->GetGUIDLow() == guid)
+                            ss << "|cFF00FFFF#" << number << " [Вы]|r |cff0000ff[" << name << "]|r [" << classstr << "] " << "убийств: |cFF8B0000" << monthly << "|r\n";
+                        else
+                            ss << "|cFF00FFFF#" << number << "|r |cff0000ff[" << name << "]|r [" << classstr << "] " << "убийств: |cFF8B0000" << monthly << "|r\n";
+                    }*/
+                    if (number < 4) //NUM: ally top 3; self springgreen |cFF00FF7F; NAME: others blue;
                     {
                         if (player->GetGUIDLow() == guid)
                             ss << "|cFF00FF7F#" << number << " [Вы]|r |cff0000ff[" << name << "]|r [" << classstr << "] " << "убийств: |cFF8B0000" << monthly << "|r\n";
                         else
                             ss << "|cFF7FFF00#" << number << "|r |cff0000ff[" << name << "]|r [" << classstr << "] " << "убийств: |cFF8B0000" << monthly << "|r\n";
                     }
-                    else //NUM: 6+ self springgreen |cFF00FF7F; others CHARTREUSE  |cFF7FFF00
+                    else if (number >= 4)//NUM: 4+ self springgreen |cFF00FF7F; others CHARTREUSE  |cFF7FFF00
                     {
                         if (player->GetGUIDLow() == guid)
                             ss << "|cFF00FF7F#" << number << " [Вы]|r |cff0000ff[" << name << "]|r [" << classstr << "] " << "убийств: |cFF8B0000" << monthly << "|r\n";
@@ -130,14 +152,21 @@ public:
                 }
                 else if (team == 1)
                 {
-                    if (number < 6) //NUM: horde top5 self springgreen |cFF00FF7F; others tomato |cFFFF6347; NAME: others red;
+                    /*if (number == 1)
+                    {
+                        if (player->GetGUIDLow() == guid)
+                            ss << "|cFF00FFFF#" << number << " [Вы]|r |cffff0000[" << name << "]|r [" << classstr << "] " << "убийств: |cFF8B0000" << monthly << "|r\n";
+                        else
+                            ss << "|cFF00FFFF#" << number << "|r |cffff0000[" << name << "]|r [" << classstr << "] " << "убийств: |cFF8B0000" << monthly << "|r\n";
+                    }*/
+                    if (number < 4) //NUM: horde top5 self springgreen |cFF00FF7F; others tomato |cFFFF6347; NAME: others red;
                     {
                         if (player->GetGUIDLow() == guid)
                             ss << "|cFF00FF7F#" << number << " [Вы]|r |cffff0000[" << name << "]|r [" << classstr << "] " << "убийств: |cFF8B0000" << monthly << "|r\n";
                         else
                             ss << "|cFF7FFF00#" << number << "|r |cffff0000[" << name << "]|r [" << classstr << "] " << "убийств: |cFF8B0000" << monthly << "|r\n";
                     }
-                    else //NUM: 6+ self springgreen |cFF00FF7F; others CHARTREUSE  |cFF7FFF00
+                    else if (number >= 4)//NUM: 4+ self springgreen |cFF00FF7F; others CHARTREUSE  |cFF7FFF00
                     {
                         if (player->GetGUIDLow() == guid)
                             ss << "|cFF00FF7F#" << number << " [Вы]|r |cffff0000[" << name << "]|r [" << classstr << "] " << "убийств: |cFF8B0000" << monthly << "|r\n";
@@ -146,11 +175,7 @@ public:
                     }
 
                 }
-
-                //ss << "#" << number << " [" << name << "] (" << classstr << ") " << "|cFF8B0000убийств: " << monthly << "|r\n";
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, ss.str(), GOSSIP_SENDER_MAIN, 10);
-                /*if (rows > OnPage)
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Next page...", GOSSIP_SENDER_MAIN, 3);*/
                 player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
             } while (result->NextRow());
             return true;
@@ -248,7 +273,7 @@ public:
         static ChatCommand monthlyCommandTable[] =
         {
             { "list", SEC_MODERATOR, false, &HandleMonthlyListCommand, "", NULL },
-            { "reset", SEC_ADMINISTRATOR, false, &HandleMonthlyResetCommand, "", NULL },
+            { "reset", SEC_MODERATOR, false, &HandleMonthlyResetCommand, "", NULL },
             { "help", SEC_MODERATOR, false, &HandleMonthlyHelpCommand, "", NULL },
             { NULL, 0, false, NULL, "", NULL }
         };

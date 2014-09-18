@@ -35,7 +35,6 @@ void AddSC_arena_spectator_script();
 // NPC Vendor
 void AddSC_npc_vendor_script();
 
-
 // spells
 void AddSC_deathknight_spell_scripts();
 void AddSC_druid_spell_scripts();
@@ -1458,13 +1457,15 @@ void AddSC_PWS_Transmogrification();
 void AddSC_CS_Transmogrification();
 void AddSC_monthly_kills();
 void AddSC_npc_transfer();
+void AddSC_brewfest();
+
 #endif
 
 void AddCustomScripts()
 {
 #ifdef SCRIPTS
     /* This is where custom scripts should be added. */
-
+    AddSC_brewfest();
 	AddSC_DuelReset();
     AddSC_PWS_Transmogrification();
 	AddSC_fast_arena_start();

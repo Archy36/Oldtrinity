@@ -31,17 +31,46 @@ public:
         QueryResult resultDB = CharacterDatabase.PQuery("SELECT * FROM `char_transfers` WHERE guid=%u;", target_guid);
         if (!resultDB)
         {
-            CharacterDatabase.PExecute("REPLACE INTO `char_transfers` (guid,state) VALUES (%u,1);", target_guid);
             if (!target)
+            {
+                CharacterDatabase.PExecute("REPLACE INTO `char_transfers` (guid,state) VALUES (%u,1);", target_guid);
                 handler->PSendSysMessage("Персонаж %s (offline) добавлен в базу переносов. ", target_name.c_str());
+                handler->SetSentErrorMessage(true);
+            }
             else
-                handler->PSendSysMessage("Персонаж %s добавлен в базу переносов.", target_name.c_str());
-            handler->SetSentErrorMessage(true);
-            return true;
+            {
+                if (target->getClass() == CLASS_DEATH_KNIGHT)
+                {
+                    if (!target->IsQuestRewarded(13188) && !target->IsQuestRewarded(13189))
+                    {
+                        handler->PSendSysMessage("Перенос невозможен: выбранный вами ДК не выполнил свой последний классовый квест.");
+                        handler->SetSentErrorMessage(true);
+                        return false;
+                    }
+                    else
+                    {
+                        CharacterDatabase.PExecute("REPLACE INTO `char_transfers` (guid,state) VALUES (%u,1);", target_guid);
+                        handler->PSendSysMessage("Персонаж %s добавлен в базу переносов.", target_name.c_str());
+                        handler->SetSentErrorMessage(true);
+                        ChatHandler(target->GetSession()).PSendSysMessage("|cff00ff00А'дал:|h|r %s, тебе назначили перенос, подходи, я тебе помогу!", target_name.c_str());
+                    }
+                }
+                else
+                {
+                    CharacterDatabase.PExecute("REPLACE INTO `char_transfers` (guid,state) VALUES (%u,1);", target_guid);
+                    handler->PSendSysMessage("Персонаж %s добавлен в базу переносов.", target_name.c_str());
+                    ChatHandler(target->GetSession()).PSendSysMessage("|cff00ff00А'дал:|h|r %s, тебе назначили перенос, подходи, я тебе помогу!", target_name.c_str());
+                }
+            }
         }
         else
         {
-            handler->PSendSysMessage("Персонаж %s уже переносится.", target_name.c_str());
+            Field *fieldsDB = resultDB->Fetch();
+            uint32 state = fieldsDB[1].GetUInt32();
+            if (state == 60)
+                handler->PSendSysMessage("Персонаж %s уже перенесен.", target_name.c_str());
+            else
+                handler->PSendSysMessage("Персонаж %s уже переносится.", target_name.c_str());
             handler->SetSentErrorMessage(true);
             return false;
         }
@@ -76,7 +105,7 @@ public:
             uint32 state = fieldsDB[1].GetUInt32();
             if (state == 60)
                 handler->PSendSysMessage("Инфо: персонаж %s в базе переносов, стадия: %u (перенос завершен)", target_name.c_str(), state);
-           	else
+            else
                 handler->PSendSysMessage("Инфо: персонаж %s в базе переносов, стадия: %u", target_name.c_str(), state);
             handler->SetSentErrorMessage(true);
             return true;

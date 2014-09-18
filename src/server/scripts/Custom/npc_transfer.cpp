@@ -8,7 +8,6 @@
 #include "Language.h"
 #include "ObjectMgr.h"
 
-#define MSG_BAGS "Что бы продолжить перенос оденьте сумку!"
 #define MSG_GOSSIP_TEXT_ALCHEMY "Изучить Алхимию."
 #define MSG_GOSSIP_TEXT_BLACKSMITHING "Изучить Кузнечное Дело."
 #define MSG_GOSSIP_TEXT_ENCNANTING "Изучить Наложение Чар."
@@ -23,7 +22,7 @@
 #define MSG_GOSSIP_READY "[Готово...]"
 
 //head, shoulder, chest, gloves, legs
-uint32 pvpset[15][5] =
+uint32 pvpset[16][5] =
 {
     { 40826, 40866, 40789, 40807, 40847 }, //warrior 0
     { 40828, 40869, 40788, 40808, 40849 }, //ret pally 1
@@ -39,7 +38,8 @@ uint32 pvpset[15][5] =
     { 41157, 41217, 41087, 41143, 41205 }, //hunter 11
     { 41993, 42011, 41998, 42017, 42005 }, //warlock 12
     { 41946, 41965, 41953, 41971, 41959 }, //mage 13
-    { 41672, 41683, 41650, 41767, 41655 }  //rogue 14
+    { 41672, 41683, 41650, 41767, 41655 }, //rogue 14
+    { 40827, 40868, 40787, 40809, 40848 } //dk 15
 };
 
 //bracer, waist, feet, ringa, ringb
@@ -102,7 +102,21 @@ public:
                 player->AddItem(pvpset[i][j], 1);
         }
     }
-    
+
+    bool HasFreeSpace(Player* player, uint32 itemID)
+    {
+        ItemPosCountVec dest;
+        uint32 noSpaceForCount = 0;
+        uint32 count = 25;
+        InventoryResult msg = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, itemID, count, &noSpaceForCount);
+        if (msg != EQUIP_ERR_OK)
+            count -= noSpaceForCount;
+        if (count < 25 || dest.empty())
+            return false;
+        else
+            return true;
+    }
+
     void LearnSkills(Player *player)
     {
         switch (player->getClass())
@@ -191,12 +205,22 @@ public:
             player->LearnSpell(5011, false);
             player->LearnSpell(15590, false);
             break;
+        case CLASS_DEATH_KNIGHT:
+            player->LearnSpell(750, false);
+            player->LearnSpell(196, false);
+            player->LearnSpell(197, false);
+            player->LearnSpell(198, false);
+            player->LearnSpell(199, false);
+            player->LearnSpell(200, false);
+            player->LearnSpell(201, false);
+            player->LearnSpell(202, false);
+            break;
         default:
             break;
         }
         player->SaveToDB();
     }
-    
+
     void GiveOffSet(Player *player, int i, bool delonly = false)
     {
         int j;
@@ -296,16 +320,41 @@ public:
                 break;
             }
             SkillLineEntry const *SkillInfo = sSkillLineStore.LookupEntry(skill);
-            //SkillLineAbilityEntry const *skillLine = sSkillLineAbilityStore.LookupEntry(skill);
             uint16 maxLevel = player->GetPureMaxSkillValue(SkillInfo->id);
             player->SetSkill(SkillInfo->id, player->GetSkillStep(SkillInfo->id), maxLevel, maxLevel);
             player->SaveToDB();
-            if (PlayerAlreadyHasNineProfessions(player))
+            QueryResult resultDB = CharacterDatabase.PQuery("SELECT * FROM char_transfers WHERE guid=%u;", player->GetGUIDLow());
+            Field *fieldsDB = resultDB->Fetch();
+            uint32 state = fieldsDB[1].GetUInt32();
+            if (PlayerAlreadyHasNineProfessions(player) || (state == 53))
             {
                 CharacterDatabase.PExecute("REPLACE INTO `char_transfers` (guid,state) VALUES (%u,55);", player->GetGUIDLow());
                 player->PlayerTalkClass->ClearMenus();
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "|cFF006400[ Завершить перенос ]|h|r", GOSSIP_SENDER_MAIN, 122);
                 player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
+            }
+            else
+            {
+                player->PlayerTalkClass->ClearMenus();
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, "[ == Выберите 2 профессии == ]", GOSSIP_SENDER_MAIN, 99);
+                if (!PlayerAlreadyHasNineProfessions(player))
+                {
+                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, MSG_GOSSIP_TEXT_ALCHEMY, GOSSIP_SENDER_MAIN, 110);
+                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, MSG_GOSSIP_TEXT_BLACKSMITHING, GOSSIP_SENDER_MAIN, 111);
+                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, MSG_GOSSIP_TEXT_ENCNANTING, GOSSIP_SENDER_MAIN, 112);
+                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, MSG_GOSSIP_TEXT_ENGINEERING, GOSSIP_SENDER_MAIN, 113);
+                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, MSG_GOSSIP_TEXT_HERBALISM, GOSSIP_SENDER_MAIN, 114);
+                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, MSG_GOSSIP_TEXT_INSCRIPTION, GOSSIP_SENDER_MAIN, 115);
+                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, MSG_GOSSIP_TEXT_JEWELCRAFTING, GOSSIP_SENDER_MAIN, 116);
+                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, MSG_GOSSIP_TEXT_LEATHERWORKING, GOSSIP_SENDER_MAIN, 117);
+                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, MSG_GOSSIP_TEXT_MINING, GOSSIP_SENDER_MAIN, 118);
+                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, MSG_GOSSIP_TEXT_SKINNING, GOSSIP_SENDER_MAIN, 119);
+                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, MSG_GOSSIP_TEXT_TAILORING, GOSSIP_SENDER_MAIN, 120);
+                }
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, MSG_GOSSIP_READY, GOSSIP_SENDER_MAIN, 121);
+                player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
+                CharacterDatabase.PExecute("REPLACE INTO `char_transfers` (guid,state) VALUES (%u,53);", player->GetGUIDLow()); //one prof choosed
+                creature->MonsterWhisper("|cFF00FFFFВЫБЕРИТЕ ЕЩЁ ОДНУ ПРОФЕССИЮ!|h|r", player, false);
             }
         }
         else
@@ -317,72 +366,83 @@ public:
 
     bool OnGossipHello(Player* player, Creature* creature)
     {
-        /*SkillLineEntry const *SkillInfo = sSkillLineStore.LookupEntry(SKILL_HERBALISM);
-        uint16 maxLevel = player->GetPureMaxSkillValue(SkillInfo->id);
-        player->SetSkill(SKILL_HERBALISM, player->GetSkillStep(SkillInfo->id), maxLevel, maxLevel);*/
-        player->PlayerTalkClass->ClearMenus();
         QueryResult resultDB = CharacterDatabase.PQuery("SELECT * FROM char_transfers WHERE guid=%u;", player->GetGUIDLow());
         if (resultDB)
         {
             Field *fieldsDB = resultDB->Fetch();
-            uint32 pguid = fieldsDB[0].GetUInt32();
             uint32 state = fieldsDB[1].GetUInt32();
             switch (state)
             {
             case 1:
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, "Здравствуйте, уважаемый игрок! Рады приветствовать вас на нашем сервере - WOW.PG.UZ! Данный нпц поможет вам перенести персонажа с другого сервера!", GOSSIP_SENDER_MAIN, 99);
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "|cFF006400[ Начать перенос ]|h|r", GOSSIP_SENDER_MAIN, 2);
+                if (player->getClass() == CLASS_DEATH_KNIGHT && (!player->IsQuestRewarded(13188) && !player->IsQuestRewarded(13189)))
+                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, "Я смогу вам помочь с переносом только после того, как вы выполните все начальные квесты ДК.", GOSSIP_SENDER_MAIN, 126);
+                else
+                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "|cFF006400[ Начать перенос ]|h|r", GOSSIP_SENDER_MAIN, 2);
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|cFF0000CD[ Информация о переносе ]|r", GOSSIP_SENDER_MAIN, 124);
                 player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
                 break;
             case 2:
-                switch (player->getClass())
+                if (!HasFreeSpace(player, 6712))
                 {
-                case CLASS_WARRIOR:
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "[А6 сет воина]", GOSSIP_SENDER_MAIN, 3);
+                    player->PlayerTalkClass->ClearMenus();
+                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "У вас недостаточно свободного места в инвентаре для того что бы продолжить. Оденьте сумку или освободите место!", GOSSIP_SENDER_MAIN, 126);
                     player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
-                    break;
-                case CLASS_PALADIN:
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "[А6 сет ретри паладина]", GOSSIP_SENDER_MAIN, 4);
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "[А6 сет холи паладина]", GOSSIP_SENDER_MAIN, 5);
-                    player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
-                    break;
-                case CLASS_DRUID:
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "[А6 сет ферал друида]", GOSSIP_SENDER_MAIN, 7);
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "[А6 сет баланс друида]", GOSSIP_SENDER_MAIN, 8);
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "[А6 сет рестор друида]", GOSSIP_SENDER_MAIN, 9);
-                    player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
-                    break;
-                case CLASS_PRIEST:
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "[А6 сет приста хила]", GOSSIP_SENDER_MAIN, 10);
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "[А6 сет ШП]", GOSSIP_SENDER_MAIN, 11);
-                    player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
-                    break;
-                case CLASS_SHAMAN:
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "[А6 сет элем шамана]", GOSSIP_SENDER_MAIN, 12);
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "[А6 сет рестор шамана]", GOSSIP_SENDER_MAIN, 13);
-                    player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
-                    break;
-                case CLASS_HUNTER:
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "[А6 сет охотника]", GOSSIP_SENDER_MAIN, 14);
-                    player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
-                    break;
-                case CLASS_WARLOCK:
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "[А6 сет варлока]", GOSSIP_SENDER_MAIN, 15);
-                    player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
-                    break;
-                case CLASS_MAGE:
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "[А6 сет мага]", GOSSIP_SENDER_MAIN, 16);
-                    player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
-                    break;
-                case CLASS_ROGUE:
-                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "[А6 сет разбойника]", GOSSIP_SENDER_MAIN, 17);
-                    player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
-                    break;
-                default:
-                    break;
                 }
-                LearnSkills(player);
+                else
+                {
+                    switch (player->getClass())
+                    {
+                    case CLASS_WARRIOR:
+                        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "[А6 сет воина]", GOSSIP_SENDER_MAIN, 3);
+                        player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
+                        break;
+                    case CLASS_PALADIN:
+                        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "[А6 сет ретри паладина]", GOSSIP_SENDER_MAIN, 4);
+                        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "[А6 сет холи паладина]", GOSSIP_SENDER_MAIN, 5);
+                        player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
+                        break;
+                    case CLASS_DRUID:
+                        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "[А6 сет ферал друида]", GOSSIP_SENDER_MAIN, 7);
+                        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "[А6 сет баланс друида]", GOSSIP_SENDER_MAIN, 8);
+                        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "[А6 сет рестор друида]", GOSSIP_SENDER_MAIN, 9);
+                        player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
+                        break;
+                    case CLASS_PRIEST:
+                        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "[А6 сет приста хила]", GOSSIP_SENDER_MAIN, 10);
+                        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "[А6 сет ШП]", GOSSIP_SENDER_MAIN, 11);
+                        player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
+                        break;
+                    case CLASS_SHAMAN:
+                        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "[А6 сет элем шамана]", GOSSIP_SENDER_MAIN, 12);
+                        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "[А6 сет рестор шамана]", GOSSIP_SENDER_MAIN, 13);
+                        player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
+                        break;
+                    case CLASS_HUNTER:
+                        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "[А6 сет охотника]", GOSSIP_SENDER_MAIN, 14);
+                        player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
+                        break;
+                    case CLASS_WARLOCK:
+                        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "[А6 сет варлока]", GOSSIP_SENDER_MAIN, 15);
+                        player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
+                        break;
+                    case CLASS_MAGE:
+                        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "[А6 сет мага]", GOSSIP_SENDER_MAIN, 16);
+                        player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
+                        break;
+                    case CLASS_ROGUE:
+                        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "[А6 сет разбойника]", GOSSIP_SENDER_MAIN, 17);
+                        player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
+                        break;
+                    case CLASS_DEATH_KNIGHT:
+                        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "[А6 сет ДК]", GOSSIP_SENDER_MAIN, 130);
+                        player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
+                        break;
+                    default:
+                        break;
+                    }
+                    LearnSkills(player);
+                };
                 break;
             case 5: //pally not confirmed
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "[А6 сет ретри паладина]", GOSSIP_SENDER_MAIN, 4);
@@ -430,6 +490,11 @@ public:
                 case CLASS_WARRIOR:
                     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, "|cffff0000[ === Оффсеты === ]|h|r", GOSSIP_SENDER_MAIN, 99);
                     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "[Оффсет на воина]", GOSSIP_SENDER_MAIN, 23);
+                    player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
+                    break;
+                case CLASS_DEATH_KNIGHT:
+                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, "|cffff0000[ === Оффсеты === ]|h|r", GOSSIP_SENDER_MAIN, 99);
+                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "[Оффсет на ДК]", GOSSIP_SENDER_MAIN, 23);
                     player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
                     break;
                 case CLASS_SHAMAN:
@@ -510,7 +575,8 @@ public:
                 player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
                 break;
             case 41: //ranged agi
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, "|cffff0000[ === Метательное оружие === ]|h|r", GOSSIP_SENDER_MAIN, 105);
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "|cffff0000[ Оружие, маунты, и медальон ]|h|r", GOSSIP_SENDER_MAIN, 63);
+                //player->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, "|cffff0000[ === Метательное оружие === ]|h|r", GOSSIP_SENDER_MAIN, 105);
                 player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
                 break;
             case 45: //weapon
@@ -518,6 +584,7 @@ public:
                 player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
                 break;
             case 50: //professions
+            case 53:
                 player->PlayerTalkClass->ClearMenus();
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, "[ == Выберите 2 профессии == ]", GOSSIP_SENDER_MAIN, 99);
                 if (!PlayerAlreadyHasNineProfessions(player))
@@ -560,10 +627,10 @@ public:
         return true;
     }
 
-    bool OnGossipSelect(Player* player, Creature* creature, uint32 /* sender */, uint32 action)
+    bool OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action)
     {
-        ChatHandler handler(player->GetSession());
-        GameTele const* tele = handler.extractGameTeleFromLink("Dalaran");
+        std::string str = "";
+        WorldPacket data(SMSG_NOTIFICATION, (str.size() + 1));
         switch (action)
         {
         case 2:
@@ -573,8 +640,17 @@ public:
             player->AddItem(41600, 1); //give a bag
             CharacterDatabase.PExecute("REPLACE INTO `char_transfers` (guid,state) VALUES (%u,2);", player->GetGUIDLow());
             player->SaveToDB();
-            creature->MonsterWhisper(MSG_BAGS, player, false);
-            player->CLOSE_GOSSIP_MENU();
+            if (player->getClass() == CLASS_DEATH_KNIGHT)
+            {
+                player->PlayerTalkClass->ClearMenus();
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "[А6 сет ДК]", GOSSIP_SENDER_MAIN, 130);
+                player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
+            }
+            else
+            {
+                creature->MonsterWhisper("|cFF00FFFFЧТОБЫ ПРОДОЛЖИТЬ ПЕРЕНОС ОДЕНЬТЕ СУМКУ!|h|r", player, false);
+                player->CLOSE_GOSSIP_MENU();
+            }
             break;
         case 3:
             GiveSet(player, 0); //give arms set
@@ -789,7 +865,7 @@ public:
             player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
             break;
         case 23:
-            GiveOffSet(player, 0); //give awar offset
+            GiveOffSet(player, 0); //give awar or DK offset
             player->SaveToDB();
             CharacterDatabase.PExecute("REPLACE INTO `char_transfers` (guid,state) VALUES (%u,20);", player->GetGUIDLow()); //state 20
             player->PlayerTalkClass->ClearMenus();
@@ -1045,7 +1121,8 @@ public:
             player->SaveToDB();
             CharacterDatabase.PExecute("REPLACE INTO `char_transfers` (guid,state) VALUES (%u,41);", player->GetGUIDLow()); //state 41 melee
             player->PlayerTalkClass->ClearMenus();
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, "|cffff0000[ === Метательное оружие === ]|h|r", GOSSIP_SENDER_MAIN, 105);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "|cffff0000[ Оружие, маунты, и медальон ]|h|r", GOSSIP_SENDER_MAIN, 63);
+            //player->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, "|cffff0000[ === Метательное оружие === ]|h|r", GOSSIP_SENDER_MAIN, 105);
             player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
             break;
         case 53: //battlemaster
@@ -1053,7 +1130,8 @@ public:
             player->SaveToDB();
             CharacterDatabase.PExecute("REPLACE INTO `char_transfers` (guid,state) VALUES (%u,41);", player->GetGUIDLow()); //state 41 melee
             player->PlayerTalkClass->ClearMenus();
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, "|cffff0000[ === Метательное оружие === ]|h|r", GOSSIP_SENDER_MAIN, 105);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "|cffff0000[ Оружие, маунты, и медальон ]|h|r", GOSSIP_SENDER_MAIN, 63);
+            //player->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, "|cffff0000[ === Метательное оружие === ]|h|r", GOSSIP_SENDER_MAIN, 105);
             player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
             break;
         case 54: //battlemaster
@@ -1061,7 +1139,8 @@ public:
             player->SaveToDB();
             CharacterDatabase.PExecute("REPLACE INTO `char_transfers` (guid,state) VALUES (%u,41);", player->GetGUIDLow()); //state 41 melee
             player->PlayerTalkClass->ClearMenus();
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, "|cffff0000[ === Метательное оружие === ]|h|r", GOSSIP_SENDER_MAIN, 105);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "|cffff0000[ Оружие, маунты, и медальон ]|h|r", GOSSIP_SENDER_MAIN, 63);
+            //player->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, "|cffff0000[ === Метательное оружие === ]|h|r", GOSSIP_SENDER_MAIN, 105);
             player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
             break;
         case 55: //battlemaster
@@ -1069,7 +1148,8 @@ public:
             player->SaveToDB();
             CharacterDatabase.PExecute("REPLACE INTO `char_transfers` (guid,state) VALUES (%u,41);", player->GetGUIDLow()); //state 41 melee
             player->PlayerTalkClass->ClearMenus();
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, "|cffff0000[ === Метательное оружие === ]|h|r", GOSSIP_SENDER_MAIN, 105);
+            //player->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, "|cffff0000[ === Метательное оружие === ]|h|r", GOSSIP_SENDER_MAIN, 105);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "|cffff0000[ Оружие, маунты, и медальон ]|h|r", GOSSIP_SENDER_MAIN, 63);
             player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
             break;
         case 56: //books
@@ -1202,8 +1282,26 @@ public:
             }
             player->SaveToDB();
             CharacterDatabase.PExecute("REPLACE INTO `char_transfers` (guid,state) VALUES (%u,50);", player->GetGUIDLow()); //state 50
-            player->CLOSE_GOSSIP_MENU();
-            creature->MonsterWhisper("|cffff0000Выберите 2 профессии...|h|r", player, false);
+            //player->CLOSE_GOSSIP_MENU();
+            player->PlayerTalkClass->ClearMenus();
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, "[ == Выберите 2 профессии == ]", GOSSIP_SENDER_MAIN, 99);
+            if (!PlayerAlreadyHasNineProfessions(player))
+            {
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, MSG_GOSSIP_TEXT_ALCHEMY, GOSSIP_SENDER_MAIN, 110);
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, MSG_GOSSIP_TEXT_BLACKSMITHING, GOSSIP_SENDER_MAIN, 111);
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, MSG_GOSSIP_TEXT_ENCNANTING, GOSSIP_SENDER_MAIN, 112);
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, MSG_GOSSIP_TEXT_ENGINEERING, GOSSIP_SENDER_MAIN, 113);
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, MSG_GOSSIP_TEXT_HERBALISM, GOSSIP_SENDER_MAIN, 114);
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, MSG_GOSSIP_TEXT_INSCRIPTION, GOSSIP_SENDER_MAIN, 115);
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, MSG_GOSSIP_TEXT_JEWELCRAFTING, GOSSIP_SENDER_MAIN, 116);
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, MSG_GOSSIP_TEXT_LEATHERWORKING, GOSSIP_SENDER_MAIN, 117);
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, MSG_GOSSIP_TEXT_MINING, GOSSIP_SENDER_MAIN, 118);
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, MSG_GOSSIP_TEXT_SKINNING, GOSSIP_SENDER_MAIN, 119);
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, MSG_GOSSIP_TEXT_TAILORING, GOSSIP_SENDER_MAIN, 120);
+            }
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, MSG_GOSSIP_READY, GOSSIP_SENDER_MAIN, 121);
+            player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
+            creature->MonsterWhisper("|cFF00FFFFТЕПЕРЬ ВЫБЕРИТЕ 2 ПРОФЕССИИ!|h|r", player, false);
             break;
         case 100: //backs
             player->PlayerTalkClass->ClearMenus();
@@ -1222,6 +1320,7 @@ public:
                 player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
                 break;
             case CLASS_WARRIOR:
+            case CLASS_DEATH_KNIGHT:
             case CLASS_HUNTER:
             case CLASS_ROGUE: //crit,hit
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, "|cffff0000[ === Плащи для физ. дд === ]|h|r", GOSSIP_SENDER_MAIN, 99);
@@ -1263,6 +1362,7 @@ public:
                 player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
                 break;
             case CLASS_WARRIOR:
+            case CLASS_DEATH_KNIGHT:
             case CLASS_HUNTER:
             case CLASS_ROGUE: //arp,crit,hit
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, "|cffff0000[ === Подвески для физ. дд === ]|h|r", GOSSIP_SENDER_MAIN, 99);
@@ -1334,58 +1434,47 @@ public:
                 break;
             }
             break;
-        case 105:
-            player->PlayerTalkClass->ClearMenus();
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, "|cffff0000[ === Метательное оружие === ]|h|r", GOSSIP_SENDER_MAIN, 99);
-            if ((player->getClass() == CLASS_WARRIOR) || (player->getClass() == CLASS_ROGUE))
+            /*case 105: thrown weapon case
+                player->PlayerTalkClass->ClearMenus();
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, "|cffff0000[ === Метательное оружие === ]|h|r", GOSSIP_SENDER_MAIN, 99);
+                if ((player->getClass() == CLASS_WARRIOR) || (player->getClass() == CLASS_ROGUE))
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "[ Багровая звезда ]", GOSSIP_SENDER_MAIN, 62);
-            else
+                else
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "[ Я такое не ношу, дальше...]", GOSSIP_SENDER_MAIN, 62);
-            player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
-            break;
+                player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
+                break;*/
         case 110:
             LearnProfession(player, creature, SKILL_ALCHEMY);
-            player->CLOSE_GOSSIP_MENU();
             break;
         case 111:
             LearnProfession(player, creature, SKILL_BLACKSMITHING);
-            player->CLOSE_GOSSIP_MENU();
             break;
         case 112:
             LearnProfession(player, creature, SKILL_ENCHANTING);
-            player->CLOSE_GOSSIP_MENU();
             break;
         case 113:
             LearnProfession(player, creature, SKILL_ENGINEERING);
-            player->CLOSE_GOSSIP_MENU();
             break;
         case 114:
             LearnProfession(player, creature, SKILL_HERBALISM);
-            player->CLOSE_GOSSIP_MENU();
             break;
         case 115:
             LearnProfession(player, creature, SKILL_INSCRIPTION);
-            player->CLOSE_GOSSIP_MENU();
             break;
         case 116:
             LearnProfession(player, creature, SKILL_JEWELCRAFTING);
-            player->CLOSE_GOSSIP_MENU();
             break;
         case 117:
             LearnProfession(player, creature, SKILL_LEATHERWORKING);
-            player->CLOSE_GOSSIP_MENU();
             break;
         case 118:
             LearnProfession(player, creature, SKILL_MINING);
-            player->CLOSE_GOSSIP_MENU();
             break;
         case 119:
             LearnProfession(player, creature, SKILL_SKINNING);
-            player->CLOSE_GOSSIP_MENU();
             break;
         case 120:
             LearnProfession(player, creature, SKILL_TAILORING);
-            player->CLOSE_GOSSIP_MENU();
             break;
         case 121:
             player->SaveToDB();
@@ -1395,8 +1484,13 @@ public:
             player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
             break;
         case 122:
+            creature->MonsterWhisper("|cFF00FFFFПеренос успешно завершен, приятной игры, пока!|h|r", player, false);
             CharacterDatabase.PExecute("REPLACE INTO `char_transfers` (guid,state) VALUES (%u,60);", player->GetGUIDLow());
-            player->TeleportTo(tele->mapId, tele->position_x, tele->position_y, tele->position_z, tele->orientation);
+            player->CLOSE_GOSSIP_MENU();
+            player->TeleportTo(571, 5804.15f, 624.771f, 647.767f, 1.64f);
+            str = "|cFF00FFFF[|cFF60FF00" + std::string(player->GetName().c_str()) + "|cFF00FFFF] Перенос завершен!";
+            data << str;
+            sWorld->SendGlobalGMMessage(&data);
             break;
         case 123:
             player->PlayerTalkClass->ClearMenus();
@@ -1439,6 +1533,10 @@ public:
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "[Оффсет разбойника]", GOSSIP_SENDER_MAIN, 31);
                 player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
                 break;
+            case CLASS_DEATH_KNIGHT:
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "[Оффсет на ДК]", GOSSIP_SENDER_MAIN, 23);
+                player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
+                break;
             default:
                 break;
             }
@@ -1446,7 +1544,7 @@ public:
         case 124:
             player->PlayerTalkClass->ClearMenus();
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, "|cFF0000CD[ Информация о переносе ]|h|r", GOSSIP_SENDER_MAIN, 99);
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Перенос персонажа с другого сервера.\n|cFF8B0000При этом вы получите:\n - Персонажа 80 уровня,\n - А6 сет + 264 + 245 пвп оффсеты,\n - 30 000 голдов + 375 Эмблем Триумфа,\n - 2 профессии на выбор,[450-450]\n - 100% и 280% маунта,\n - Кельдалар (264 кинжалы для разбойников и 264 ПВЕ лук для охотников),\n - 270 ПВП оффхенды или щиты для кастеров.|h|r\nПеренос выполняется по предварительной заявке на форуме |cFF0000CD[forum.playground.uz]|h|rТам же вы получите ответы на интересующие вас вопросы касательно переноса персонажей с других серверов.", GOSSIP_SENDER_MAIN, 125);
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Перенос персонажа с другого сервера.\n|cFF8B0000При этом вы получите:\n - Персонажа 80 уровня,\n - А6 сет + 264 + 245 пвп оффсеты,\n - 30 000 голдов + 375 Эмблем Триумфа,\n - 2 профессии на выбор,[450-450]\n - 100% и 280% маунта,\n - Кельдалар (251 кинжалы для разбойников и 251 ПВЕ лук для охотников),\n - 270 ПВП оффхенды или щиты для кастеров.|h|r\nПеренос выполняется по предварительной заявке на форуме |cFF0000CD[forum.playground.uz]|h|rТам же вы получите ответы на интересующие вас вопросы касательно переноса персонажей с других серверов.", GOSSIP_SENDER_MAIN, 125);
             player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
             break;
         case 125:
@@ -1454,8 +1552,15 @@ public:
             OnGossipHello(player, creature);
             break;
         case 126:
-            player->PlayerTalkClass->ClearMenus();
             player->CLOSE_GOSSIP_MENU();
+            break;
+        case 130:
+            GiveSet(player, 15); //give dk set
+            player->SaveToDB();
+            CharacterDatabase.PExecute("REPLACE INTO `char_transfers` (guid,state) VALUES (%u,10);", player->GetGUIDLow());
+            player->PlayerTalkClass->ClearMenus();
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "[Оффсет на ДК]", GOSSIP_SENDER_MAIN, 23);
+            player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
             break;
         default:
             break;
