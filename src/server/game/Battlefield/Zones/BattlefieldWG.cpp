@@ -301,7 +301,7 @@ void BattlefieldWG::OnBattleEnd(bool endByTimer)
     if (m_titansRelicGUID)
         if (GameObject* relic = GetGameObject(m_titansRelicGUID))
             relic->RemoveFromWorld();
-    m_titansRelicGUID = 0;
+    m_titansRelicGUID.Clear();
 
     // Remove turret
     for (GuidSet::const_iterator itr = CanonList.begin(); itr != CanonList.end(); ++itr)
@@ -1073,7 +1073,6 @@ BfWGGameObjectBuilding::BfWGGameObjectBuilding(BattlefieldWG* wg)
 {
     m_WG = wg;
     m_Team = 0;
-    m_BuildGUID = 0;
     m_Type = 0;
     m_WorldState = 0;
     m_State = 0;
@@ -1127,11 +1126,11 @@ void BfWGGameObjectBuilding::Damaged()
     if (m_NameId)                                       // tower damage + name
         m_WG->SendWarningToAllInZone(m_NameId);
 
-    for (uint64 guid : m_CreatureTopList[m_WG->GetAttackerTeam()])
+    for (ObjectGuid guid : m_CreatureTopList[m_WG->GetAttackerTeam()])
         if (Creature* creature = m_WG->GetCreature(guid))
             m_WG->HideNpc(creature);
 
-    for (uint64 guid : m_TurretTopList)
+    for (ObjectGuid guid : m_TurretTopList)
         if (Creature* creature = m_WG->GetCreature(guid))
             m_WG->HideNpc(creature);
 
@@ -1339,34 +1338,34 @@ void BfWGGameObjectBuilding::Init(GameObject* go, uint32 type, uint32 worldstate
 
 void BfWGGameObjectBuilding::UpdateCreatureAndGo()
 {
-    for (uint64 guid : m_CreatureTopList[m_WG->GetDefenderTeam()])
+    for (ObjectGuid guid : m_CreatureTopList[m_WG->GetDefenderTeam()])
         if (Creature* creature = m_WG->GetCreature(guid))
             m_WG->HideNpc(creature);
 
-    for (uint64 guid : m_CreatureTopList[m_WG->GetAttackerTeam()])
+    for (ObjectGuid guid : m_CreatureTopList[m_WG->GetAttackerTeam()])
         if (Creature* creature = m_WG->GetCreature(guid))
             m_WG->ShowNpc(creature, true);
 
-    for (uint64 guid : m_CreatureBottomList[m_WG->GetDefenderTeam()])
+    for (ObjectGuid guid : m_CreatureBottomList[m_WG->GetDefenderTeam()])
         if (Creature* creature = m_WG->GetCreature(guid))
             m_WG->HideNpc(creature);
 
-    for (uint64 guid : m_CreatureBottomList[m_WG->GetAttackerTeam()])
+    for (ObjectGuid guid : m_CreatureBottomList[m_WG->GetAttackerTeam()])
         if (Creature* creature = m_WG->GetCreature(guid))
             m_WG->ShowNpc(creature, true);
 
-    for (uint64 guid : m_GameObjectList[m_WG->GetDefenderTeam()])
+    for (ObjectGuid guid : m_GameObjectList[m_WG->GetDefenderTeam()])
         if (GameObject* object = m_WG->GetGameObject(guid))
             object->SetRespawnTime(RESPAWN_ONE_DAY);
 
-    for (uint64 guid : m_GameObjectList[m_WG->GetAttackerTeam()])
+    for (ObjectGuid guid : m_GameObjectList[m_WG->GetAttackerTeam()])
         if (GameObject* object = m_WG->GetGameObject(guid))
             object->SetRespawnTime(RESPAWN_IMMEDIATELY);
 }
 
 void BfWGGameObjectBuilding::UpdateTurretAttack(bool disable)
 {
-    for (uint64 guid : m_TowerCannonBottomList)
+    for (ObjectGuid guid : m_TowerCannonBottomList)
     {
         if (Creature* creature = m_WG->GetCreature(guid))
         {
@@ -1399,7 +1398,7 @@ void BfWGGameObjectBuilding::UpdateTurretAttack(bool disable)
         }
     }
 
-    for (uint64 guid : m_TurretTopList)
+    for (ObjectGuid guid : m_TurretTopList)
     {
         if (Creature* creature = m_WG->GetCreature(guid))
         {
@@ -1500,7 +1499,6 @@ void WGWorkshop::Save()
 WintergraspWorkshopData::WintergraspWorkshopData(BattlefieldWG* wg)
 {
     m_WG = wg;
-    m_BuildGUID = 0;
     m_Type = 0;
     m_State = 0;
     m_WorldState = 0;
@@ -1546,22 +1544,22 @@ void WintergraspWorkshopData::GiveControlTo(uint8 team, bool init)
         case BATTLEFIELD_WG_TEAM_ALLIANCE:
         {
             // Show Alliance creature
-            for (uint64 guid : m_CreatureOnPoint[TEAM_ALLIANCE])
+            for (ObjectGuid guid : m_CreatureOnPoint[TEAM_ALLIANCE])
                 if (Creature* creature = m_WG->GetCreature(guid))
                     m_WG->ShowNpc(creature, creature->GetEntry() != 30499);
 
             // Hide Horde creature
-            for (uint64 guid : m_CreatureOnPoint[TEAM_HORDE])
+            for (ObjectGuid guid : m_CreatureOnPoint[TEAM_HORDE])
                 if (Creature* creature = m_WG->GetCreature(guid))
                     m_WG->HideNpc(creature);
 
             // Show Alliance gameobject
-            for (uint64 guid : m_GameObjectOnPoint[TEAM_ALLIANCE])
+            for (ObjectGuid guid : m_GameObjectOnPoint[TEAM_ALLIANCE])
                 if (GameObject* object = m_WG->GetGameObject(guid))
                     object->SetRespawnTime(RESPAWN_IMMEDIATELY);
 
             // Hide Horde gameobject
-            for (uint64 guid : m_GameObjectOnPoint[TEAM_HORDE])
+            for (ObjectGuid guid : m_GameObjectOnPoint[TEAM_HORDE])
                 if (GameObject* object = m_WG->GetGameObject(guid))
                     object->SetRespawnTime(RESPAWN_ONE_DAY);
 
@@ -1585,22 +1583,22 @@ void WintergraspWorkshopData::GiveControlTo(uint8 team, bool init)
         case BATTLEFIELD_WG_TEAM_HORDE:
         {
             // Show Horde creature
-            for (uint64 guid : m_CreatureOnPoint[TEAM_HORDE])
+            for (ObjectGuid guid : m_CreatureOnPoint[TEAM_HORDE])
                 if (Creature* creature = m_WG->GetCreature(guid))
                     m_WG->ShowNpc(creature, creature->GetEntry() != 30400);
 
             // Hide Alliance creature
-            for (uint64 guid : m_CreatureOnPoint[TEAM_ALLIANCE])
+            for (ObjectGuid guid : m_CreatureOnPoint[TEAM_ALLIANCE])
                 if (Creature* creature = m_WG->GetCreature(guid))
                     m_WG->HideNpc(creature);
 
             // Hide Alliance gameobject
-            for (uint64 guid : m_GameObjectOnPoint[TEAM_ALLIANCE])
+            for (ObjectGuid guid : m_GameObjectOnPoint[TEAM_ALLIANCE])
                 if (GameObject* object = m_WG->GetGameObject(guid))
                     object->SetRespawnTime(RESPAWN_ONE_DAY);
 
             // Show Horde gameobject
-            for (uint64 guid : m_GameObjectOnPoint[TEAM_HORDE])
+            for (ObjectGuid guid : m_GameObjectOnPoint[TEAM_HORDE])
                 if (GameObject* object = m_WG->GetGameObject(guid))
                     object->SetRespawnTime(RESPAWN_IMMEDIATELY);
 
