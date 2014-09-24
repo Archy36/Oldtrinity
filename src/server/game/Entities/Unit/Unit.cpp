@@ -3345,7 +3345,7 @@ void Unit::_AddAura(UnitAura* aura, Unit* caster)
     if (aura->IsSingleTarget())
     {
         ASSERT((IsInWorld() && !IsDuringRemoveFromWorld()) || (aura->GetCasterGUID() == GetGUID()) ||
-                (isBeingLoaded() && aura->HasEffectType(SPELL_AURA_CONTROL_VEHICLE)));
+                (IsLoading() && aura->HasEffectType(SPELL_AURA_CONTROL_VEHICLE)));
                 /* @HACK: Player is not in world during loading auras.
                  *        Single target auras are not saved or loaded from database
                  *        but may be created as a result of aura links (player mounts with passengers)
@@ -7681,7 +7681,7 @@ bool Unit::HandleAuraProc(Unit* victim, uint32 damage, Aura* triggeredByAura, Sp
                                 player->GetBaseRune(i) != RUNE_BLOOD)
                                 continue;
                         }
-                        if (player->GetRuneCooldown(i) != player->GetRuneBaseCooldown(i))
+                        if (player->GetRuneCooldown(i) != (player->GetRuneBaseCooldown(i) - player->GetLastRuneGraceTimer(i)))
                             continue;
 
                         --runesLeft;
@@ -11844,6 +11844,16 @@ void Unit::ClearInCombat()
 {
     m_CombatTimer = 0;
     RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IN_COMBAT);
+
+    // Reset rune flags after combat
+    if (GetTypeId() == TYPEID_PLAYER && getClass() == CLASS_DEATH_KNIGHT)
+    {
+        for (uint8 i = 0; i < MAX_RUNES; ++i)
+        {
+            ToPlayer()->SetRuneTimer(i, 0xFFFFFFFF);
+            ToPlayer()->SetLastRuneGraceTimer(i, 0);
+        }
+    }
 
     // Player's state will be cleared in Player::UpdateContestedPvP
     if (Creature* creature = ToCreature())

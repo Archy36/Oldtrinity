@@ -133,7 +133,6 @@ Battleground::Battleground()
     m_IsRated           = false;
     m_BuffChange        = false;
     m_IsRandom          = false;
-    m_Name              = "";
     m_LevelMin          = 0;
     m_LevelMax          = 0;
     m_InBGFreeSlotQueue = false;
@@ -622,7 +621,7 @@ void Battleground::SendPacketToTeam(uint32 TeamID, WorldPacket* packet, Player* 
 
 void Battleground::SendChatMessage(Creature* source, uint8 textId, WorldObject* target /*= NULL*/)
 {
-    sCreatureTextMgr->SendChat(source, textId, target, CHAT_MSG_ADDON, LANG_ADDON, TEXT_RANGE_MAP);
+    sCreatureTextMgr->SendChat(source, textId, target);
 }
 
 void Battleground::PlaySoundToAll(uint32 SoundID)

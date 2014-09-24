@@ -1529,7 +1529,7 @@ class Player : public Unit, public GridObject<Player>
         /*********************************************************/
 
         bool LoadFromDB(ObjectGuid guid, SQLQueryHolder *holder);
-        bool isBeingLoaded() const override;
+        bool IsLoading() const override;
 
         void Initialize(uint32 guid);
         static uint32 GetUInt32ValueFromArray(Tokenizer const& data, uint16 index);
@@ -1870,6 +1870,10 @@ class Player : public Unit, public GridObject<Player>
         void ApplyHealthRegenBonus(int32 amount, bool apply);
         void UpdateManaRegen();
         void UpdateRuneRegen(RuneType rune);
+        uint32 GetRuneTimer(uint8 index) const { return m_runeGraceCooldown[index]; }
+        void SetRuneTimer(uint8 index, uint32 timer) { m_runeGraceCooldown[index] = timer; }
+        uint32 GetLastRuneGraceTimer(uint8 index) const { return m_lastRuneGraceTimers[index]; }
+        void SetLastRuneGraceTimer(uint8 index, uint32 timer) { m_lastRuneGraceTimers[index] = timer; }
 
         ObjectGuid GetLootGUID() const { return m_lootGuid; }
         void SetLootGUID(ObjectGuid guid) { m_lootGuid = guid; }
@@ -2327,7 +2331,7 @@ class Player : public Unit, public GridObject<Player>
         void SetLastUsedRune(RuneType type) { m_runes->lastUsedRune = type; }
         void SetBaseRune(uint8 index, RuneType baseRune) { m_runes->runes[index].BaseRune = baseRune; }
         void SetCurrentRune(uint8 index, RuneType currentRune) { m_runes->runes[index].CurrentRune = currentRune; }
-        void SetRuneCooldown(uint8 index, uint32 cooldown);
+        void SetRuneCooldown(uint8 index, uint32 cooldown, bool casted = false);
         void SetRuneConvertAura(uint8 index, AuraEffect const* aura);
         void AddRuneByAuraEffect(uint8 index, RuneType newType, AuraEffect const* aura);
         void RemoveRunesByAuraEffect(AuraEffect const* aura);
@@ -2380,7 +2384,6 @@ class Player : public Unit, public GridObject<Player>
         std::string GetMapAreaAndZoneString();
         std::string GetCoordsMapAreaAndZoneString();
 
-        bool IsLoading() const;
         
         TransmogMapType transmogMap; // transmogMap[iGUID] = entry
 #ifdef PRESETS
@@ -2683,6 +2686,10 @@ class Player : public Unit, public GridObject<Player>
         uint8 m_MirrorTimerFlags;
         uint8 m_MirrorTimerFlagsLast;
         bool m_isInWater;
+
+        // Rune type / Rune timer
+        uint32 m_runeGraceCooldown[MAX_RUNES];
+        uint32 m_lastRuneGraceTimers[MAX_RUNES];
 
         // Current teleport data
         WorldLocation m_teleport_dest;
