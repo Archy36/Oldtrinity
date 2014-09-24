@@ -19,7 +19,7 @@ class arena_spectator_commands : public CommandScript
         static bool HandleSpectateCommand(ChatHandler* handler, char const* args)
         {
             Player* target;
-            uint64 target_guid;
+            ObjectGuid target_guid;
             std::string target_name;
             if (!handler->extractPlayerTarget((char*)args, &target, &target_guid, &target_name))
                 return false;
@@ -186,7 +186,7 @@ class arena_spectator_commands : public CommandScript
         static bool HandleSpectateFromCommand(ChatHandler* handler, const char *args)
         {
             Player* target;
-            uint64 target_guid;
+            ObjectGuid target_guid;
             std::string target_name;
             if (!handler->extractPlayerTarget((char*)args, &target, &target_guid, &target_name))
                 return false;

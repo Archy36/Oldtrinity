@@ -98,7 +98,7 @@ public:
                         creature->setFaction(FACTION_HOSTILE_CORE);
                         creature->SetInCombatWithZone();
                     }
-                    _add[i] = 0;
+                    _add[i] = ObjectGuid::Empty;
                 }
             }
         }
@@ -190,7 +190,7 @@ public:
 
     private:
         SummonList _summons;
-        uint64 _add[3];
+        ObjectGuid _add[3];
         uint32 _addTimer;
         uint32 _disarmTimer;
         bool _spawnedIlsa;

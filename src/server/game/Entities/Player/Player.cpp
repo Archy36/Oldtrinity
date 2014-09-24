@@ -1924,7 +1924,7 @@ void Player::setDeathState(DeathState s)
         SetUInt32Value(PLAYER_SELF_RES_SPELL, 0);
 }
 
-void Player::SetSelection(uint64 guid)
+void Player::SetSelection(ObjectGuid guid)
 {
     SetUInt64Value(UNIT_FIELD_TARGET, guid);
     if (Player *target = ObjectAccessor::FindPlayer(guid))
@@ -7311,7 +7311,7 @@ bool Player::RewardHonor(Unit* victim, uint32 groupsize, int32 honor, bool pvpto
                 else if (victim_title < 29)
                 victim_rank = victim_title - 14 + 4;
                 else
-                victim_guid.Clear();                     // Don't show HK: <rank> message, only log.
+                victim_guid.Clear();                     // Don't show HK: <rank> message, only log.*/
 
             // PLAYER__FIELD_KNOWN_TITLES describe which titles player can use,
             // so we must find biggest pvp title , even for killer to find extra honor value
@@ -7342,7 +7342,7 @@ bool Player::RewardHonor(Unit* victim, uint32 groupsize, int32 honor, bool pvpto
             //  title[15..28] -> rank[5..18]
             //  title[other]  -> 0
             if (victim_title == 0)
-                victim_guid = 0;                        // Don't show HK: <rank> message, only log.
+                victim_guid = ObjectGuid::Empty;                        // Don't show HK: <rank> message, only log.
             else if (victim_title < HKRANKMAX)
                 victim_rank = victim_title + 4;
             else if (victim_title < (2 * HKRANKMAX - 1))
@@ -26427,7 +26427,7 @@ void Player::ActivateSpec(uint8 spec)
             if (_spellEntry->Effects[i].TriggerSpell > 0 && (_spellEntry->Effects[i].Effect == SPELL_EFFECT_LEARN_SPELL || _spellEntry->Effects[i].Effect == SPELL_EFFECT_TRIGGER_SPELL))
             {
                 RemoveSpell(_spellEntry->Effects[i].TriggerSpell, true); // and remove any spells that the talent teaches
-                RemoveAurasDueToSpell(_spellEntry->Effects[i].TriggerSpell, true);
+                RemoveAurasDueToSpell(_spellEntry->Effects[i].TriggerSpell, ObjectGuid::Empty, true);
             }
             // if this talent rank can be found in the PlayerTalentMap, mark the talent as removed so it gets deleted
             //PlayerTalentMap::iterator plrTalent = m_talents[m_activeSpec]->find(talentInfo->RankID[rank]);

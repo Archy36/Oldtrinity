@@ -13,6 +13,8 @@ public:
     uint32 kills = 1;
     void OnPVPKill(Player* killer, Player* killed)
     {
+        if (killer == killed)
+            return;
         if (Battleground *bg = killer->GetBattleground())
         {
             if (bg->isArena())

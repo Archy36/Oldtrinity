@@ -16,7 +16,7 @@ public:
     static bool HandleSetTransferCommand(ChatHandler* handler, char const* args)
     {
         Player* target;
-        uint64 target_guid;
+        ObjectGuid target_guid;
         std::string target_name;
         if (!handler->extractPlayerTarget((char*)args, &target, &target_guid, &target_name))
             return false;
@@ -80,7 +80,7 @@ public:
     {
         Player* target;
         Player* player = handler->GetSession()->GetPlayer();
-        uint64 target_guid;
+        ObjectGuid target_guid;
         std::string target_name;
         if (!handler->extractPlayerTarget((char*)args, &target, &target_guid, &target_name))
             return false;
@@ -115,7 +115,7 @@ public:
     static bool HandleTransferCancelCommand(ChatHandler* handler, char const* args)
     {
         Player* target;
-        uint64 target_guid;
+        ObjectGuid target_guid;
         std::string target_name;
         Player* player = handler->GetSession()->GetPlayer();
         if (!handler->extractPlayerTarget((char*)args, &target, &target_guid, &target_name))

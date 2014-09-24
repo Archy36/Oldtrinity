@@ -742,9 +742,9 @@ class npc_halion_controller : public CreatureScript
                         case EVENT_TWILIGHT_MENDING:
                             if (ObjectAccessor::GetCreature(*me, _instance->GetGuidData(DATA_HALION))) // Just check if physical Halion is spawned
                             {
-                                if (Creature* twilightHalion = ObjectAccessor::GetCreature(*me, _instance->GetData64(DATA_TWILIGHT_HALION)))
+                                if (Creature* twilightHalion = ObjectAccessor::GetCreature(*me, _instance->GetGuidData(DATA_TWILIGHT_HALION)))
                                     twilightHalion->CastSpell((Unit*)NULL, SPELL_TWILIGHT_MENDING, true);
-                                if (Creature* physicalHalion = ObjectAccessor::GetCreature(*me, _instance->GetData64(DATA_HALION)))
+                                if (Creature* physicalHalion = ObjectAccessor::GetCreature(*me, _instance->GetGuidData(DATA_HALION)))
                                     physicalHalion->CastSpell((Unit*)NULL, SPELL_TWILIGHT_MENDING, true);
                             }
                             break;

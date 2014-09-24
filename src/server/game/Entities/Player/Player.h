@@ -1586,7 +1586,7 @@ class Player : public Unit, public GridObject<Player>
         Player* GetSelectedPlayer() const;
 
         void SetTarget(ObjectGuid /*guid*/) override { } /// Used for serverside target changes, does not apply to players
-        void SetSelection(uint64 guid);
+        void SetSelection(ObjectGuid guid);
 
         uint8 GetComboPoints() const { return m_comboPoints; }
         ObjectGuid GetComboTarget() const { return m_comboTarget; }

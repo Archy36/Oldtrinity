@@ -181,7 +181,7 @@ public:
         {
             Initialize();
 
-            if (me->GetMapId() == 469)
+            if (me->GetMapId() == 469 && !(instance->GetBossState(BOSS_NEFARIAN) == DONE))
             {
                 if (!me->FindNearestCreature(NPC_NEFARIAN, 1000.0f, true))
                     _Reset();
@@ -432,6 +432,7 @@ public:
         {
             _JustDied();
             Talk(SAY_DEATH);
+            instance->SetBossState(BOSS_NEFARIAN, DONE);
         }
 
         void KilledUnit(Unit* victim) override

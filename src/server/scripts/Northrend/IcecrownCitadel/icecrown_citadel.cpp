@@ -2381,7 +2381,7 @@ class at_icc_start_sindragosa_gauntlet : public AreaTriggerScript
         bool OnTrigger(Player* player, AreaTriggerEntry const* /*areaTrigger*/)
         {
             if (InstanceScript* instance = player->GetInstanceScript())
-                if (Creature* ward = ObjectAccessor::GetCreature(*player, instance->GetData64(DATA_SINDRAGOSA_GAUNTLET)))
+                if (Creature* ward = ObjectAccessor::GetCreature(*player, instance->GetGuidData(DATA_SINDRAGOSA_GAUNTLET)))
                     ward->AI()->DoAction(ACTION_START_GAUNTLET);
             return true;
         }

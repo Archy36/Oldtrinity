@@ -4974,7 +4974,7 @@ void AuraEffect::HandleAuraDummy(AuraApplication const* aurApp, uint8 mode, bool
 						player->setDeathState(GHOULED);
 						player->RemoveAllAurasOnDeath();
 						WorldPacket data(SMSG_PRE_RESURRECT, player->GetPackGUID().size());
-						data.append(player->GetPackGUID());
+						data << (player->GetPackGUID());
 						player->GetSession()->SendPacket(&data);
 						player->StopMirrorTimers();
 						player->SetFloatValue(UNIT_FIELD_BOUNDINGRADIUS, float(1.0f));

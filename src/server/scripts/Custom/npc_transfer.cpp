@@ -354,12 +354,12 @@ public:
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, MSG_GOSSIP_READY, GOSSIP_SENDER_MAIN, 121);
                 player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
                 CharacterDatabase.PExecute("REPLACE INTO `char_transfers` (guid,state) VALUES (%u,53);", player->GetGUIDLow()); //one prof choosed
-                creature->MonsterWhisper("|cFF00FFFFВЫБЕРИТЕ ЕЩЁ ОДНУ ПРОФЕССИЮ!|h|r", player, false);
+                creature->Whisper("|cFF00FFFFВЫБЕРИТЕ ЕЩЁ ОДНУ ПРОФЕССИЮ!|h|r", LANG_UNIVERSAL, player, false);
             }
         }
         else
         {
-            creature->MonsterWhisper("Ошибка. Вы уже выбрали 2 профессии, жмите Готово!", player, false);
+            creature->Whisper("Ошибка. Вы уже выбрали 2 профессии, жмите Готово!", LANG_UNIVERSAL, player, false);
         }
         return true;
     }
@@ -611,7 +611,7 @@ public:
                 break;
             case 60: //last
                 player->CLOSE_GOSSIP_MENU();
-                creature->MonsterWhisper("Вас уже перенесли, приятной игры!", player, false);
+                creature->Whisper("Вас уже перенесли, приятной игры!", LANG_UNIVERSAL, player, false);
                 break;
             default:
                 break;
@@ -648,7 +648,7 @@ public:
             }
             else
             {
-                creature->MonsterWhisper("|cFF00FFFFЧТОБЫ ПРОДОЛЖИТЬ ПЕРЕНОС ОДЕНЬТЕ СУМКУ!|h|r", player, false);
+                creature->Whisper("|cFF00FFFFЧТОБЫ ПРОДОЛЖИТЬ ПЕРЕНОС ОДЕНЬТЕ СУМКУ!|h|r", LANG_UNIVERSAL, player, false);
                 player->CLOSE_GOSSIP_MENU();
             }
             break;
@@ -1301,7 +1301,7 @@ public:
             }
             player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, MSG_GOSSIP_READY, GOSSIP_SENDER_MAIN, 121);
             player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
-            creature->MonsterWhisper("|cFF00FFFFТЕПЕРЬ ВЫБЕРИТЕ 2 ПРОФЕССИИ!|h|r", player, false);
+            creature->Whisper("|cFF00FFFFТЕПЕРЬ ВЫБЕРИТЕ 2 ПРОФЕССИИ!|h|r", LANG_UNIVERSAL, player, false);
             break;
         case 100: //backs
             player->PlayerTalkClass->ClearMenus();
@@ -1484,7 +1484,7 @@ public:
             player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
             break;
         case 122:
-            creature->MonsterWhisper("|cFF00FFFFПеренос успешно завершен, приятной игры, пока!|h|r", player, false);
+            creature->Whisper("|cFF00FFFFПеренос успешно завершен, приятной игры, пока!|h|r", LANG_UNIVERSAL, player, false);
             CharacterDatabase.PExecute("REPLACE INTO `char_transfers` (guid,state) VALUES (%u,60);", player->GetGUIDLow());
             player->CLOSE_GOSSIP_MENU();
             player->TeleportTo(571, 5804.15f, 624.771f, 647.767f, 1.64f);

@@ -126,13 +126,13 @@ public:
     void DeleteFakeEntry(Player* player, Item* item);
     void SetFakeEntry(Player* player, Item* item, uint32 entry);
 
-    TransmogTrinityStrings Transmogrify(Player* player, uint64 itemGUID, uint8 slot, bool no_cost = false);
+    TransmogTrinityStrings Transmogrify(Player* player, ObjectGuid itemGUID, uint8 slot, bool no_cost = false);
     bool CanTransmogrifyItemWithItem(Player* player, ItemTemplate const* destination, ItemTemplate const* source) const;
     bool SuitableForTransmogrification(Player* player, ItemTemplate const* proto) const;
     // bool CanBeTransmogrified(Item const* item);
     // bool CanTransmogrify(Item const* item);
     uint32 GetSpecialPrice(ItemTemplate const* proto) const;
-    std::vector<uint64> GetItemList(const Player* player) const;
+    std::vector<ObjectGuid> GetItemList(const Player* player) const;
 };
 #define sTransmogrification Transmogrification::instance()
 

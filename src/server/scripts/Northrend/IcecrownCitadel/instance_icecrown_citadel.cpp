@@ -129,7 +129,7 @@ class instance_icecrown_citadel : public InstanceMapScript
                 UpperSpireTeleporterActiveState = NOT_STARTED;
                 BloodQuickeningState = NOT_STARTED;
                 BloodQuickeningMinutes = 0;
-				SindragosasWardGUID = 0;
+                SindragosasWardGUID = ObjectGuid::Empty;
             }
 
             // A function to help reduce the number of lines for teleporter management.
@@ -1496,7 +1496,7 @@ class instance_icecrown_citadel : public InstanceMapScript
             bool IsOozeDanceEligible;
             bool IsNauseaEligible;
             bool IsOrbWhispererEligible;
-			uint64 SindragosasWardGUID;
+			ObjectGuid SindragosasWardGUID;
         };
 
         InstanceScript* GetInstanceScript(InstanceMap* map) const override

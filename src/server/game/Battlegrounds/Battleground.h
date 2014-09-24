@@ -300,9 +300,9 @@ class Battleground
         bool HasFreeSlots() const;
         uint32 GetFreeSlotsForTeam(uint32 Team) const;
 		
-		typedef std::set<uint32> SpectatorList;
-        void AddSpectator(uint32 playerId) { m_Spectators.insert(playerId); }
-        void RemoveSpectator(uint32 playerId) { m_Spectators.erase(playerId); }
+        typedef std::set<ObjectGuid> SpectatorList;
+        void AddSpectator(ObjectGuid playerId) { m_Spectators.insert(playerId); }
+        void RemoveSpectator(ObjectGuid playerId) { m_Spectators.erase(playerId); }
         bool HaveSpectators() { return (m_Spectators.size() > 0); }
         void SendSpectateAddonsMsg(SpectatorAddonMsg msg);
 		

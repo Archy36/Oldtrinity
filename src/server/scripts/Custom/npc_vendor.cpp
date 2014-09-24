@@ -107,7 +107,7 @@ public:
                         std::string str;
                         str = (player->GetName() + MSG_ADV);
                         const char* c = str.c_str();
-                        me->MonsterWhisper(c, player);
+                        me->Whisper(c, player);
                         timer = urand(30000, 40000);
                     }
                 }
@@ -117,19 +117,19 @@ public:
                     if (Player* player = me->SelectNearestPlayer(30.0f))
                     {
                         me->HandleEmoteCommand(ANIM_STAND);
-                        me->MonsterSay(MSG_ADVA, LANG_UNIVERSAL, player);
+                        me->Say(MSG_ADVA, LANG_UNIVERSAL);
                         Reset();
                     }
                     else
                     {
                         if (urand(1, 2) == 1)
                         {
-                            me->MonsterYell(MSG_ADVB, LANG_UNIVERSAL, player);
+                            me->Yell(MSG_ADVB, LANG_UNIVERSAL);
                         }
                         else
                         {
                             me->SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_DANCE);
-                            me->MonsterYell(MSG_ADVC, LANG_UNIVERSAL, player);
+                            me->Yell(MSG_ADVC, LANG_UNIVERSAL);
                         }
                         Reset();
                     }
@@ -216,19 +216,19 @@ public:
                         player->ModifyArenaPoints(-AP);
                         player->DestroyItemCount(token, price, true);
                         player->AddItem(itemA, 1);
-                        creature->MonsterWhisper(MSG_THANKS, player);
+                        creature->Whisper(MSG_THANKS, LANG_UNIVERSAL, player);
                         creature->HandleEmoteCommand(ANIM_EMOTE_KISS);
                         player->CLOSE_GOSSIP_MENU();
                     }
                     else
                     {
-                        creature->MonsterWhisper(MSG_NOT_ENOUGH_MONEY, player);
+                        creature->Whisper(MSG_NOT_ENOUGH_MONEY, LANG_UNIVERSAL, player);
                         player->CLOSE_GOSSIP_MENU();
                     }
                 }
                 else
                 {
-                    creature->MonsterWhisper(MSG_BAG_ERROR, player);
+                    creature->Whisper(MSG_BAG_ERROR, LANG_UNIVERSAL, player);
                     player->CLOSE_GOSSIP_MENU();
                 }
                 break;
@@ -248,19 +248,19 @@ public:
                         player->ModifyArenaPoints(-AP);
                         player->DestroyItemCount(token, price, true);
                         player->AddItem(itemB, 1);
-                        creature->MonsterWhisper(MSG_THANKS, player);
+                        creature->Whisper(MSG_THANKS, LANG_UNIVERSAL, player);
                         creature->HandleEmoteCommand(ANIM_EMOTE_KISS);
                         player->CLOSE_GOSSIP_MENU();
                     }
                     else
                     {
-                        creature->MonsterWhisper(MSG_NOT_ENOUGH_MONEY, player);
+                        creature->Whisper(MSG_NOT_ENOUGH_MONEY, LANG_UNIVERSAL, player);
                         player->CLOSE_GOSSIP_MENU();
                     }
                 }
                 else
                 {
-                    creature->MonsterWhisper(MSG_BAG_ERROR, player);
+                    creature->Whisper(MSG_BAG_ERROR, LANG_UNIVERSAL, player);
                     player->CLOSE_GOSSIP_MENU();
                 }
                 break;
@@ -280,19 +280,19 @@ public:
                         player->ModifyArenaPoints(-AP);
                         player->DestroyItemCount(token, price, true);
                         player->AddItem(itemC, 1);
-                        creature->MonsterWhisper(MSG_THANKS, player);
+                        creature->Whisper(MSG_THANKS, LANG_UNIVERSAL, player);
                         creature->HandleEmoteCommand(ANIM_EMOTE_KISS);
                         player->CLOSE_GOSSIP_MENU();
                     }
                     else
                     {
-                        creature->MonsterWhisper(MSG_NOT_ENOUGH_MONEY, player);
+                        creature->Whisper(MSG_NOT_ENOUGH_MONEY, LANG_UNIVERSAL, player);
                         player->CLOSE_GOSSIP_MENU();
                     }
                 }
                 else
                 {
-                    creature->MonsterWhisper(MSG_BAG_ERROR, player);
+                    creature->Whisper(MSG_BAG_ERROR, LANG_UNIVERSAL, player);
                     player->CLOSE_GOSSIP_MENU();
                 }
                 break;
@@ -312,19 +312,19 @@ public:
                         player->ModifyArenaPoints(-AP);
                         player->DestroyItemCount(token, price, true);
                         player->AddItem(itemD, 1);
-                        creature->MonsterWhisper(MSG_THANKS, player);
+                        creature->Whisper(MSG_THANKS, LANG_UNIVERSAL, player);
                         creature->HandleEmoteCommand(ANIM_EMOTE_KISS);
                         player->CLOSE_GOSSIP_MENU();
                     }
                     else
                     {
-                        creature->MonsterWhisper(MSG_NOT_ENOUGH_MONEY, player);
+                        creature->Whisper(MSG_NOT_ENOUGH_MONEY, LANG_UNIVERSAL, player);
                         player->CLOSE_GOSSIP_MENU();
                     }
                 }
                 else
                 {
-                    creature->MonsterWhisper(MSG_BAG_ERROR, player);
+                    creature->Whisper(MSG_BAG_ERROR, LANG_UNIVERSAL, player);
                     player->CLOSE_GOSSIP_MENU();
                 }
                 break;
@@ -344,19 +344,19 @@ public:
                         player->ModifyArenaPoints(-AP);
                         player->DestroyItemCount(token, price, true);
                         player->AddItem(itemE, 1);
-                        creature->MonsterWhisper(MSG_THANKS, player);
+                        creature->Whisper(MSG_THANKS, LANG_UNIVERSAL, player);
                         creature->HandleEmoteCommand(ANIM_EMOTE_KISS);
                         player->CLOSE_GOSSIP_MENU();
                     }
                     else
                     {
-                        creature->MonsterWhisper(MSG_NOT_ENOUGH_MONEY, player);
+                        creature->Whisper(MSG_NOT_ENOUGH_MONEY, LANG_UNIVERSAL, player);
                         player->CLOSE_GOSSIP_MENU();
                     }
                 }
                 else
                 {
-                    creature->MonsterWhisper(MSG_BAG_ERROR, player);
+                    creature->Whisper(MSG_BAG_ERROR, LANG_UNIVERSAL, player);
                     player->CLOSE_GOSSIP_MENU();
                 }
                 break;
@@ -376,19 +376,19 @@ public:
                         player->ModifyArenaPoints(-AP);
                         player->DestroyItemCount(token, price, true);
                         player->AddItem(itemF, 1);
-                        creature->MonsterWhisper(MSG_THANKS, player);
+                        creature->Whisper(MSG_THANKS, LANG_UNIVERSAL, player);
                         creature->HandleEmoteCommand(ANIM_EMOTE_KISS);
                         player->CLOSE_GOSSIP_MENU();
                     }
                     else
                     {
-                        creature->MonsterWhisper(MSG_NOT_ENOUGH_MONEY, player);
+                        creature->Whisper(MSG_NOT_ENOUGH_MONEY, LANG_UNIVERSAL, player);
                         player->CLOSE_GOSSIP_MENU();
                     }
                 }
                 else
                 {
-                    creature->MonsterWhisper(MSG_BAG_ERROR, player);
+                    creature->Whisper(MSG_BAG_ERROR, LANG_UNIVERSAL, player);
                     player->CLOSE_GOSSIP_MENU();
                 }
                 break;
@@ -408,19 +408,19 @@ public:
                         player->ModifyArenaPoints(-AP);
                         player->DestroyItemCount(token, price, true);
                         player->AddItem(itemG, 1);
-                        creature->MonsterWhisper(MSG_THANKS, player);
+                        creature->Whisper(MSG_THANKS, LANG_UNIVERSAL, player);
                         creature->HandleEmoteCommand(ANIM_EMOTE_KISS);
                         player->CLOSE_GOSSIP_MENU();
                     }
                     else
                     {
-                        creature->MonsterWhisper(MSG_NOT_ENOUGH_MONEY, player);
+                        creature->Whisper(MSG_NOT_ENOUGH_MONEY, LANG_UNIVERSAL, player);
                         player->CLOSE_GOSSIP_MENU();
                     }
                 }
                 else
                 {
-                    creature->MonsterWhisper(MSG_BAG_ERROR, player);
+                    creature->Whisper(MSG_BAG_ERROR, LANG_UNIVERSAL, player);
                     player->CLOSE_GOSSIP_MENU();
                 }
                 break;
