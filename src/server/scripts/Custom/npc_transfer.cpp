@@ -637,7 +637,8 @@ public:
             player->GiveLevel(80);
             player->AddItem(badge, 375); //give triumphs
             player->ModifyMoney(300000000);
-            player->AddItem(41600, 1); //give a bag
+            //player->AddItem(41600, 1); //give a bag
+            player->StoreNewItemInBestSlots(41600, 1);
             CharacterDatabase.PExecute("REPLACE INTO `char_transfers` (guid,state) VALUES (%u,2);", player->GetGUIDLow());
             player->SaveToDB();
             if (player->getClass() == CLASS_DEATH_KNIGHT)
@@ -648,8 +649,10 @@ public:
             }
             else
             {
-                creature->Whisper("|cFF00FFFFЧТОБЫ ПРОДОЛЖИТЬ ПЕРЕНОС ОДЕНЬТЕ СУМКУ!|h|r", LANG_UNIVERSAL, player, false);
-                player->CLOSE_GOSSIP_MENU();
+                player->PlayerTalkClass->ClearMenus();
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "[Выбор А6 сета]", GOSSIP_SENDER_MAIN, 125);
+                player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
+                //creature->Whisper("|cFF00FFFFЧТОБЫ ПРОДОЛЖИТЬ ПЕРЕНОС ОДЕНЬТЕ СУМКУ!|h|r", LANG_UNIVERSAL, player, false);
             }
             break;
         case 3:
