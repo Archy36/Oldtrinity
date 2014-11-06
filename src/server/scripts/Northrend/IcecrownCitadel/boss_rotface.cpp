@@ -199,6 +199,8 @@ class boss_rotface : public CreatureScript
                 if (summon->GetEntry() == NPC_VILE_GAS_STALKER)
                     if (Creature* professor = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_PROFESSOR_PUTRICIDE)))
                         professor->CastSpell(summon, SPELL_VILE_GAS_H, true);
+
+                summons.Summon(summon);
             }
 
 			void SummonedCreatureDespawn(Creature* summon)
@@ -564,12 +566,13 @@ class spell_rotface_mutated_infection : public SpellScriptLoader
         {
             PrepareSpellScript(spell_rotface_mutated_infection_SpellScript);
 
-            bool Load() override
+        public:
+            spell_rotface_mutated_infection_SpellScript()
             {
-                _target = NULL;
-                return true;
+                _target = nullptr;
             }
 
+        private:
             void FilterTargets(std::list<WorldObject*>& targets)
             {
                 // remove targets with this aura already

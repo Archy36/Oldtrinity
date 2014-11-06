@@ -235,6 +235,8 @@ void Vehicle::ApplyAllImmunities()
         case 160: // Strand of the Ancients
         case 244: // Wintergrasp
         case 510: // Isle of Conquest
+        case 452: // Isle of Conquest
+        case 543: // Isle of Conquest
             _me->SetControlled(true, UNIT_STATE_ROOT);
 			_me->SetSpeed(MOVE_WALK, 0.0f);
 			_me->SetSpeed(MOVE_RUN, 0.0f);
