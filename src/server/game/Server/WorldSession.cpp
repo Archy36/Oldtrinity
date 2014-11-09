@@ -1403,7 +1403,6 @@ uint32 WorldSession::DosProtection::GetMaxPacketCounterAllowed(uint16 opcode) co
         case CMSG_QUERY_INSPECT_ACHIEVEMENTS:           //   0              13         high upload bandwidth usage
         case CMSG_GAMEOBJ_REPORT_USE:                   // not profiled
         case CMSG_GAMEOBJ_USE:                          // not profiled
-        case MSG_PETITION_DECLINE:                      // not profiled
         {
             maxPacketCounterAllowed = 50;
             break;
@@ -1497,6 +1496,7 @@ uint32 WorldSession::DosProtection::GetMaxPacketCounterAllowed(uint16 opcode) co
         case CMSG_SET_GUILD_BANK_TEXT:                  // not profiled
         case MSG_SAVE_GUILD_EMBLEM:                     // not profiled
         case MSG_PETITION_RENAME:                       // not profiled
+        case MSG_PETITION_DECLINE:                      // not profiled
         case MSG_TALENT_WIPE_CONFIRM:                   // not profiled
         case MSG_SET_DUNGEON_DIFFICULTY:                // not profiled
         case MSG_SET_RAID_DIFFICULTY:                   // not profiled
