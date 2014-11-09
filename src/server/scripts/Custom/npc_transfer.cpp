@@ -18,7 +18,7 @@
 #define MSG_GOSSIP_TEXT_LEATHERWORKING "Изучить Кожевничество."
 #define MSG_GOSSIP_TEXT_MINING "Изучить Горное дело."
 #define MSG_GOSSIP_TEXT_SKINNING "Изучить Снятие Шкур."
-#define MSG_GOSSIP_TEXT_TAILORING "Изучить Портное дело."
+#define MSG_GOSSIP_TEXT_TAILORING "Изучить Портняжное дело."
 #define MSG_GOSSIP_READY "[Готово...]"
 
 //head, shoulder, chest, gloves, legs
@@ -326,7 +326,7 @@ public:
             QueryResult resultDB = CharacterDatabase.PQuery("SELECT * FROM char_transfers WHERE guid=%u;", player->GetGUIDLow());
             Field *fieldsDB = resultDB->Fetch();
             uint32 state = fieldsDB[1].GetUInt32();
-            if (PlayerAlreadyHasNineProfessions(player) || (state == 53))
+            if (PlayerAlreadyHasNineProfessions(player) && (state == 53))
             {
                 CharacterDatabase.PExecute("REPLACE INTO `char_transfers` (guid,state) VALUES (%u,55);", player->GetGUIDLow());
                 player->PlayerTalkClass->ClearMenus();
@@ -351,7 +351,6 @@ public:
                     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, MSG_GOSSIP_TEXT_SKINNING, GOSSIP_SENDER_MAIN, 119);
                     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, MSG_GOSSIP_TEXT_TAILORING, GOSSIP_SENDER_MAIN, 120);
                 }
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, MSG_GOSSIP_READY, GOSSIP_SENDER_MAIN, 121);
                 player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
                 CharacterDatabase.PExecute("REPLACE INTO `char_transfers` (guid,state) VALUES (%u,53);", player->GetGUIDLow()); //one prof choosed
                 creature->Whisper("|cFF00FFFFВЫБЕРИТЕ ЕЩЁ ОДНУ ПРОФЕССИЮ!|h|r", LANG_UNIVERSAL, player, false);
@@ -601,7 +600,8 @@ public:
                     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, MSG_GOSSIP_TEXT_SKINNING, GOSSIP_SENDER_MAIN, 119);
                     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, MSG_GOSSIP_TEXT_TAILORING, GOSSIP_SENDER_MAIN, 120);
                 }
-                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, MSG_GOSSIP_READY, GOSSIP_SENDER_MAIN, 121);
+                else
+                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, MSG_GOSSIP_READY, GOSSIP_SENDER_MAIN, 121);
                 player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
                 break;
             case 55:
@@ -1302,7 +1302,8 @@ public:
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, MSG_GOSSIP_TEXT_SKINNING, GOSSIP_SENDER_MAIN, 119);
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, MSG_GOSSIP_TEXT_TAILORING, GOSSIP_SENDER_MAIN, 120);
             }
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, MSG_GOSSIP_READY, GOSSIP_SENDER_MAIN, 121);
+            else
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, MSG_GOSSIP_READY, GOSSIP_SENDER_MAIN, 121);
             player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
             creature->Whisper("|cFF00FFFFТЕПЕРЬ ВЫБЕРИТЕ 2 ПРОФЕССИИ!|h|r", LANG_UNIVERSAL, player, false);
             break;

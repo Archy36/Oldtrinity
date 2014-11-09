@@ -31,28 +31,20 @@ enum TransmogTrinityStrings // Language.h might have same entries, appears when 
 class Transmogrification
 {
 private:
-    Transmogrification() {};
-    ~Transmogrification() {};
+    Transmogrification() { };
+    ~Transmogrification() { };
     Transmogrification(const Transmogrification&);
     Transmogrification& operator=(const Transmogrification&);
 
 public:
     static Transmogrification* instance()
     {
-        static Transmogrification *instance = new Transmogrification();
-        return instance;
+        // Thread safe in C++11 standard
+        static Transmogrification instance;
+        return &instance;
     }
 
 #ifdef PRESETS
-    //typedef std::map<uint8, uint32> presetslotMap;
-    //struct presetData
-    //{
-    //    std::string name;
-    //    presetslotMap slotMap;
-    //};
-    //typedef std::map<uint8, presetData> presetIdMap; // remember to lock
-    // typedef KVRWHashMap<uint64, presetIdMap> presetPlayers;
-    // presetPlayers presetMap; // presetByName[pGUID][presetID] = presetData
 
     bool EnableSetInfo;
     uint32 SetNpcText;
@@ -66,12 +58,6 @@ public:
 
     void PresetTransmog(Player* player, Item* itemTransmogrified, uint32 fakeEntry, uint8 slot);
 #endif
-
-    //typedef std::unordered_map<uint64, uint32> transmogData; // remember to lock
-    //typedef KVRWHashMap<uint64, transmogData> transmogMap;
-    //// typedef KVRWHashMap<uint64, uint64> transmogPlayers;
-    //transmogMap entryMap; // entryMap[pGUID][iGUID] = entry
-    //// transmogPlayers playerMap; // dataMap[iGUID] = pGUID
 
     bool EnableTransmogInfo;
     uint32 TransmogNpcText;
