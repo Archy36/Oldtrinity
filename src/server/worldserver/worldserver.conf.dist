@@ -3512,3 +3512,13 @@ DuelReset.Cooldown.Only.in.Elwynn.and.Durotar = 0
 
 PvPRank.Rate.ExtraHonor = 1
 PvPRank.HKPerRank = "10,50,100,200,450,750,1300,2000,3500,6000,9500,15000,21000,30000"
+#
+###################################################################################################
+#     Chat Min Player Time
+#     Chat.DisableWhenPlayerCreate
+#        Description: Disable chat for player who total played time not equal to X (in seconds)
+#        Default:     900 seconds   (equal to 15 minutes)
+ 
+Chat.DisableWhenPlayerCreate = 900
+#
+###################################################################################################

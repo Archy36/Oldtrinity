@@ -48,6 +48,19 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
     recvData >> type;
     recvData >> lang;
 
+    /* Chat Min PlayedTime */
+	Player* chatter = GetPlayer();
+	{
+        if ((chatter->GetTotalPlayedTime() <= sWorld->getIntConfig(CONFIG_INT_CHAT_DISABLE_TIME)) && chatter->GetSession()->GetSecurity() == SEC_PLAYER)
+        {
+            std::string adStr = secsToTimeString(sWorld->getIntConfig(CONFIG_INT_CHAT_DISABLE_TIME) - chatter->GetTotalPlayedTime());
+            SendNotification("Ваш чат отключен. Чтобы вы смогли написать в чат, проведите в игре еще %s секунд", adStr.c_str());
+            recvData.rfinish();
+            return;
+        }
+	}
+    /*End Chat MIn Played Time */
+    
     if (type >= MAX_CHAT_MSG_TYPE)
     {
         TC_LOG_ERROR("network", "CHAT: Wrong message type received: %u", type);

@@ -3734,17 +3734,20 @@ void SpellMgr::LoadSpellInfoCorrections()
 			case 18754: // Improved succubus - problems with apply if target is pet 
                 spellInfo->Effects[EFFECT_0].ApplyAuraName = SPELL_AURA_ADD_FLAT_MODIFIER; // it's affects duration of seduction, let's minimize affection 
 				spellInfo->Effects[EFFECT_0].BasePoints = -1.5*IN_MILLISECONDS*0.22; // reduce cast time of seduction by 22%
-				spellInfo->Effects[EFFECT_0].TargetA = TARGET_UNIT_CASTER;
+				spellInfo->Effects[0].TargetA = SpellImplicitTargetInfo(TARGET_UNIT_CASTER);
+                spellInfo->Effects[1].TargetA = SpellImplicitTargetInfo(TARGET_UNIT_MASTER);
                 break; 
             case 18755: 
 				spellInfo->Effects[EFFECT_0].ApplyAuraName = SPELL_AURA_ADD_FLAT_MODIFIER;
 				spellInfo->Effects[EFFECT_0].BasePoints = -1.5*IN_MILLISECONDS*0.44; // reduce cast time of seduction by 44% 
-				spellInfo->Effects[EFFECT_0].TargetA = TARGET_UNIT_CASTER;
+				spellInfo->Effects[0].TargetA = SpellImplicitTargetInfo(TARGET_UNIT_CASTER);
+                spellInfo->Effects[1].TargetA = SpellImplicitTargetInfo(TARGET_UNIT_MASTER);
                 break; 
             case 18756: 
 				spellInfo->Effects[EFFECT_0].ApplyAuraName = SPELL_AURA_ADD_FLAT_MODIFIER;
 				spellInfo->Effects[EFFECT_0].BasePoints = -1.5*IN_MILLISECONDS*0.66; // reduce cast time of seduction by 66% 
-				spellInfo->Effects[EFFECT_0].TargetA = TARGET_UNIT_CASTER;
+				spellInfo->Effects[0].TargetA = SpellImplicitTargetInfo(TARGET_UNIT_CASTER);
+                spellInfo->Effects[1].TargetA = SpellImplicitTargetInfo(TARGET_UNIT_MASTER);
                 break;
             case 24314: // Threatening Gaze
                 spellInfo->AuraInterruptFlags |= AURA_INTERRUPT_FLAG_CAST | AURA_INTERRUPT_FLAG_MOVE | AURA_INTERRUPT_FLAG_JUMP;
