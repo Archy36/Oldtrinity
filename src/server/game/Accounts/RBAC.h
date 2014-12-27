@@ -100,6 +100,7 @@ enum RBACPermissions
     RBAC_PERM_COMMANDS_PINFO_CHECK_PERSONAL_DATA             = 48,
     RBAC_PERM_EMAIL_CONFIRM_FOR_PASS_CHANGE                  = 49,
     RBAC_PERM_MAY_CHECK_OWN_EMAIL                            = 50,
+    RBAC_PERM_ALLOW_TWO_SIDE_TRADE                           = 51,
 
     // Free space for core permissions (till 149)
     // Roles (Permissions with delegated permissions) use 199 and descending
@@ -110,16 +111,7 @@ enum RBACPermissions
     RBAC_PERM_COMMAND_RBAC_ACC_PERM_DENY                     = 204,
     RBAC_PERM_COMMAND_RBAC_ACC_PERM_REVOKE                   = 205,
     RBAC_PERM_COMMAND_RBAC_LIST                              = 206,
-    // 207 - reuse
-    // 208 - reuse
-    // 209 - reuse
-    // 210 - reuse
-    // 211 - reuse
-    // 212 - reuse
-    // 213 - reuse
-    // 214 - reuse
-    // 215 - reuse
-    // 216 - reuse
+    // 207 - 216 do NOT use
     RBAC_PERM_COMMAND_ACCOUNT                                = 217,
     RBAC_PERM_COMMAND_ACCOUNT_ADDON                          = 218,
     RBAC_PERM_COMMAND_ACCOUNT_CREATE                         = 219,
@@ -700,6 +692,8 @@ enum RBACPermissions
     RBAC_PERM_COMMAND_GUILD_INFO                             = 794,
     RBAC_PERM_COMMAND_INSTANCE_SET_BOSS_STATE                = 795,
     RBAC_PERM_COMMAND_INSTANCE_GET_BOSS_STATE                = 796,
+    RBAC_PERM_COMMAND_PVPSTATS                               = 797,
+    RBAC_PERM_COMMAND_MODIFY_XP                              = 798,
 
     // custom permissions 1000+
     RBAC_PERM_MAX

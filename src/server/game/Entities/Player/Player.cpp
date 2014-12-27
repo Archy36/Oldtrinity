@@ -205,7 +205,7 @@ void PlayerTaxi::LoadTaxiMask(std::string const &data)
     for (Tokenizer::const_iterator iter = tokens.begin(); index < TaxiMaskSize && iter != tokens.end(); ++iter, ++index)
     {
         // load and set bits only for existing taxi nodes
-        m_taximask[index] = sTaxiNodesMask[index] & uint32(atol(*iter));
+        m_taximask[index] = sTaxiNodesMask[index] & atoul(*iter);
     }
 }
 
@@ -231,7 +231,7 @@ bool PlayerTaxi::LoadTaxiDestinationsFromString(const std::string& values, uint3
 
     for (Tokenizer::const_iterator iter = Tokenizer.begin(); iter != Tokenizer.end(); ++iter)
     {
-        uint32 node = uint32(atol(*iter));
+        uint32 node = atoul(*iter);
         AddTaxiDestination(node);
     }
 
@@ -15687,12 +15687,13 @@ void Player::RewardQuest(Quest const* quest, uint32 reward, Object* questGiver, 
 
 void Player::FailQuest(uint32 questId)
 {
-    // Already complete quests shouldn't turn failed.
-    if (GetQuestStatus(questId) == QUEST_STATUS_COMPLETE)
-        return;
 
     if (Quest const* quest = sObjectMgr->GetQuestTemplate(questId))
     {
+        // Already complete quests shouldn't turn failed.
+        if (GetQuestStatus(questId) == QUEST_STATUS_COMPLETE && !quest->HasSpecialFlag(QUEST_SPECIAL_FLAGS_TIMED))
+            return;
+
         SetQuestStatus(questId, QUEST_STATUS_FAILED);
 
         uint16 log_slot = FindQuestSlot(questId);
@@ -20479,7 +20480,7 @@ void Player::SendAutoRepeatCancel(Unit* target)
 {
     WorldPacket data(SMSG_CANCEL_AUTO_REPEAT, target->GetPackGUID().size());
     data << target->GetPackGUID();                     // may be it's target guid
-    GetSession()->SendPacket(&data);
+    SendMessageToSet(&data, false);
 }
 
 void Player::SendExplorationExperience(uint32 Area, uint32 Experience)
@@ -24518,7 +24519,7 @@ Player* Player::GetNextRandomRaidMember(float radius)
     return nearMembers[randTarget];
 }
 
-PartyResult Player::CanUninviteFromGroup() const
+PartyResult Player::CanUninviteFromGroup(ObjectGuid guidMember) const
 {
     Group const* grp = GetGroup();
     if (!grp)
@@ -24560,6 +24561,9 @@ PartyResult Player::CanUninviteFromGroup() const
 
         if (InBattleground())
             return ERR_INVITE_RESTRICTED;
+
+        if (grp->IsLeader(guidMember))
+            return ERR_NOT_LEADER;
     }
 
     return ERR_PARTY_RESULT_OK;
