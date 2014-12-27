@@ -24116,14 +24116,7 @@ void Player::RemoveItemDependentAurasAndCasts(Item* pItem)
         }
 
         // skip if not item dependent or have alternative item
-        if (HasItemFitToSpellRequirements(spellInfo, pItem))
-        {
-            ++itr;
-            continue;
-        }
-
-        // Bladestorm
-        if (HasAura(46924))
+        if (HasItemFitToSpellRequirements(spellInfo, pItem)|| spellInfo->Id == 46924)
         {
             ++itr;
             continue;

@@ -108,7 +108,7 @@ enum Events
     EVENT_THIRD_PHASE_CHECK         = 22,
     EVENT_AIR_MOVEMENT_FAR          = 23,
     EVENT_LAND_GROUND               = 24,
-	EVENT_CHECK_PLAYERS             = 25,
+    EVENT_CHECK_PLAYERS             = 25,
 
     // Spinestalker
     EVENT_BELLOWING_ROAR            = 13,
@@ -244,11 +244,8 @@ class boss_sindragosa : public CreatureScript
                 events.ScheduleEvent(EVENT_UNCHAINED_MAGIC, urand(9000, 14000), EVENT_GROUP_LAND_PHASE);
                 events.ScheduleEvent(EVENT_ICY_GRIP, 33500, EVENT_GROUP_LAND_PHASE);
                 events.ScheduleEvent(EVENT_AIR_PHASE, 50000);
-				events.ScheduleEvent(EVENT_CHECK_PLAYERS, 5000);
-				_iceTombCounter = 0;
-                _mysticBuffetStack = 0;
-                _isInAirPhase = false;
-                _isThirdPhase = false;
+                Initialize();
+                events.ScheduleEvent(EVENT_CHECK_PLAYERS, 5000);
 
                 if (!_summoned)
                 {
@@ -275,19 +272,20 @@ class boss_sindragosa : public CreatureScript
                     instance->DoCastSpellOnPlayers(LIGHT_S_HAMMER_TELEPORT);
                     return;
                 }
+
                 BossAI::EnterCombat(victim);
                 DoCast(me, SPELL_FROST_AURA);
                 DoCast(me, SPELL_PERMAEATING_CHILL);
                 Talk(SAY_AGGRO);
             }
-			bool CanAIAttack(Unit const* target) const
-			{
-				if (target->GetPositionZ() >= 211.0f && !me->IsWithinLOS(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ()))
-					return false;
-					
-				return true;
-			}
-			
+            bool CanAIAttack(Unit const* target) const
+            {
+                if (target->GetPositionZ() >= 211.0f && !me->IsWithinLOS(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ()))
+                    return false;
+                    
+                return true;
+            }
+
             void JustReachedHome() override
             {
                 BossAI::JustReachedHome();
@@ -351,19 +349,19 @@ class boss_sindragosa : public CreatureScript
                         me->SetHomePosition(SindragosaLandPos);
                         me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                         me->SetSpeed(MOVE_FLIGHT, 2.5f);
-						
+
                         // Sindragosa enters combat as soon as she lands
                         DoZoneInCombat(me, 100.0f);
-						
-						// Sindragosa should be in combat here, otherwise EnterEvadeMode and despawn
-						if (!me->IsInCombat())
-							EnterEvadeMode();	
+                        
+                        // Sindragosa should be in combat here, otherwise EnterEvadeMode and despawn
+                        if (!me->IsInCombat())
+                            EnterEvadeMode();   
                         break;
                     case POINT_TAKEOFF:
                         events.ScheduleEvent(EVENT_AIR_MOVEMENT, 1);
                         break;
                     case POINT_AIR_PHASE:
-                        me->CastCustomSpell(SPELL_ICE_TOMB_TARGET, SPELLVALUE_MAX_TARGETS, RAID_MODE<int32>(2, 5, 2, 6), false);
+                        me->CastCustomSpell(SPELL_ICE_TOMB_TARGET, SPELLVALUE_MAX_TARGETS, RAID_MODE<int32>(2, 5, 2, 6), NULL);
                         me->SetFacingTo(float(M_PI));
                         events.ScheduleEvent(EVENT_AIR_MOVEMENT_FAR, 1);
                         events.ScheduleEvent(EVENT_FROST_BOMB, 9000);
@@ -426,18 +424,18 @@ class boss_sindragosa : public CreatureScript
             {
                 if (uint32 spellId = sSpellMgr->GetSpellIdForDifficulty(70127, me))
                 {
-					if (spellId == spell->Id)
-					{
+                    if (spellId == spell->Id)
+                    {
                         if (Aura const* mysticBuffet = target->GetAura(spell->Id))
                             _mysticBuffetStack = std::max<uint8>(_mysticBuffetStack, mysticBuffet->GetStackAmount());
-							
-						return;
-					}
-				}
+                            
+                        return;
+                    }
+                }
             }
-			void CheckPlayerPositions()
-			{
-				Map* map = me->GetMap();
+            void CheckPlayerPositions()
+            {
+                Map* map = me->GetMap();
                 if (map && map->IsDungeon())
                 {
                     Map::PlayerList const &PlayerList = map->GetPlayers();
@@ -493,15 +491,6 @@ class boss_sindragosa : public CreatureScript
                             DoCast(me, SPELL_ICY_GRIP);
                             events.ScheduleEvent(EVENT_BLISTERING_COLD, 1000, EVENT_GROUP_LAND_PHASE);
                             break;
-						// Need to reschedule in phase three, since it cannot be done via movement any longer
-						// Reset Ice Tomb counter, and schedule Ice Tombs again in phase 3
-                            if (_isThirdPhase)
-                            {
-								events.RescheduleEvent(EVENT_ICY_GRIP, 40000);
-                                _iceTombCounter = 0;
-                                events.ScheduleEvent(EVENT_ICE_TOMB, urand(7000, 10000));
-                            }
-							break;
                         case EVENT_BLISTERING_COLD:
                             Talk(EMOTE_WARN_BLISTERING_COLD);
                             DoCast(me, SPELL_BLISTERING_COLD);
@@ -538,12 +527,10 @@ class boss_sindragosa : public CreatureScript
                             {
                                 Talk(EMOTE_WARN_FROZEN_ORB, target);
                                 DoCast(target, SPELL_ICE_TOMB_DUMMY, true);
+                                DoCast(target, SPELL_FROST_BEACON, true);
+                                me->SetFacingTo(float(2 * M_PI));
                             }
-							_iceTombCounter++;
-                            if (_iceTombCounter < 4) // Avoid casting ice tomb more than 4 times between icy grips
-								events.ScheduleEvent(EVENT_ICE_TOMB, urand(16000, 23000));
-							else // We are done with all ice tombs, start icy grip timer
-                                events.ScheduleEvent(EVENT_ICY_GRIP, 20000);
+                            events.ScheduleEvent(EVENT_ICE_TOMB, urand(16000, 23000));
                             break;
                         case EVENT_FROST_BOMB:
                         {
@@ -574,11 +561,8 @@ class boss_sindragosa : public CreatureScript
                         {
                             if (!_isInAirPhase)
                             {
-								events.CancelEvent(EVENT_ICY_GRIP);
-                                _isThirdPhase = true;
-								Talk(SAY_PHASE_2);
-                                _iceTombCounter = 2; // Set to 2 here, so we get 2 casts until first icy grip
-								events.ScheduleEvent(EVENT_ICE_TOMB, urand(7000, 10000));
+                                Talk(SAY_PHASE_2);
+                                events.ScheduleEvent(EVENT_ICE_TOMB, urand(7000, 10000));
                                 events.RescheduleEvent(EVENT_ICY_GRIP, urand(35000, 40000));
                                 DoCast(me, SPELL_MYSTIC_BUFFET, true);
                             }
@@ -586,10 +570,10 @@ class boss_sindragosa : public CreatureScript
                                 events.ScheduleEvent(EVENT_THIRD_PHASE_CHECK, 5000);
                             break;
                         }
-						case EVENT_CHECK_PLAYERS:
-							CheckPlayerPositions();
-							events.ScheduleEvent(EVENT_CHECK_PLAYERS, 3000);
-							break;
+                        case EVENT_CHECK_PLAYERS:
+                            CheckPlayerPositions();
+                            events.ScheduleEvent(EVENT_CHECK_PLAYERS, 3000);
+                            break;
                         default:
                             break;
                     }
@@ -599,7 +583,6 @@ class boss_sindragosa : public CreatureScript
             }
 
         private:
-			uint8 _iceTombCounter;
             uint8 _mysticBuffetStack;
             bool _isInAirPhase;
             bool _isThirdPhase;
@@ -1174,17 +1157,17 @@ class spell_sindragosa_s_fury : public SpellScriptLoader
 
 class UnchainedMagicTargetSelector
 {
-	enum CriticalSpells
-	{
-		// Paladin spells that identify a specc
-		SPELL_PALADIN_DIVINE_STORM            = 53385,
-		SPELL_PALADIN_HAMMER_OF_THE_RIGHTEOUS = 53595,
-		// Shaman spell that identifies an enhancer
-		SPELL_SHAMAN_SHAMANISTIC_RAGE         = 30823,
-		// Druid spell that identifies a feral (cat or bear)
-		SPELL_DRUID_BERSERK                   = 50334
-	};
-	
+    enum CriticalSpells
+    {
+        // Paladin spells that identify a specc
+        SPELL_PALADIN_DIVINE_STORM            = 53385,
+        SPELL_PALADIN_HAMMER_OF_THE_RIGHTEOUS = 53595,
+        // Shaman spell that identifies an enhancer
+        SPELL_SHAMAN_SHAMANISTIC_RAGE         = 30823,
+        // Druid spell that identifies a feral (cat or bear)
+        SPELL_DRUID_BERSERK                   = 50334
+    };
+    
     public:
         UnchainedMagicTargetSelector() { }
 
