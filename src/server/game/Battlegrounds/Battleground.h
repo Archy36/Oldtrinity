@@ -23,7 +23,6 @@
 #include "Common.h"
 #include "SharedDefines.h"
 #include "DBCEnums.h"
-#include "SpectatorAddon.h"
 #include "WorldPacket.h"
 #include "Object.h"
 #include "GameObject.h"
@@ -300,13 +299,12 @@ class Battleground
         uint32 GetInvitedCount(uint32 team) const   { return (team == ALLIANCE) ? m_InvitedAlliance : m_InvitedHorde; }
         bool HasFreeSlots() const;
         uint32 GetFreeSlotsForTeam(uint32 Team) const;
-		
+        
         typedef std::set<ObjectGuid> SpectatorList;
         void AddSpectator(ObjectGuid playerId) { m_Spectators.insert(playerId); }
         void RemoveSpectator(ObjectGuid playerId) { m_Spectators.erase(playerId); }
         bool HaveSpectators() { return (m_Spectators.size() > 0); }
-        void SendSpectateAddonsMsg(SpectatorAddonMsg msg);
-		
+        
         bool isArena() const        { return m_IsArena; }
         bool isBattleground() const { return !m_IsArena; }
         bool isRated() const        { return m_IsRated; }
@@ -472,9 +470,9 @@ class Battleground
         uint32 GetTeamScore(uint32 TeamID) const;
 
         virtual uint32 GetPrematureWinner();
-		
-		uint8 ClickFastStart(Player *player, GameObject *go);
-		void DespawnCrystals();
+        
+        uint8 ClickFastStart(Player *player, GameObject *go);
+        void DespawnCrystals();
 
         // because BattleGrounds with different types and same level range has different m_BracketId
         uint8 GetUniqueBracketId() const;
@@ -544,9 +542,9 @@ class Battleground
         uint32 m_PrematureCountDownTimer;
         std::string m_Name;
 
-		std::set<uint64> m_playersWantsFastStart;
-		std::set<GameObject*> m_crystals;
-		
+        std::set<uint64> m_playersWantsFastStart;
+        std::set<GameObject*> m_crystals;
+        
         /* Pre- and post-update hooks */
 
         /**
@@ -590,8 +588,8 @@ class Battleground
         // Raid Group
         Group* m_BgRaids[BG_TEAMS_COUNT];                   // 0 - alliance, 1 - horde
 
-		SpectatorList m_Spectators;
-		
+        SpectatorList m_Spectators;
+        
         // Players count by team
         uint32 m_PlayersCount[BG_TEAMS_COUNT];
 

@@ -1908,15 +1908,6 @@ void Player::setDeathState(DeathState s)
             return;
         }
 
-        // send spectate addon message
-        if (HaveSpectators())
-        {
-            SpectatorAddonMsg msg;
-            msg.SetPlayer(GetName());
-            msg.SetStatus(false);
-            SendSpectatorAddonMsgToBG(msg);
-        }
-
         // drunken state is cleared on death
         SetDrunkValue(0);
         // lost combo points at any target (targeted combo points clear in Unit::setDeathState)
@@ -1951,20 +1942,6 @@ void Player::setDeathState(DeathState s)
         //clear aura case after resurrection by another way (spells will be applied before next death)
         SetUInt32Value(PLAYER_SELF_RES_SPELL, 0);
 }
-
-void Player::SetSelection(ObjectGuid guid)
-{
-    SetUInt64Value(UNIT_FIELD_TARGET, guid);
-    if (Player *target = ObjectAccessor::FindPlayer(guid))
-    if (HaveSpectators())
-    {
-        SpectatorAddonMsg msg;
-        msg.SetPlayer(GetName());
-        msg.SetTarget(target->GetName());
-        SendSpectatorAddonMsgToBG(msg);
-    }
-}
-
 
 void Player::InnEnter(time_t time, uint32 mapid, float x, float y, float z)
 {
@@ -2944,14 +2921,6 @@ bool Player::HaveSpectators()
     }
 
     return false;
-}
-
-void Player::SendSpectatorAddonMsgToBG(SpectatorAddonMsg msg)
-{
-    if (!HaveSpectators())
-        return;
-
-    GetBattleground()->SendSpectateAddonsMsg(msg);
 }
 
 void Player::SetGameMaster(bool on)
@@ -4427,7 +4396,8 @@ void Player::_LoadSpellCooldowns(PreparedQueryResult result)
             AddSpellCooldown(spell_id, item_id, db_time);
 
             TC_LOG_DEBUG("entities.player.loading", "Player (GUID: %u) spell %u, item %u cooldown loaded (%u secs).", GetGUIDLow(), spell_id, item_id, uint32(db_time - curTime));
-        } while (result->NextRow());
+        }
+        while (result->NextRow());
     }
 }
 
@@ -4902,7 +4872,8 @@ void Player::DeleteFromDB(ObjectGuid playerguid, uint32 accountId, bool updateRe
                                                    }
 
                                                    draft.AddItem(pItem);
-                                               } while (resultItems->NextRow());
+                                               }
+                                               while (resultItems->NextRow());
                                            }
                                        }
 
@@ -4913,7 +4884,8 @@ void Player::DeleteFromDB(ObjectGuid playerguid, uint32 accountId, bool updateRe
                     uint32 pl_account = sObjectMgr->GetPlayerAccountIdByGUID(playerguid);
 
                                        draft.AddMoney(money).SendReturnToSender(pl_account, guid, sender, trans);
-                                   } while (resultMail->NextRow());
+                                   } 
+                                   while (resultMail->NextRow());
                                }
 
                                // Unsummon and delete for pets in world is not required: player deleted from CLI or character list with not loaded pet.
@@ -5149,7 +5121,8 @@ void Player::DeleteOldCharacters(uint32 keepDays)
         {
             Field* fields = result->Fetch();
             Player::DeleteFromDB(ObjectGuid(HIGHGUID_PLAYER, fields[0].GetUInt32()), fields[1].GetUInt32(), true, true);
-        } while (result->NextRow());
+        }
+        while (result->NextRow());
     }
 }
 
@@ -17267,7 +17240,8 @@ void Player::_LoadArenaTeamInfo(PreparedQueryResult result)
             SetArenaTeamInfoField(arenaSlot, ARENA_TEAM_GAMES_WEEK, uint32(fields[1].GetUInt16()));
             SetArenaTeamInfoField(arenaSlot, ARENA_TEAM_GAMES_SEASON, uint32(fields[2].GetUInt16()));
             SetArenaTeamInfoField(arenaSlot, ARENA_TEAM_WINS_SEASON, uint32(fields[3].GetUInt16()));
-        } while (result->NextRow());
+        } 
+        while (result->NextRow());
     }
 
     for (uint8 slot = 0; slot <= 2; ++slot)
@@ -17304,7 +17278,8 @@ void Player::_LoadEquipmentSets(PreparedQueryResult result)
 
         if (count >= MAX_EQUIPMENT_SET_INDEX)                // client limit
             break;
-    } while (result->NextRow());
+    } 
+    while (result->NextRow());
 }
 
 void Player::_LoadBGData(PreparedQueryResult result)
@@ -18136,7 +18111,8 @@ void Player::_LoadActions(PreparedQueryResult result)
                 // Will deleted in DB at next save (it can create data until save but marked as deleted)
                 m_actionButtons[button].uState = ACTIONBUTTON_DELETED;
             }
-        } while (result->NextRow());
+        } 
+        while (result->NextRow());
     }
 }
 
@@ -18211,7 +18187,8 @@ void Player::_LoadAuras(PreparedQueryResult result, uint32 timediff)
                 aura->ApplyForTargets();
                 TC_LOG_INFO("entities.player", "Added aura spellid %u, effectmask %u", spellInfo->Id, effmask);
             }
-        } while (result->NextRow());
+        } 
+        while (result->NextRow());
     }
 }
 
@@ -18367,7 +18344,8 @@ void Player::_LoadInventory(PreparedQueryResult result, uint32 timeDiff)
                     problematicItems.push_back(item);
                 }
             }
-        } while (result->NextRow());
+        } 
+        while (result->NextRow());
 
         m_itemUpdateQueueBlocked = false;
 
@@ -18570,7 +18548,8 @@ void Player::_LoadMailedItems(Mail* mail)
         }
 
         AddMItem(item);
-    } while (result->NextRow());
+    } 
+    while (result->NextRow());
 }
 
 void Player::_LoadMailInit(PreparedQueryResult resultUnread, PreparedQueryResult resultDelivery)
@@ -18628,7 +18607,8 @@ void Player::_LoadMail()
                 _LoadMailedItems(m);
 
             m_mail.push_back(m);
-        } while (result->NextRow());
+        } 
+        while (result->NextRow());
     }
     m_mailsLoaded = true;
 }
@@ -18726,7 +18706,8 @@ void Player::_LoadQuestStatus(PreparedQueryResult result)
 
                 TC_LOG_DEBUG("entities.player.loading", "Quest status is {%u} for quest {%u} for player (GUID: %u)", questStatusData.Status, quest_id, GetGUIDLow());
             }
-        } while (result->NextRow());
+        } 
+        while (result->NextRow());
     }
 
     // clear quest log tail
@@ -18764,7 +18745,8 @@ void Player::_LoadQuestStatusRewarded(PreparedQueryResult result)
             }
 
             m_RewardedQuests.insert(quest_id);
-        } while (result->NextRow());
+        } 
+        while (result->NextRow());
     }
 }
 
@@ -18813,7 +18795,8 @@ void Player::_LoadDailyQuestStatus(PreparedQueryResult result)
             ++quest_daily_idx;
 
             TC_LOG_DEBUG("entities.player.loading", "Daily quest (%u) cooldown for player (GUID: %u)", quest_id, GetGUIDLow());
-        } while (result->NextRow());
+        } 
+        while (result->NextRow());
     }
 
     m_DailyQuestChanged = false;
@@ -18835,7 +18818,8 @@ void Player::_LoadWeeklyQuestStatus(PreparedQueryResult result)
 
             m_weeklyquests.insert(quest_id);
             TC_LOG_DEBUG("entities.player.loading", "Weekly quest {%u} cooldown for player (GUID: %u)", quest_id, GetGUIDLow());
-        } while (result->NextRow());
+        } 
+        while (result->NextRow());
     }
 
     m_WeeklyQuestChanged = false;
@@ -18858,7 +18842,8 @@ void Player::_LoadSeasonalQuestStatus(PreparedQueryResult result)
 
             m_seasonalquests[event_id].insert(quest_id);
             TC_LOG_DEBUG("entities.player.loading", "Seasonal quest {%u} cooldown for player (GUID: %u)", quest_id, GetGUIDLow());
-        } while (result->NextRow());
+        } 
+        while (result->NextRow());
     }
 
     m_SeasonalQuestChanged = false;
@@ -18880,7 +18865,8 @@ void Player::_LoadMonthlyQuestStatus(PreparedQueryResult result)
 
             m_monthlyquests.insert(quest_id);
             TC_LOG_DEBUG("entities.player.loading", "Monthly quest {%u} cooldown for player (GUID: %u)", quest_id, GetGUIDLow());
-        } while (result->NextRow());
+        } 
+        while (result->NextRow());
     }
 
     m_MonthlyQuestChanged = false;
@@ -18992,7 +18978,8 @@ void Player::_LoadBoundInstances(PreparedQueryResult result)
             // since non permanent binds are always solo bind, they can always be reset
             if (InstanceSave* save = sInstanceSaveMgr->AddInstanceSave(mapId, instanceId, Difficulty(difficulty), resetTime, !perm, true))
                 BindToInstance(save, perm, true);
-        } while (result->NextRow());
+        } 
+        while (result->NextRow());
     }
 }
 
@@ -21345,7 +21332,8 @@ void Player::RemovePetitionsAndSigns(ObjectGuid guid, uint32 type)
             Player* owner = ObjectAccessor::FindConnectedPlayer(ownerguid);
             if (owner)
                 owner->GetSession()->SendPetitionQueryOpcode(petitionguid);
-        } while (result->NextRow());
+        } 
+        while (result->NextRow());
 
         if (type == 10)
         {
@@ -21411,7 +21399,8 @@ void Player::LeaveAllArenaTeams(ObjectGuid guid)
             if (arenaTeam)
                 arenaTeam->DelMember(guid, true);
         }
-    } while (result->NextRow());
+    } 
+    while (result->NextRow());
 }
 
 void Player::SetRestBonus(float rest_bonus_new)
@@ -23575,30 +23564,7 @@ void Player::SendAurasForTarget(Unit* target)
         AuraApplication * auraApp = itr->second;
         auraApp->BuildUpdatePacket(data, false);
     }
-    if (Player *stream = target->ToPlayer())
-    if (stream->HaveSpectators() && IsSpectator())
-    {
-        for (Unit::VisibleAuraMap::const_iterator itr = visibleAuras->begin(); itr != visibleAuras->end(); ++itr)
-        {
-            AuraApplication * auraApp = itr->second;
-            auraApp->BuildUpdatePacket(data, false);
-            if (Aura* aura = auraApp->GetBase())
-            {
-                SpectatorAddonMsg msg;
-                uint64 casterID = 0;
-                if (aura->GetCaster())
-                    casterID = (aura->GetCaster()->ToPlayer()) ? aura->GetCaster()->GetGUID() : 0;
-                msg.SetPlayer(stream->GetName());
-                msg.CreateAura(casterID, aura->GetSpellInfo()->Id,
-                    aura->GetSpellInfo()->IsPositive(), aura->GetSpellInfo()->Dispel,
-                    aura->GetDuration(), aura->GetMaxDuration(),
-                    aura->GetStackAmount(), false);
-                msg.SendPacket(GetGUID());
-            }
 
-        }
-
-    }
     GetSession()->SendPacket(&data);
 }
 
@@ -25368,7 +25334,8 @@ void Player::_LoadSkills(PreparedQueryResult result)
                 TC_LOG_ERROR("entities.player", "Character %u has more than %u skills.", GetGUIDLow(), PLAYER_MAX_SKILLS);
                 break;
             }
-        } while (result->NextRow());
+        } 
+        while (result->NextRow());
     }
 
     for (; count < PLAYER_MAX_SKILLS; ++count)
@@ -26298,7 +26265,8 @@ void Player::_LoadGlyphs(PreparedQueryResult result)
         m_Glyphs[spec][3] = fields[4].GetUInt16();
         m_Glyphs[spec][4] = fields[5].GetUInt16();
         m_Glyphs[spec][5] = fields[6].GetUInt16();
-    } while (result->NextRow());
+    } 
+    while (result->NextRow());
 }
 
 void Player::_SaveGlyphs(SQLTransaction& trans)
@@ -26864,7 +26832,8 @@ void Player::_LoadInstanceTimeRestrictions(PreparedQueryResult result)
     {
         Field* fields = result->Fetch();
         _instanceResetTimes.insert(InstanceTimeMap::value_type(fields[0].GetUInt32(), fields[1].GetUInt64()));
-    } while (result->NextRow());
+    } 
+    while (result->NextRow());
 }
 
 void Player::_SaveInstanceTimeRestrictions(SQLTransaction& trans)

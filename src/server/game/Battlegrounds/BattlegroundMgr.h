@@ -86,8 +86,8 @@ class BattlegroundMgr
         Battleground* GetBattlegroundTemplate(BattlegroundTypeId bgTypeId);
         Battleground* CreateNewBattleground(BattlegroundTypeId bgTypeId, PvPDifficultyEntry const* bracketEntry, uint8 arenaType, bool isRated);
 
-		BattlegroundContainer GetBattlegroundsByType(BattlegroundTypeId bgTypeId) { return m_Battlegrounds[bgTypeId]; }
-		
+        BattlegroundContainer GetBattlegroundsByType(BattlegroundTypeId bgTypeId) { return m_Battlegrounds[bgTypeId]; }
+        
         void AddBattleground(Battleground* bg);
         void RemoveBattleground(BattlegroundTypeId bgTypeId, uint32 instanceId);
         void AddToBGFreeSlotQueue(BattlegroundTypeId bgTypeId, Battleground* bg);
@@ -111,7 +111,7 @@ class BattlegroundMgr
 
         bool isArenaTesting() const { return m_ArenaTesting; }
         bool isTesting() const { return m_Testing; }
-		bool IsArenaType(BattlegroundTypeId bgTypeId);
+        bool IsArenaType(BattlegroundTypeId bgTypeId);
 
         static BattlegroundQueueTypeId BGQueueTypeId(BattlegroundTypeId bgTypeId, uint8 arenaType);
         static BattlegroundTypeId BGTemplateId(BattlegroundQueueTypeId bgQueueTypeId);
@@ -143,7 +143,7 @@ class BattlegroundMgr
         typedef std::map<BattlegroundTypeId, BattlegroundData> BattlegroundDataContainer;
         BattlegroundDataContainer bgDataStore;
         BattlegroundQueue m_BattlegroundQueues[MAX_BATTLEGROUND_QUEUE_TYPES];
-		BattlegroundContainer m_Battlegrounds[MAX_BATTLEGROUND_TYPE_ID];
+        BattlegroundContainer m_Battlegrounds[MAX_BATTLEGROUND_TYPE_ID];
 
         std::vector<uint64> m_QueueUpdateScheduler;
         uint32 m_NextRatedArenaUpdate;

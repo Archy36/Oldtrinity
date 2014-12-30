@@ -16,6 +16,7 @@
 #include "AnticheatMgr.h"
 #include "AnticheatScripts.h"
 #include "MapManager.h"
+#include "Language.h"
 
 #define CLIMB_ANGLE 1.9f
 
@@ -337,11 +338,31 @@ void AnticheatMgr::BuildReport(Player* player, uint8 reportType)
     {
         // display warning at the center of the screen, hacky way?
         std::string str = "";
-        //str = "|cFFFFFC00[AC]|cFF00FFFF[|cFF60FF00" + std::string(player->GetName().c_str()) + "|cFF00FFFF] Possible cheater!";
+        //str = "|cFFFFFC00[AC]|cFF00FFFF[|cFF60FF00" + std::string(player->GetName().c_str()) + "|cFF00FFFF] Possible cheater!";"|cFF60FF00[АНТИЧИТ]|h|r: %s возможно читер!",
         str = "|cFFFFFC00[АНТИЧИТ]|cFF00FFFF[|cFF60FF00" + std::string(player->GetName().c_str()) + "|cFF00FFFF] Обнаружен читер!";
         WorldPacket data(SMSG_NOTIFICATION, (str.size() + 1));
         data << str;
         sWorld->SendGlobalGMMessage(&data);
+        std::string nameLink = "|cFF60FF00[АНТИЧИТ]|h|r: " + ChatHandler(player->GetSession()).playerLink(player->GetName()) + " возможно читер!";
+        switch (m_Players[key].GetTotalReports() - sWorld->getIntConfig(CONFIG_ANTICHEAT_REPORTS_INGAME_NOTIFICATION))
+        {
+        case 1:
+        case 10:
+        case 25:
+        case 50:
+        case 75:
+        case 100:
+        case 125:
+        case 150:
+        case 175:
+        case 200:
+        case 225:
+        case 250:
+            sWorld->SendGMText(LANG_GM_BROADCAST, nameLink.c_str());
+            break;
+        default:
+            break;
+        }
     }
 }
 

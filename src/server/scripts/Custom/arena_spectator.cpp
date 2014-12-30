@@ -257,39 +257,8 @@ class arena_spectator_commands : public CommandScript
             if (!bGround)
                 return false;
 
-           if (bGround->GetStatus() != STATUS_IN_PROGRESS)
+            if (bGround->GetStatus() != STATUS_IN_PROGRESS)
                 return true;
-
-            for (Battleground::BattlegroundPlayerMap::const_iterator itr = bGround->GetPlayers().begin(); itr != bGround->GetPlayers().end(); ++itr)
-                if (Player* tmpPlayer = ObjectAccessor::FindPlayer(itr->first))
-                {
-                    if (tmpPlayer->IsSpectator())
-                        continue;
-
-                    uint32 tmpID = bGround->GetPlayerTeam(tmpPlayer->GetGUID());
-
-                    // generate addon massage
-                    std::string pName = tmpPlayer->GetName();
-                    std::string tName = "";
-
-                    if (Player *target = tmpPlayer->GetSelectedPlayer())
-                        tName = target->GetName();
-
-                    SpectatorAddonMsg msg;
-                    msg.SetPlayer(pName);
-                    if (tName != "")
-                        msg.SetTarget(tName);
-                    msg.SetStatus(tmpPlayer->IsAlive());
-                    msg.SetClass(tmpPlayer->getClass());
-                    msg.SetCurrentHP(tmpPlayer->GetHealth());
-                    msg.SetMaxHP(tmpPlayer->GetMaxHealth());
-                    Powers powerType = tmpPlayer->getPowerType();
-                    msg.SetMaxPower(tmpPlayer->GetMaxPower(powerType));
-                    msg.SetCurrentPower(tmpPlayer->GetPower(powerType));
-                    msg.SetPowerType(powerType);
-                    msg.SetTeam(tmpID);
-                    msg.SendPacket(player->GetGUID());
-                }
 
             return true;
         }

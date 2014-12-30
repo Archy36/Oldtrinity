@@ -287,9 +287,9 @@ Unit::~Unit()
             m_currentSpells[i]->SetReferencedFromCurrent(false);
             m_currentSpells[i] = NULL;
         }
-		
+        
     _DeleteRemovedAuras();
-	
+    
     // remove veiw point for spectator
     if (!m_sharedVision.empty())
     {
@@ -302,7 +302,7 @@ Unit::~Unit()
                 --itr;
             }
     }
-	
+    
     delete i_motionMaster;
     delete m_charmInfo;
     delete movespline;
@@ -505,48 +505,12 @@ AuraApplication * Unit::GetVisibleAura(uint8 slot) const
 
 void Unit::SetVisibleAura(uint8 slot, AuraApplication * aur)
 {
-    if (Aura* aura = aur->GetBase())
-        if (Player *player = ToPlayer())
-            if (player->HaveSpectators() && slot < MAX_AURAS)
-            {
-                SpectatorAddonMsg msg;
-                uint64 casterID = 0;
-                if (aura->GetCaster())
-                    casterID = (aura->GetCaster()->ToPlayer()) ? aura->GetCaster()->GetGUID() : 0;
-                msg.SetPlayer(player->GetName());
-                msg.CreateAura(casterID, aura->GetSpellInfo()->Id,
-                aura->GetSpellInfo()->IsPositive(), aura->GetSpellInfo()->Dispel,
-                aura->GetDuration(), aura->GetMaxDuration(),
-                aura->GetStackAmount(), false);
-                player->SendSpectatorAddonMsgToBG(msg);
-            }
-
     m_visibleAuras[slot]=aur;
     UpdateAuraForGroup(slot);
 }
 
 void Unit::RemoveVisibleAura(uint8 slot)
 {
-    AuraApplication *aurApp = GetVisibleAura(slot);
-    if (aurApp && slot < MAX_AURAS)
-    {
-        if (Aura* aura = aurApp->GetBase())
-            if (Player *player = ToPlayer())
-                if (player->HaveSpectators())
-                {
-                    SpectatorAddonMsg msg;
-                    uint64 casterID = 0;
-                    if (aura->GetCaster())
-                        casterID = (aura->GetCaster()->ToPlayer()) ? aura->GetCaster()->GetGUID() : 0;
-                    msg.SetPlayer(player->GetName());
-                    msg.CreateAura(casterID, aura->GetSpellInfo()->Id,
-                    aurApp->IsPositive(), aura->GetSpellInfo()->Dispel,
-                    aura->GetDuration(), aura->GetMaxDuration(),
-                    aura->GetStackAmount(), true);
-                    player->SendSpectatorAddonMsgToBG(msg);
-                }
-    }
-
     m_visibleAuras.erase(slot);
     UpdateAuraForGroup(slot);
 }
@@ -791,7 +755,7 @@ uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDam
         if (damagetype == DIRECT_DAMAGE || damagetype == SPELL_DIRECT_DAMAGE)
         {
             victim->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_DIRECT_DAMAGE, spellProto ? spellProto->Id : 0);
-			if (victim->GetTypeId() == TYPEID_UNIT && !victim->IsPet())
+            if (victim->GetTypeId() == TYPEID_UNIT && !victim->IsPet())
                 victim->SetLastDamagedTime(time(NULL));
         }
 
@@ -1123,15 +1087,15 @@ void Unit::CalculateSpellDamageTaken(SpellNonMeleeDamage* damageInfo, int32 dama
     if (damage > 0)
     {
         switch (spellInfo->SpellIconID)
-		{
-			// Chaos Bolt - "Chaos Bolt cannot be resisted, and pierces through all absorption effects."
-			case 3178:
-				break;
-			default:
-				CalcAbsorbResist(victim, damageSchoolMask, SPELL_DIRECT_DAMAGE, damage, &damageInfo->absorb, &damageInfo->resist, spellInfo);
-				damage -= damageInfo->absorb + damageInfo->resist;
-				break;
-		}
+        {
+            // Chaos Bolt - "Chaos Bolt cannot be resisted, and pierces through all absorption effects."
+            case 3178:
+                break;
+            default:
+                CalcAbsorbResist(victim, damageSchoolMask, SPELL_DIRECT_DAMAGE, damage, &damageInfo->absorb, &damageInfo->resist, spellInfo);
+                damage -= damageInfo->absorb + damageInfo->resist;
+                break;
+        }
     }
     else
         damage = 0;
@@ -2943,7 +2907,7 @@ void Unit::_UpdateSpells(uint32 time)
             m_currentSpells[i]->SetReferencedFromCurrent(false);
             m_currentSpells[i] = NULL;                      // remove pointer
         }
-		
+        
     }
 
     // m_auraUpdateIterator can be updated in indirect called code at aura remove to skip next planned to update but removed auras
@@ -7220,26 +7184,26 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
 
                 if (pPet && pPet->GetVictim() && damage && procSpell)
                 {
-					pPet->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-					pPet->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                    pPet->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                    pPet->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                     uint32 procDmg = damage / 2;
                     pPet->SendSpellNonMeleeDamageLog(pPet->GetVictim(), procSpell->Id, procDmg, procSpell->GetSchoolMask(), 0, 0, false, 0, false);
                     pPet->DealDamage(pPet->GetVictim(), procDmg, NULL, SPELL_DIRECT_DAMAGE, procSpell->GetSchoolMask(), procSpell, true);
                     break;
                 }
-				else // copy 50% melee damage
-				if (pPet && pPet->GetVictim() && damage && !procSpell)
-				{
-					CalcDamageInfo damageInfo;
-					CalculateMeleeDamage(pPet->GetVictim(), 0, &damageInfo, BASE_ATTACK);
-					damageInfo.attacker = pPet;
-					damageInfo.damage = damageInfo.damage / 2;
-					// Send log damage message to client
-					pPet->DealDamageMods(pPet->GetVictim(),damageInfo.damage,&damageInfo.absorb);
-					pPet->SendAttackStateUpdate(&damageInfo);
-					pPet->ProcDamageAndSpell(damageInfo.target, damageInfo.procAttacker, damageInfo.procVictim, damageInfo.procEx, damageInfo.damage, damageInfo.attackType);
-					pPet->DealMeleeDamage(&damageInfo,true);
-				}
+                else // copy 50% melee damage
+                if (pPet && pPet->GetVictim() && damage && !procSpell)
+                {
+                    CalcDamageInfo damageInfo;
+                    CalculateMeleeDamage(pPet->GetVictim(), 0, &damageInfo, BASE_ATTACK);
+                    damageInfo.attacker = pPet;
+                    damageInfo.damage = damageInfo.damage / 2;
+                    // Send log damage message to client
+                    pPet->DealDamageMods(pPet->GetVictim(),damageInfo.damage,&damageInfo.absorb);
+                    pPet->SendAttackStateUpdate(&damageInfo);
+                    pPet->ProcDamageAndSpell(damageInfo.target, damageInfo.procAttacker, damageInfo.procVictim, damageInfo.procEx, damageInfo.damage, damageInfo.attackType);
+                    pPet->DealMeleeDamage(&damageInfo,true);
+                }
                 else
                     return false;
             }
@@ -11737,13 +11701,13 @@ void Unit::Dismount()
         else
             player->ResummonPetTemporaryUnSummonedIfAny();
             Pet* plPet = player->GetPet();
-			if (plPet != NULL)
-			{
-				uint32 uclass;
-				uclass=(player->getClassMask());
-				if ((uclass==256) || (uclass==32)) //Warlock and DK pets
-					plPet->SetHealth(plPet->GetMaxHealth());
-			}
+            if (plPet != NULL)
+            {
+                uint32 uclass;
+                uclass=(player->getClassMask());
+                if ((uclass==256) || (uclass==32)) //Warlock and DK pets
+                    plPet->SetHealth(plPet->GetMaxHealth());
+            }
     }
 }
 
@@ -12412,7 +12376,7 @@ void Unit::UpdateSpeed(UnitMoveType mtype, bool forced)
         if (float minSpeedMod = (float)GetMaxPositiveAuraModifier(SPELL_AURA_MOD_MINIMUM_SPEED))
         {
             float baseSpeed = (GetTypeId() == TYPEID_UNIT ? ToCreature()->GetCreatureTemplate()->speed_walk : 1.0f);
-			float min_speed = (minSpeedMod / 100.0f) * baseSpeed;
+            float min_speed = (minSpeedMod / 100.0f) * baseSpeed;
             if (speed < min_speed)
                 speed = min_speed;
         }
@@ -12794,13 +12758,13 @@ Unit* Creature::SelectVictim()
         SetInFront(target);
         return target;
     }
-	// Case where mob is being kited.
-	// Mob may not be in range to attack or may have dropped target. In any case,
-	// don't evade if damage received within the last 10 seconds
-	// Does not apply to world bosses to prevent kiting to cities
-	if (!isWorldBoss() && !GetInstanceId())
-		if (time(NULL) - GetLastDamagedTime() <= MAX_AGGRO_RESET_TIME)
-			return target;
+    // Case where mob is being kited.
+    // Mob may not be in range to attack or may have dropped target. In any case,
+    // don't evade if damage received within the last 10 seconds
+    // Does not apply to world bosses to prevent kiting to cities
+    if (!isWorldBoss() && !GetInstanceId())
+        if (time(NULL) - GetLastDamagedTime() <= MAX_AGGRO_RESET_TIME)
+            return target;
     // last case when creature must not go to evade mode:
     // it in combat but attacker not make any damage and not enter to aggro radius to have record in threat list
     // for example at owner command to pet attack some far away creature
@@ -13462,17 +13426,9 @@ void Unit::SetHealth(uint32 val)
 
     SetUInt32Value(UNIT_FIELD_HEALTH, val);
 
-    // group and spectator update
+    // group update
     if (Player* player = ToPlayer())
     {
-        if (player->HaveSpectators())
-        {
-            SpectatorAddonMsg msg;
-            msg.SetPlayer(player->GetName());
-            msg.SetCurrentHP(val);
-            player->SendSpectatorAddonMsgToBG(msg);
-        }
-
         if (player->GetGroup())
             player->SetGroupUpdateFlag(GROUP_UPDATE_FLAG_CUR_HP);
     }
@@ -13495,17 +13451,9 @@ void Unit::SetMaxHealth(uint32 val)
     uint32 health = GetHealth();
     SetUInt32Value(UNIT_FIELD_MAXHEALTH, val);
 
-    // group and spectators update
+    // group update
     if (GetTypeId() == TYPEID_PLAYER)
-    {
-        if (ToPlayer()->HaveSpectators())
-        {
-            SpectatorAddonMsg msg;
-            msg.SetPlayer(ToPlayer()->GetName());
-            msg.SetMaxHP(val);
-            ToPlayer()->SendSpectatorAddonMsgToBG(msg);
-        }
-		
+    { 
         if (ToPlayer()->GetGroup())
             ToPlayer()->SetGroupUpdateFlag(GROUP_UPDATE_FLAG_MAX_HP);
     }
@@ -13540,18 +13488,9 @@ void Unit::SetPower(Powers power, uint32 val)
     data << uint32(val);
     SendMessageToSet(&data, GetTypeId() == TYPEID_PLAYER);
 
-    // group and spectators update
+    // group update
     if (Player* player = ToPlayer())
     {
-        if (player->HaveSpectators())
-        {
-            SpectatorAddonMsg msg;
-            msg.SetPlayer(player->GetName());
-            msg.SetCurrentPower(val);
-            msg.SetPowerType(power);
-            player->SendSpectatorAddonMsgToBG(msg);
-        }
-
         if (player->GetGroup())
             player->SetGroupUpdateFlag(GROUP_UPDATE_FLAG_CUR_POWER);
     }
@@ -13575,18 +13514,9 @@ void Unit::SetMaxPower(Powers power, uint32 val)
     uint32 cur_power = GetPower(power);
     SetStatInt32Value(UNIT_FIELD_MAXPOWER1 + power, val);
 
-    // group and spectators update
+    // group update
     if (GetTypeId() == TYPEID_PLAYER)
     {
-        if (ToPlayer()->HaveSpectators())
-        {
-            SpectatorAddonMsg msg;
-            msg.SetPlayer(ToPlayer()->GetName());
-            msg.SetMaxPower(val);
-            msg.SetPowerType(power);
-            ToPlayer()->SendSpectatorAddonMsgToBG(msg);
-        }
-
         if (ToPlayer()->GetGroup())
             ToPlayer()->SetGroupUpdateFlag(GROUP_UPDATE_FLAG_MAX_POWER);
     }

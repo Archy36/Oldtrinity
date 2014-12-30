@@ -479,7 +479,7 @@ enum DeathState
     CORPSE         = 2,
     DEAD           = 3,
     JUST_RESPAWNED = 4,
-	GHOULED        = 5 //Raise ally, Deathknight's spell
+    GHOULED        = 5 //Raise ally, Deathknight's spell
 };
 
 enum UnitState
@@ -2154,9 +2154,9 @@ class Unit : public WorldObject
         // Movement info
         Movement::MoveSpline * movespline;
 
-		// Part of Evade mechanics
-		time_t GetLastDamagedTime() const { return _lastDamagedTime; }
-		void SetLastDamagedTime(time_t val) { _lastDamagedTime = val; }
+        // Part of Evade mechanics
+        time_t GetLastDamagedTime() const { return _lastDamagedTime; }
+        void SetLastDamagedTime(time_t val) { _lastDamagedTime = val; }
 
         int32 GetHighestExclusiveSameEffectSpellGroupValue(AuraEffect const* aurEff, AuraType auraType, bool checkMiscValue = false, int32 miscValue = 0) const;
         bool IsHighestExclusiveAura(Aura const* aura, bool removeOtherAuraApplications = false);

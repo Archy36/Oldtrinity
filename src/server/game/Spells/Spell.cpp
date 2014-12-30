@@ -1301,7 +1301,7 @@ void Spell::SelectImplicitCasterDestTargets(SpellEffIndex effIndex, SpellImplici
                 dist = objSize + (dist - objSize) * float(rand_norm());
 
             Position pos = dest._position;
-			switch (targetType.GetTarget())
+            switch (targetType.GetTarget())
             {
                 case TARGET_DEST_CASTER_FRONT_LEAP:
                 case TARGET_DEST_CASTER_FRONT_LEFT:
@@ -2951,17 +2951,7 @@ void Spell::prepare(SpellCastTargets const* targets, AuraEffect const* triggered
     ReSetTimer();
 
     TC_LOG_DEBUG("spells", "Spell::prepare: spell id %u source %u caster %d customCastFlags %u mask %u", m_spellInfo->Id, m_caster->GetEntry(), m_originalCaster ? m_originalCaster->GetEntry() : -1, _triggeredCastFlags, m_targets.GetTargetMask());
-	
-    if (GetCaster() && GetSpellInfo())
-        if (Player *tmpPlayer = GetCaster()->ToPlayer())
-            if (tmpPlayer->HaveSpectators())
-            {
-                SpectatorAddonMsg msg;
-                msg.SetPlayer(tmpPlayer->GetName());
-                msg.CastSpell(GetSpellInfo()->Id, GetSpellInfo()->CastTimeEntry->CastTime);
-                tmpPlayer->SendSpectatorAddonMsgToBG(msg);
-            }
-	
+      
     //Containers for channeled spells have to be set
     /// @todoApply this to all cast spells if needed
     // Why check duration? 29350: channelled triggers channelled
@@ -4670,10 +4660,10 @@ SpellCastResult Spell::CheckCast(bool strict)
             if (m_triggeredByAuraSpell)
                 return SPELL_FAILED_DONT_REPORT;
             else
-			{
-				// Return spell fizzle for shadowform, returning not ready causes it to bug out client side.
-				return m_spellInfo->Id == 15473 ? SPELL_FAILED_FIZZLE : SPELL_FAILED_NOT_READY;
-			}
+            {
+                // Return spell fizzle for shadowform, returning not ready causes it to bug out client side.
+                return m_spellInfo->Id == 15473 ? SPELL_FAILED_FIZZLE : SPELL_FAILED_NOT_READY;
+            }
         }
 
         // check if we are using a potion in combat for the 2nd+ time. Cooldown is added only after caster gets out of combat
@@ -4689,10 +4679,10 @@ SpellCastResult Spell::CheckCast(bool strict)
 
     // Check global cooldown
     if (strict && !(_triggeredCastFlags & TRIGGERED_IGNORE_GCD) && HasGlobalCooldown())
-	{
-		// Return spell fizzle for shadowform, returning not ready causes it to bug out client side.
-		return m_spellInfo->Id == 15473 ? SPELL_FAILED_FIZZLE : SPELL_FAILED_NOT_READY;
-	}
+    {
+        // Return spell fizzle for shadowform, returning not ready causes it to bug out client side.
+        return m_spellInfo->Id == 15473 ? SPELL_FAILED_FIZZLE : SPELL_FAILED_NOT_READY;
+    }
 
     // only triggered spells can be processed an ended battleground
     if (!IsTriggered() && m_caster->GetTypeId() == TYPEID_PLAYER)
@@ -4714,7 +4704,7 @@ SpellCastResult Spell::CheckCast(bool strict)
     if (Player *tmpPlayer = m_caster->ToPlayer())
         if (tmpPlayer->IsSpectator())
             return SPELL_FAILED_SPELL_UNAVAILABLE;
-	
+    
     // only check at first call, Stealth auras are already removed at second call
     // for now, ignore triggered spells
     if (strict && !(_triggeredCastFlags & TRIGGERED_IGNORE_SHAPESHIFT))
