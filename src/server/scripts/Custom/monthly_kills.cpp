@@ -13,13 +13,8 @@ public:
     uint32 kills = 1;
     void OnPVPKill(Player* killer, Player* killed)
     {
-        if (killer == killed)
+        if ((Battleground *bg = killer->GetBattleground()&& bg->isArena()) || killer == killed)
             return;
-        if (Battleground *bg = killer->GetBattleground())
-        {
-            if (bg->isArena())
-                return;
-        }
         else
         {
             QueryResult resultDB = CharacterDatabase.PQuery("SELECT * FROM char_monthly_kills WHERE guid=%u;", killer->GetGUIDLow());
