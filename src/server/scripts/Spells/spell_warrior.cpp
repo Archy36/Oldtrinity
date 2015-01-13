@@ -54,7 +54,8 @@ enum WarriorSpells
     SPELL_WARRIOR_UNRELENTING_ASSAULT_TRIGGER_1     = 64849,
     SPELL_WARRIOR_UNRELENTING_ASSAULT_TRIGGER_2     = 64850,
     SPELL_WARRIOR_VIGILANCE_PROC                    = 50725,
-    SPELL_WARRIOR_VIGILANCE_REDIRECT_THREAT         = 59665
+    SPELL_WARRIOR_VIGILANCE_REDIRECT_THREAT         = 59665,
+    SPELL_WARRIOR_RAMPAGE                           = 29801
 };
 
 enum WarriorSpellIcons
@@ -862,6 +863,43 @@ class spell_warr_vigilance_trigger : public SpellScriptLoader
         }
 };
 
+class spell_warr_rampage : public SpellScriptLoader
+{
+public:
+    spell_warr_rampage() : SpellScriptLoader("spell_warr_rampage") { }
+
+    class spell_warr_rampage_AuraScript : public AuraScript
+    {
+        PrepareAuraScript(spell_warr_rampage_AuraScript);
+
+        bool CheckAreaTarget(Unit* target)
+        {
+            Unit::AuraApplicationMap& appliedAuras = target->GetAppliedAuras();
+            for (Unit::AuraApplicationMap::iterator itr = appliedAuras.begin(); itr != appliedAuras.end(); ++itr)
+            {
+                Aura const* aura = itr->second->GetBase();
+                if (aura->GetSpellInfo()->Id == SPELL_WARRIOR_RAMPAGE)
+                {
+                    if (aura->GetCasterGUID() != GetCasterGUID())
+                        return false;
+                    return true;
+                }
+            }
+            return true;
+        }
+
+        void Register() override
+        {
+            DoCheckAreaTarget += AuraCheckAreaTargetFn(spell_warr_rampage_AuraScript::CheckAreaTarget);
+        }
+    };
+
+    AuraScript* GetAuraScript() const override
+    {
+        return new spell_warr_rampage_AuraScript();
+    }
+};
+
 void AddSC_warrior_spell_scripts()
 {
     new spell_warr_bloodthirst();
@@ -883,4 +921,5 @@ void AddSC_warrior_spell_scripts()
     new spell_warr_sweeping_strikes();
     new spell_warr_vigilance();
     new spell_warr_vigilance_trigger();
+    new spell_warr_rampage(); //INSERT INTO `spell_script_names` (`spell_id`,`ScriptName`) VALUES ('29801','spell_warr_rampage')
 }

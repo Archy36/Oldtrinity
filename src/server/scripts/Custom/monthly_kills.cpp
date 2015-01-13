@@ -10,28 +10,19 @@ class monthly_kills : public PlayerScript
 {
 public:
     monthly_kills() : PlayerScript("monthly_kills") {}
-    uint32 kills = 1;
-    void OnPVPKill(Player* killer, Player* killed)
+    
+    void OnMapChanged(Player* player)
     {
-        if (killer->InArena() || killer == killed)
-            return;
-        else
-        {
-            QueryResult resultDB = CharacterDatabase.PQuery("SELECT * FROM char_monthly_kills WHERE guid=%u;", killer->GetGUIDLow());
-            if (resultDB)
-            {
-                Field *fieldsDB = resultDB->Fetch();
-                uint32 killsnew = fieldsDB[5].GetUInt32() + kills;
-                CharacterDatabase.PExecute("REPLACE INTO `char_monthly_kills` (name,race,guid,gender,class,monthly) VALUES (\"%s\",%u,%u,%u,%u,%u);", killer->GetName().c_str(), killer->getRace(), killer->GetGUIDLow(), killer->getGender(), killer->getClass(), killsnew);
-                ChatHandler(killer->GetSession()).PSendSysMessage("|cff00ff00Псих:|h|r Ещё один килл!");
-            }
-            else
-            {
-                CharacterDatabase.PExecute("REPLACE INTO `char_monthly_kills` (name,race,guid,gender,class,monthly) VALUES (\"%s\",%u,%u,%u,%u,%u);", killer->GetName().c_str(), killer->getRace(), killer->GetGUIDLow(), killer->getGender(), killer->getClass(), kills);
-                ChatHandler(killer->GetSession()).PSendSysMessage("|cff00ff00Псих:|h|r Ещё один килл!");
-            }
-        }
+        if (player->HasAura(70923))
+            player->RemoveAurasDueToSpell(70923);
     }
+
+    void OnLogin(Player* player, bool /*firstLogin*/)
+    {
+        if (player->HasAura(70923))
+            player->RemoveAurasDueToSpell(70923);
+    }
+
 };
 
 class npc_monthly_kills : public CreatureScript

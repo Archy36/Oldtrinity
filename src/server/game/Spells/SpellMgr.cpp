@@ -3666,6 +3666,9 @@ void SpellMgr::LoadSpellInfoCorrections()
             case 72405: // Broken Frostmourne
                 spellInfo->Effects[EFFECT_1].RadiusEntry = sSpellRadiusStore.LookupEntry(EFFECT_RADIUS_200_YARDS); // 200yd
                 break;
+            case 70157: // Ice tomb damage spell
+                spellInfo->AttributesEx2 |= SPELL_ATTR2_CAN_TARGET_NOT_IN_LOS;
+                break;
             // ENDOF ICECROWN CITADEL SPELLS
             //
             // RUBY SANCTUM SPELLS

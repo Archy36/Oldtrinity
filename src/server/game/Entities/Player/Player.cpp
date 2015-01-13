@@ -7412,6 +7412,20 @@ bool Player::RewardHonor(Unit* victim, uint32 groupsize, int32 honor, bool pvpto
         if (Battleground* bg = GetBattleground())
         {
             bg->UpdatePlayerScore(this, SCORE_BONUS_HONOR, honor, false); //false: prevent looping
+            //monthly kills counter
+            QueryResult resultDB = CharacterDatabase.PQuery("SELECT * FROM char_monthly_kills WHERE guid=%u;", this->GetGUIDLow());
+            if (resultDB)
+            {
+                Field *fieldsDB = resultDB->Fetch();
+                uint32 killsnew = fieldsDB[5].GetUInt32() + 1;
+                CharacterDatabase.PExecute("REPLACE INTO `char_monthly_kills` (name,race,guid,gender,class,monthly) VALUES (\"%s\",%u,%u,%u,%u,%u);", this->GetName().c_str(), this->getRace(), this->GetGUIDLow(), this->getGender(), this->getClass(), killsnew);
+                ChatHandler(this->GetSession()).PSendSysMessage("|cff00ff00Псих:|h|r ещё один килл!");
+            }
+            else
+            {
+                CharacterDatabase.PExecute("REPLACE INTO `char_monthly_kills` (name,race,guid,gender,class,monthly) VALUES (\"%s\",%u,%u,%u,%u,%u);", this->GetName().c_str(), this->getRace(), this->GetGUIDLow(), this->getGender(), this->getClass(), 1);
+                ChatHandler(this->GetSession()).PSendSysMessage("|cff00ff00Псих:|h|r ещё один килл!");
+            }
         }
     }
 
@@ -14572,13 +14586,13 @@ void Player::PrepareGossipMenu(WorldObject* source, uint32 menuId /*= 0*/, bool 
                 break;
             case GOSSIP_OPTION_VENDOR:
             {
-                                         VendorItemData const* vendorItems = creature->GetVendorItems();
-                                         if (!vendorItems || vendorItems->Empty())
-                                         {
-                                             TC_LOG_ERROR("sql.sql", "Creature %s (Entry: %u GUID: %u DB GUID: %u) has UNIT_NPC_FLAG_VENDOR set but has an empty trading item list.", creature->GetName().c_str(), creature->GetEntry(), creature->GetGUIDLow(), creature->GetDBTableGUIDLow());
-                                             canTalk = false;
-                                         }
-                                         break;
+                VendorItemData const* vendorItems = creature->GetVendorItems();
+                if (!vendorItems || vendorItems->Empty())
+                {
+                    TC_LOG_ERROR("sql.sql", "Creature %s (Entry: %u GUID: %u DB GUID: %u) has UNIT_NPC_FLAG_VENDOR set but has an empty trading item list.", creature->GetName().c_str(), creature->GetEntry(), creature->GetGUIDLow(), creature->GetDBTableGUIDLow());
+                    canTalk = false;
+                }
+                break;
             }
             case GOSSIP_OPTION_LEARNDUALSPEC:
                 if (!(GetSpecsCount() == 1 && creature->isCanTrainingAndResetTalentsOf(this) && !(getLevel() < sWorld->getIntConfig(CONFIG_MIN_DUALSPEC_LEVEL))))

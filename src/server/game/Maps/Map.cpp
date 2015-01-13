@@ -2856,7 +2856,7 @@ bool InstanceMap::CanEnter(Player* player)
 
     // cannot enter while an encounter is in progress
     // allow if just loading
-    if ((!player->IsLoading() && IsRaid() && GetInstanceScript() && GetInstanceScript()->IsEncounterInProgress()) || ((GetId() == 724) && IsRaid() && GetInstanceScript() && GetInstanceScript()->IsEncounterInProgress()))
+    if ((!player->IsLoading() && IsRaid() && GetInstanceScript() && GetInstanceScript()->IsEncounterInProgress()) || ((GetId() == 724) && IsRaid() && GetInstanceScript() && GetInstanceScript()->IsEncounterInProgress()) || ((GetId() == 631) && IsRaid() && GetInstanceScript() && GetInstanceScript()->IsEncounterInProgress()))
     {
         player->SendTransferAborted(GetId(), TRANSFER_ABORT_ZONE_IN_COMBAT);
         return false;
