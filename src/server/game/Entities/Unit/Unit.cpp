@@ -3260,7 +3260,7 @@ Aura* Unit::_TryStackingOrRefreshingExistingAura(SpellInfo const* newAura, uint8
             // effect masks do not match
             // extremely rare case
             // let's just recreate aura
-            if (effMask != foundAura->GetEffectMask())
+            if (effMask != foundAura->GetEffectMask() && foundAura->GetSpellInfo()->Id != 57970)
                 return NULL;
 
             // update basepoints with new values - effect amount will be recalculated in ModStackAmount
