@@ -7359,6 +7359,24 @@ bool Player::RewardHonor(Unit* victim, uint32 groupsize, int32 honor, bool pvpto
 
             // count the number of playerkills in one day
             ApplyModUInt32Value(PLAYER_FIELD_KILLS, 1, true);
+                        
+            // count the number of playerkills in a month
+            if (GetBattleground() && victim != NULL && victim != this)
+            {
+                QueryResult resultDB = CharacterDatabase.PQuery("SELECT * FROM char_monthly_kills WHERE guid=%u;", this->GetGUIDLow());
+                if (resultDB)
+                {
+                    Field *fieldsDB = resultDB->Fetch();
+                    uint32 killsnew = fieldsDB[5].GetUInt32() + 1;
+                    CharacterDatabase.PExecute("REPLACE INTO `char_monthly_kills` (name,race,guid,gender,class,monthly) VALUES (\"%s\",%u,%u,%u,%u,%u);", this->GetName().c_str(), this->getRace(), this->GetGUIDLow(), this->getGender(), this->getClass(), killsnew);
+                    ChatHandler(this->GetSession()).PSendSysMessage("|cff00ff00Псих:|h|r ещё один килл!");
+                }
+                else
+                {
+                    CharacterDatabase.PExecute("REPLACE INTO `char_monthly_kills` (name,race,guid,gender,class,monthly) VALUES (\"%s\",%u,%u,%u,%u,%u);", this->GetName().c_str(), this->getRace(), this->GetGUIDLow(), this->getGender(), this->getClass(), 1);
+                    ChatHandler(this->GetSession()).PSendSysMessage("|cff00ff00Псих:|h|r ещё один килл!");
+                }
+            }
             // and those in a lifetime
             ApplyModUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS, 1, true);
             UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL);
@@ -7410,23 +7428,7 @@ bool Player::RewardHonor(Unit* victim, uint32 groupsize, int32 honor, bool pvpto
     if (InBattleground() && honor > 0)
     {
         if (Battleground* bg = GetBattleground())
-        {
             bg->UpdatePlayerScore(this, SCORE_BONUS_HONOR, honor, false); //false: prevent looping
-            //monthly kills counter
-            QueryResult resultDB = CharacterDatabase.PQuery("SELECT * FROM char_monthly_kills WHERE guid=%u;", this->GetGUIDLow());
-            if (resultDB)
-            {
-                Field *fieldsDB = resultDB->Fetch();
-                uint32 killsnew = fieldsDB[5].GetUInt32() + 1;
-                CharacterDatabase.PExecute("REPLACE INTO `char_monthly_kills` (name,race,guid,gender,class,monthly) VALUES (\"%s\",%u,%u,%u,%u,%u);", this->GetName().c_str(), this->getRace(), this->GetGUIDLow(), this->getGender(), this->getClass(), killsnew);
-                ChatHandler(this->GetSession()).PSendSysMessage("|cff00ff00Псих:|h|r ещё один килл!");
-            }
-            else
-            {
-                CharacterDatabase.PExecute("REPLACE INTO `char_monthly_kills` (name,race,guid,gender,class,monthly) VALUES (\"%s\",%u,%u,%u,%u,%u);", this->GetName().c_str(), this->getRace(), this->GetGUIDLow(), this->getGender(), this->getClass(), 1);
-                ChatHandler(this->GetSession()).PSendSysMessage("|cff00ff00Псих:|h|r ещё один килл!");
-            }
-        }
     }
 
     if (sWorld->getBoolConfig(CONFIG_PVP_TOKEN_ENABLE) && pvptoken)
