@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2014 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2008-2015 TrinityCore <http://www.trinitycore.org/>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -813,7 +813,7 @@ class AuraScript : public _SpellScript
         DynamicObject* GetDynobjOwner() const;
 
         // removes aura with remove mode (see AuraRemoveMode enum)
-        void Remove(uint32 removeMode = 0);
+        void Remove(AuraRemoveMode removeMode = AURA_REMOVE_BY_DEFAULT);
         // returns aura object of script
         Aura* GetAura() const;
 
