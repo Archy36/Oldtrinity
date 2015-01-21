@@ -365,6 +365,11 @@ public:
 
     bool OnGossipHello(Player* player, Creature* creature)
     {
+        if (!sWorld->getBoolConfig(CONFIG_TRANSFER_ENABLED))
+        {
+            ChatHandler(player->GetSession()).PSendSysMessage("|cff00ff00А`дал:|h|r Услуга [Перенос персонажа] сейчас недоступна.");
+            return false;
+        }
         QueryResult resultDB = CharacterDatabase.PQuery("SELECT * FROM char_transfers WHERE guid=%u;", player->GetGUIDLow());
         if (resultDB)
         {

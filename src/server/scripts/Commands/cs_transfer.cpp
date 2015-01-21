@@ -15,6 +15,12 @@ public:
 
     static bool HandleSetTransferCommand(ChatHandler* handler, char const* args)
     {
+        if (!sWorld->getBoolConfig(CONFIG_TRANSFER_ENABLED))
+        {
+            handler->PSendSysMessage("Перенос персонажей сейчас выключен.");
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
         Player* target;
         ObjectGuid target_guid;
         std::string target_name;
@@ -114,6 +120,12 @@ public:
     }
     static bool HandleTransferCancelCommand(ChatHandler* handler, char const* args)
     {
+        if (!sWorld->getBoolConfig(CONFIG_TRANSFER_ENABLED))
+        {
+            handler->PSendSysMessage("Перенос персонажей сейчас выключен.");
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
         Player* target;
         ObjectGuid target_guid;
         std::string target_name;

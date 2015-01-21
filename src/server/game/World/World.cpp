@@ -1066,6 +1066,7 @@ void World::LoadConfigSettings(bool reload)
     m_bool_configs[CONFIG_ARENA_2v2_TEAM_ENABLE]                     = sConfigMgr->GetBoolDefault("Arena.2v2.Team", 1);
     m_bool_configs[CONFIG_ARENA_3v3_TEAM_ENABLE]                     = sConfigMgr->GetBoolDefault("Arena.3v3.Team", 1);
     m_bool_configs[CONFIG_ARENA_5v5_TEAM_ENABLE]                     = sConfigMgr->GetBoolDefault("Arena.5v5.Team", 1);
+    m_bool_configs[CONFIG_TRANSFER_ENABLED]                          = sConfigMgr->GetBoolDefault("Transfer.Enable", false);
 	
     m_bool_configs[CONFIG_OFFHAND_CHECK_AT_SPELL_UNLEARN]            = sConfigMgr->GetBoolDefault("OffhandCheckAtSpellUnlearn", true);
 
