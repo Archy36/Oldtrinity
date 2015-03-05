@@ -48,13 +48,13 @@ public:
     {
         PrepareAuraScript(spell_gen_absorb0_hitlimit1_AuraScript);
 
-        public:
-            spell_gen_absorb0_hitlimit1_AuraScript()
-            {
-                limit = 0;
-            }
+    public:
+        spell_gen_absorb0_hitlimit1_AuraScript()
+        {
+            limit = 0;
+        }
 
-        private:
+    private:
         uint32 limit;
 
         bool Load() override
@@ -783,13 +783,13 @@ public:
     {
         PrepareAuraScript(spell_gen_clone_weapon_auraScript);
 
-        public:
-            spell_gen_clone_weapon_auraScript()
-            {
-                prevItem = 0;
-            }
+    public:
+        spell_gen_clone_weapon_auraScript()
+        {
+            prevItem = 0;
+        }
 
-        private:
+    private:
         bool Validate(SpellInfo const* /*spellInfo*/) override
         {
             if (!sSpellMgr->GetSpellInfo(SPELL_COPY_WEAPON_AURA) ||
@@ -814,58 +814,58 @@ public:
             case SPELL_COPY_WEAPON_2_AURA:
             case SPELL_COPY_WEAPON_3_AURA:
             {
-                prevItem = target->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID);
+                                             prevItem = target->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID);
 
-                if (Player* player = caster->ToPlayer())
-                {
-                    if (Item* mainItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND))
-                    {
-                        if (uint32 entry = sTransmogrification->GetFakeEntry(mainItem))
-                            target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, entry);
-                        else
-                            target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, mainItem->GetEntry());
-                    }
-                }
-                else
-                    target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, caster->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID));
-                break;
+                                             if (Player* player = caster->ToPlayer())
+                                             {
+                                                 if (Item* mainItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND))
+                                                 {
+                                                     if (uint32 entry = sTransmogrification->GetFakeEntry(mainItem))
+                                                         target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, entry);
+                                                     else
+                                                         target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, mainItem->GetEntry());
+                                                 }
+                                             }
+                                             else
+                                                 target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, caster->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID));
+                                             break;
             }
             case SPELL_COPY_OFFHAND_AURA:
             case SPELL_COPY_OFFHAND_2_AURA:
             {
-                prevItem = target->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID) + 1;
+                                              prevItem = target->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID) + 1;
 
-                if (Player* player = caster->ToPlayer())
-                {
-                    if (Item* offItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND))
-                    {
-                        if (uint32 entry = sTransmogrification->GetFakeEntry(offItem))
-                            target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1, entry);
-                        else
-                            target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1, offItem->GetEntry());
-                    }
-                }
-                else
-                    target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1, caster->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1));
-                break;
+                                              if (Player* player = caster->ToPlayer())
+                                              {
+                                                  if (Item* offItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND))
+                                                  {
+                                                      if (uint32 entry = sTransmogrification->GetFakeEntry(offItem))
+                                                          target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1, entry);
+                                                      else
+                                                          target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1, offItem->GetEntry());
+                                                  }
+                                              }
+                                              else
+                                                  target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1, caster->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1));
+                                              break;
             }
             case SPELL_COPY_RANGED_AURA:
             {
-                prevItem = target->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID) + 2;
+                                           prevItem = target->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID) + 2;
 
-                if (Player* player = caster->ToPlayer())
-                {
-                    if (Item* rangedItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_RANGED))
-                    {
-                        if (uint32 entry = sTransmogrification->GetFakeEntry(rangedItem))
-                            target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 2, entry);
-                        else
-                            target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 2, rangedItem->GetEntry());
-                    }
-                }
-                else
-                    target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 2, caster->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 2));
-                break;
+                                           if (Player* player = caster->ToPlayer())
+                                           {
+                                               if (Item* rangedItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_RANGED))
+                                               {
+                                                   if (uint32 entry = sTransmogrification->GetFakeEntry(rangedItem))
+                                                       target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 2, entry);
+                                                   else
+                                                       target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 2, rangedItem->GetEntry());
+                                               }
+                                           }
+                                           else
+                                               target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 2, caster->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 2));
+                                           break;
             }
             default:
                 break;
@@ -1415,15 +1415,15 @@ public:
     {
         PrepareSpellScript(spell_gen_dungeon_credit_SpellScript);
 
-        public:
-            spell_gen_dungeon_credit_SpellScript()
+    public:
+        spell_gen_dungeon_credit_SpellScript()
         {
             _handled = false;
-            }
+        }
 
-        private:
-            bool Load() override
-            {
+    private:
+        bool Load() override
+        {
             return GetCaster()->GetTypeId() == TYPEID_UNIT;
         }
 
@@ -2435,13 +2435,13 @@ public:
     {
         PrepareAuraScript(spell_gen_on_tournament_mount_AuraScript);
 
-        public:
-            spell_gen_on_tournament_mount_AuraScript()
-            {
-                _pennantSpellId = 0;
-            }
+    public:
+        spell_gen_on_tournament_mount_AuraScript()
+        {
+            _pennantSpellId = 0;
+        }
 
-        private:
+    private:
         uint32 _pennantSpellId;
 
         bool Load() override
@@ -2474,103 +2474,103 @@ public:
             case NPC_ARGENT_STEED_ASPIRANT:
             case NPC_STORMWIND_STEED:
             {
-                                        if (player->HasAchieved(ACHIEVEMENT_CHAMPION_STORMWIND))
-                                            return SPELL_PENNANT_STORMWIND_CHAMPION;
-                                        else if (player->GetQuestRewardStatus(QUEST_VALIANT_OF_STORMWIND) || player->GetQuestRewardStatus(QUEST_A_VALIANT_OF_STORMWIND))
-                                            return SPELL_PENNANT_STORMWIND_VALIANT;
-                                        else
-                                            return SPELL_PENNANT_STORMWIND_ASPIRANT;
+                if (player->HasAchieved(ACHIEVEMENT_CHAMPION_STORMWIND))
+                    return SPELL_PENNANT_STORMWIND_CHAMPION;
+                else if (player->GetQuestRewardStatus(QUEST_VALIANT_OF_STORMWIND) || player->GetQuestRewardStatus(QUEST_A_VALIANT_OF_STORMWIND))
+                    return SPELL_PENNANT_STORMWIND_VALIANT;
+                else
+                    return SPELL_PENNANT_STORMWIND_ASPIRANT;
             }
             case NPC_GNOMEREGAN_MECHANOSTRIDER:
             {
-                                                  if (player->HasAchieved(ACHIEVEMENT_CHAMPION_GNOMEREGAN))
-                                                      return SPELL_PENNANT_GNOMEREGAN_CHAMPION;
-                                                  else if (player->GetQuestRewardStatus(QUEST_VALIANT_OF_GNOMEREGAN) || player->GetQuestRewardStatus(QUEST_A_VALIANT_OF_GNOMEREGAN))
-                                                      return SPELL_PENNANT_GNOMEREGAN_VALIANT;
-                                                  else
-                                                      return SPELL_PENNANT_GNOMEREGAN_ASPIRANT;
+                if (player->HasAchieved(ACHIEVEMENT_CHAMPION_GNOMEREGAN))
+                    return SPELL_PENNANT_GNOMEREGAN_CHAMPION;
+                else if (player->GetQuestRewardStatus(QUEST_VALIANT_OF_GNOMEREGAN) || player->GetQuestRewardStatus(QUEST_A_VALIANT_OF_GNOMEREGAN))
+                    return SPELL_PENNANT_GNOMEREGAN_VALIANT;
+                else
+                    return SPELL_PENNANT_GNOMEREGAN_ASPIRANT;
             }
             case NPC_DARK_SPEAR_RAPTOR:
             {
-                                          if (player->HasAchieved(ACHIEVEMENT_CHAMPION_SEN_JIN))
-                                              return SPELL_PENNANT_SEN_JIN_CHAMPION;
-                                          else if (player->GetQuestRewardStatus(QUEST_VALIANT_OF_SEN_JIN) || player->GetQuestRewardStatus(QUEST_A_VALIANT_OF_SEN_JIN))
-                                              return SPELL_PENNANT_SEN_JIN_VALIANT;
-                                          else
-                                              return SPELL_PENNANT_SEN_JIN_ASPIRANT;
+                if (player->HasAchieved(ACHIEVEMENT_CHAMPION_SEN_JIN))
+                    return SPELL_PENNANT_SEN_JIN_CHAMPION;
+                else if (player->GetQuestRewardStatus(QUEST_VALIANT_OF_SEN_JIN) || player->GetQuestRewardStatus(QUEST_A_VALIANT_OF_SEN_JIN))
+                    return SPELL_PENNANT_SEN_JIN_VALIANT;
+                else
+                    return SPELL_PENNANT_SEN_JIN_ASPIRANT;
             }
             case NPC_ARGENT_HAWKSTRIDER_ASPIRANT:
             case NPC_SILVERMOON_HAWKSTRIDER:
             {
-                                               if (player->HasAchieved(ACHIEVEMENT_CHAMPION_SILVERMOON))
-                                                   return SPELL_PENNANT_SILVERMOON_CHAMPION;
-                                               else if (player->GetQuestRewardStatus(QUEST_VALIANT_OF_SILVERMOON) || player->GetQuestRewardStatus(QUEST_A_VALIANT_OF_SILVERMOON))
-                                                   return SPELL_PENNANT_SILVERMOON_VALIANT;
-                                               else
-                                                   return SPELL_PENNANT_SILVERMOON_ASPIRANT;
+                if (player->HasAchieved(ACHIEVEMENT_CHAMPION_SILVERMOON))
+                    return SPELL_PENNANT_SILVERMOON_CHAMPION;
+                else if (player->GetQuestRewardStatus(QUEST_VALIANT_OF_SILVERMOON) || player->GetQuestRewardStatus(QUEST_A_VALIANT_OF_SILVERMOON))
+                    return SPELL_PENNANT_SILVERMOON_VALIANT;
+                else
+                    return SPELL_PENNANT_SILVERMOON_ASPIRANT;
             }
             case NPC_DARNASSIAN_NIGHTSABER:
             {
-                                              if (player->HasAchieved(ACHIEVEMENT_CHAMPION_DARNASSUS))
-                                                  return SPELL_PENNANT_DARNASSUS_CHAMPION;
-                                              else if (player->GetQuestRewardStatus(QUEST_VALIANT_OF_DARNASSUS) || player->GetQuestRewardStatus(QUEST_A_VALIANT_OF_DARNASSUS))
-                                                  return SPELL_PENNANT_DARNASSUS_VALIANT;
-                                              else
-                                                  return SPELL_PENNANT_DARNASSUS_ASPIRANT;
+                if (player->HasAchieved(ACHIEVEMENT_CHAMPION_DARNASSUS))
+                    return SPELL_PENNANT_DARNASSUS_CHAMPION;
+                else if (player->GetQuestRewardStatus(QUEST_VALIANT_OF_DARNASSUS) || player->GetQuestRewardStatus(QUEST_A_VALIANT_OF_DARNASSUS))
+                    return SPELL_PENNANT_DARNASSUS_VALIANT;
+                else
+                    return SPELL_PENNANT_DARNASSUS_ASPIRANT;
             }
             case NPC_EXODAR_ELEKK:
             {
-                                     if (player->HasAchieved(ACHIEVEMENT_CHAMPION_THE_EXODAR))
-                                         return SPELL_PENNANT_EXODAR_CHAMPION;
-                                     else if (player->GetQuestRewardStatus(QUEST_VALIANT_OF_THE_EXODAR) || player->GetQuestRewardStatus(QUEST_A_VALIANT_OF_THE_EXODAR))
-                                         return SPELL_PENNANT_EXODAR_VALIANT;
-                                     else
-                                         return SPELL_PENNANT_EXODAR_ASPIRANT;
+                if (player->HasAchieved(ACHIEVEMENT_CHAMPION_THE_EXODAR))
+                    return SPELL_PENNANT_EXODAR_CHAMPION;
+                else if (player->GetQuestRewardStatus(QUEST_VALIANT_OF_THE_EXODAR) || player->GetQuestRewardStatus(QUEST_A_VALIANT_OF_THE_EXODAR))
+                    return SPELL_PENNANT_EXODAR_VALIANT;
+                else
+                    return SPELL_PENNANT_EXODAR_ASPIRANT;
             }
             case NPC_IRONFORGE_RAM:
             {
-                                      if (player->HasAchieved(ACHIEVEMENT_CHAMPION_IRONFORGE))
-                                          return SPELL_PENNANT_IRONFORGE_CHAMPION;
-                                      else if (player->GetQuestRewardStatus(QUEST_VALIANT_OF_IRONFORGE) || player->GetQuestRewardStatus(QUEST_A_VALIANT_OF_IRONFORGE))
-                                          return SPELL_PENNANT_IRONFORGE_VALIANT;
-                                      else
-                                          return SPELL_PENNANT_IRONFORGE_ASPIRANT;
+                if (player->HasAchieved(ACHIEVEMENT_CHAMPION_IRONFORGE))
+                    return SPELL_PENNANT_IRONFORGE_CHAMPION;
+                else if (player->GetQuestRewardStatus(QUEST_VALIANT_OF_IRONFORGE) || player->GetQuestRewardStatus(QUEST_A_VALIANT_OF_IRONFORGE))
+                    return SPELL_PENNANT_IRONFORGE_VALIANT;
+                else
+                    return SPELL_PENNANT_IRONFORGE_ASPIRANT;
             }
             case NPC_FORSAKEN_WARHORSE:
             {
-                                          if (player->HasAchieved(ACHIEVEMENT_CHAMPION_UNDERCITY))
-                                              return SPELL_PENNANT_UNDERCITY_CHAMPION;
-                                          else if (player->GetQuestRewardStatus(QUEST_VALIANT_OF_UNDERCITY) || player->GetQuestRewardStatus(QUEST_A_VALIANT_OF_UNDERCITY))
-                                              return SPELL_PENNANT_UNDERCITY_VALIANT;
-                                          else
-                                              return SPELL_PENNANT_UNDERCITY_ASPIRANT;
+                if (player->HasAchieved(ACHIEVEMENT_CHAMPION_UNDERCITY))
+                    return SPELL_PENNANT_UNDERCITY_CHAMPION;
+                else if (player->GetQuestRewardStatus(QUEST_VALIANT_OF_UNDERCITY) || player->GetQuestRewardStatus(QUEST_A_VALIANT_OF_UNDERCITY))
+                    return SPELL_PENNANT_UNDERCITY_VALIANT;
+                else
+                    return SPELL_PENNANT_UNDERCITY_ASPIRANT;
             }
             case NPC_ORGRIMMAR_WOLF:
             {
-                                       if (player->HasAchieved(ACHIEVEMENT_CHAMPION_ORGRIMMAR))
-                                           return SPELL_PENNANT_ORGRIMMAR_CHAMPION;
-                                       else if (player->GetQuestRewardStatus(QUEST_VALIANT_OF_ORGRIMMAR) || player->GetQuestRewardStatus(QUEST_A_VALIANT_OF_ORGRIMMAR))
-                                           return SPELL_PENNANT_ORGRIMMAR_VALIANT;
-                                       else
-                                           return SPELL_PENNANT_ORGRIMMAR_ASPIRANT;
+                if (player->HasAchieved(ACHIEVEMENT_CHAMPION_ORGRIMMAR))
+                    return SPELL_PENNANT_ORGRIMMAR_CHAMPION;
+                else if (player->GetQuestRewardStatus(QUEST_VALIANT_OF_ORGRIMMAR) || player->GetQuestRewardStatus(QUEST_A_VALIANT_OF_ORGRIMMAR))
+                    return SPELL_PENNANT_ORGRIMMAR_VALIANT;
+                else
+                    return SPELL_PENNANT_ORGRIMMAR_ASPIRANT;
             }
             case NPC_THUNDER_BLUFF_KODO:
             {
-                                           if (player->HasAchieved(ACHIEVEMENT_CHAMPION_THUNDER_BLUFF))
-                                               return SPELL_PENNANT_THUNDER_BLUFF_CHAMPION;
-                                           else if (player->GetQuestRewardStatus(QUEST_VALIANT_OF_THUNDER_BLUFF) || player->GetQuestRewardStatus(QUEST_A_VALIANT_OF_THUNDER_BLUFF))
-                                               return SPELL_PENNANT_THUNDER_BLUFF_VALIANT;
-                                           else
-                                               return SPELL_PENNANT_THUNDER_BLUFF_ASPIRANT;
+                if (player->HasAchieved(ACHIEVEMENT_CHAMPION_THUNDER_BLUFF))
+                    return SPELL_PENNANT_THUNDER_BLUFF_CHAMPION;
+                else if (player->GetQuestRewardStatus(QUEST_VALIANT_OF_THUNDER_BLUFF) || player->GetQuestRewardStatus(QUEST_A_VALIANT_OF_THUNDER_BLUFF))
+                    return SPELL_PENNANT_THUNDER_BLUFF_VALIANT;
+                else
+                    return SPELL_PENNANT_THUNDER_BLUFF_ASPIRANT;
             }
             case NPC_ARGENT_WARHORSE:
             {
-                                        if (player->HasAchieved(ACHIEVEMENT_CHAMPION_ALLIANCE) || player->HasAchieved(ACHIEVEMENT_CHAMPION_HORDE))
-                                            return player->getClass() == CLASS_DEATH_KNIGHT ? SPELL_PENNANT_EBON_BLADE_CHAMPION : SPELL_PENNANT_ARGENT_CRUSADE_CHAMPION;
-                                        else if (player->HasAchieved(ACHIEVEMENT_ARGENT_VALOR))
-                                            return player->getClass() == CLASS_DEATH_KNIGHT ? SPELL_PENNANT_EBON_BLADE_VALIANT : SPELL_PENNANT_ARGENT_CRUSADE_VALIANT;
-                                        else
-                                            return player->getClass() == CLASS_DEATH_KNIGHT ? SPELL_PENNANT_EBON_BLADE_ASPIRANT : SPELL_PENNANT_ARGENT_CRUSADE_ASPIRANT;
+                if (player->HasAchieved(ACHIEVEMENT_CHAMPION_ALLIANCE) || player->HasAchieved(ACHIEVEMENT_CHAMPION_HORDE))
+                    return player->getClass() == CLASS_DEATH_KNIGHT ? SPELL_PENNANT_EBON_BLADE_CHAMPION : SPELL_PENNANT_ARGENT_CRUSADE_CHAMPION;
+                else if (player->HasAchieved(ACHIEVEMENT_ARGENT_VALOR))
+                    return player->getClass() == CLASS_DEATH_KNIGHT ? SPELL_PENNANT_EBON_BLADE_VALIANT : SPELL_PENNANT_ARGENT_CRUSADE_VALIANT;
+                else
+                    return player->getClass() == CLASS_DEATH_KNIGHT ? SPELL_PENNANT_EBON_BLADE_ASPIRANT : SPELL_PENNANT_ARGENT_CRUSADE_ASPIRANT;
             }
             default:
                 return 0;
@@ -3513,7 +3513,7 @@ public:
         {
             DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_gen_vehicle_scaling_AuraScript::CalculateAmount, EFFECT_0, SPELL_AURA_MOD_HEALING_PCT);
             DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_gen_vehicle_scaling_AuraScript::CalculateAmount, EFFECT_1, SPELL_AURA_MOD_DAMAGE_PERCENT_DONE);
-            DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_gen_vehicle_scaling_AuraScript::CalculateAmount, EFFECT_2, SPELL_AURA_MOD_INCREASE_HEALTH_PERCENT);
+            DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_gen_vehicle_scaling_AuraScript::CalculateAmount, EFFECT_2, SPELL_AURA_MOD_INCREASE_HEALTH_PERCENT);    
         }
     };
 
@@ -3797,90 +3797,90 @@ public:
 
 enum RequiredMixologySpells
 {
-    SPELL_MIXOLOGY                      = 53042,
+    SPELL_MIXOLOGY = 53042,
     // Flasks
-    SPELL_FLASK_OF_THE_FROST_WYRM       = 53755,
-    SPELL_FLASK_OF_STONEBLOOD           = 53758,
-    SPELL_FLASK_OF_ENDLESS_RAGE         = 53760,
-    SPELL_FLASK_OF_PURE_MOJO            = 54212,
-    SPELL_LESSER_FLASK_OF_RESISTANCE    = 62380,
-    SPELL_LESSER_FLASK_OF_TOUGHNESS     = 53752,
-    SPELL_FLASK_OF_BLINDING_LIGHT       = 28521,
-    SPELL_FLASK_OF_CHROMATIC_WONDER     = 42735,
-    SPELL_FLASK_OF_FORTIFICATION        = 28518,
-    SPELL_FLASK_OF_MIGHTY_RESTORATION   = 28519,
-    SPELL_FLASK_OF_PURE_DEATH           = 28540,
-    SPELL_FLASK_OF_RELENTLESS_ASSAULT   = 28520,
+    SPELL_FLASK_OF_THE_FROST_WYRM = 53755,
+    SPELL_FLASK_OF_STONEBLOOD = 53758,
+    SPELL_FLASK_OF_ENDLESS_RAGE = 53760,
+    SPELL_FLASK_OF_PURE_MOJO = 54212,
+    SPELL_LESSER_FLASK_OF_RESISTANCE = 62380,
+    SPELL_LESSER_FLASK_OF_TOUGHNESS = 53752,
+    SPELL_FLASK_OF_BLINDING_LIGHT = 28521,
+    SPELL_FLASK_OF_CHROMATIC_WONDER = 42735,
+    SPELL_FLASK_OF_FORTIFICATION = 28518,
+    SPELL_FLASK_OF_MIGHTY_RESTORATION = 28519,
+    SPELL_FLASK_OF_PURE_DEATH = 28540,
+    SPELL_FLASK_OF_RELENTLESS_ASSAULT = 28520,
     SPELL_FLASK_OF_CHROMATIC_RESISTANCE = 17629,
-    SPELL_FLASK_OF_DISTILLED_WISDOM     = 17627,
-    SPELL_FLASK_OF_SUPREME_POWER        = 17628,
-    SPELL_FLASK_OF_THE_TITANS           = 17626,
+    SPELL_FLASK_OF_DISTILLED_WISDOM = 17627,
+    SPELL_FLASK_OF_SUPREME_POWER = 17628,
+    SPELL_FLASK_OF_THE_TITANS = 17626,
     // Elixirs
-    SPELL_ELIXIR_OF_MIGHTY_AGILITY      = 28497,
-    SPELL_ELIXIR_OF_ACCURACY            = 60340,
-    SPELL_ELIXIR_OF_DEADLY_STRIKES      = 60341,
-    SPELL_ELIXIR_OF_MIGHTY_DEFENSE      = 60343,
-    SPELL_ELIXIR_OF_EXPERTISE           = 60344,
-    SPELL_ELIXIR_OF_ARMOR_PIERCING      = 60345,
-    SPELL_ELIXIR_OF_LIGHTNING_SPEED     = 60346,
-    SPELL_ELIXIR_OF_MIGHTY_FORTITUDE    = 53751,
-    SPELL_ELIXIR_OF_MIGHTY_MAGEBLOOD    = 53764,
-    SPELL_ELIXIR_OF_MIGHTY_STRENGTH     = 53748,
-    SPELL_ELIXIR_OF_MIGHTY_TOUGHTS      = 60347,
-    SPELL_ELIXIR_OF_PROTECTION          = 53763,
-    SPELL_ELIXIR_OF_SPIRIT              = 53747,
-    SPELL_GURUS_ELIXIR                  = 53749,
-    SPELL_SHADOWPOWER_ELIXIR            = 33721,
-    SPELL_WRATH_ELIXIR                  = 53746,
-    SPELL_ELIXIR_OF_EMPOWERMENT         = 28514,
-    SPELL_ELIXIR_OF_MAJOR_MAGEBLOOD     = 28509,
-    SPELL_ELIXIR_OF_MAJOR_SHADOW_POWER  = 28503,
-    SPELL_ELIXIR_OF_MAJOR_DEFENSE       = 28502,
-    SPELL_FEL_STRENGTH_ELIXIR           = 38954,
-    SPELL_ELIXIR_OF_IRONSKIN            = 39628,
-    SPELL_ELIXIR_OF_MAJOR_AGILITY       = 54494,
-    SPELL_ELIXIR_OF_DRAENIC_WISDOM      = 39627,
-    SPELL_ELIXIR_OF_MAJOR_FIREPOWER     = 28501,
-    SPELL_ELIXIR_OF_MAJOR_FROST_POWER   = 28493,
-    SPELL_EARTHEN_ELIXIR                = 39626,
-    SPELL_ELIXIR_OF_MASTERY             = 33726,
-    SPELL_ELIXIR_OF_HEALING_POWER       = 28491,
-    SPELL_ELIXIR_OF_MAJOR_FORTITUDE     = 39625,
-    SPELL_ELIXIR_OF_MAJOR_STRENGTH      = 28490,
-    SPELL_ADEPTS_ELIXIR                 = 54452,
-    SPELL_ONSLAUGHT_ELIXIR              = 33720,
-    SPELL_MIGHTY_TROLLS_BLOOD_ELIXIR    = 24361,
-    SPELL_GREATER_ARCANE_ELIXIR         = 17539,
-    SPELL_ELIXIR_OF_THE_MONGOOSE        = 17538,
-    SPELL_ELIXIR_OF_BRUTE_FORCE         = 17537,
-    SPELL_ELIXIR_OF_SAGES               = 17535,
-    SPELL_ELIXIR_OF_SUPERIOR_DEFENSE    = 11348,
-    SPELL_ELIXIR_OF_DEMONSLAYING        = 11406,
-    SPELL_ELIXIR_OF_GREATER_FIREPOWER   = 26276,
-    SPELL_ELIXIR_OF_SHADOW_POWER        = 11474,
-    SPELL_MAGEBLOOD_ELIXIR              = 24363,
-    SPELL_ELIXIR_OF_GIANTS              = 11405,
-    SPELL_ELIXIR_OF_GREATER_AGILITY     = 11334,
-    SPELL_ARCANE_ELIXIR                 = 11390,
-    SPELL_ELIXIR_OF_GREATER_INTELLECT   = 11396,
-    SPELL_ELIXIR_OF_GREATER_DEFENSE     = 11349,
-    SPELL_ELIXIR_OF_FROST_POWER         = 21920,
-    SPELL_ELIXIR_OF_AGILITY             = 11328,
-    SPELL_MAJOR_TROLLS_BLLOOD_ELIXIR    =  3223,
-    SPELL_ELIXIR_OF_FORTITUDE           =  3593,
-    SPELL_ELIXIR_OF_OGRES_STRENGTH      =  3164,
-    SPELL_ELIXIR_OF_FIREPOWER           =  7844,
-    SPELL_ELIXIR_OF_LESSER_AGILITY      =  3160,
-    SPELL_ELIXIR_OF_DEFENSE             =  3220,
-    SPELL_STRONG_TROLLS_BLOOD_ELIXIR    =  3222,
-    SPELL_ELIXIR_OF_MINOR_ACCURACY      = 63729,
-    SPELL_ELIXIR_OF_WISDOM              =  3166,
-    SPELL_ELIXIR_OF_GIANTH_GROWTH       =  8212,
-    SPELL_ELIXIR_OF_MINOR_AGILITY       =  2374,
-    SPELL_ELIXIR_OF_MINOR_FORTITUDE     =  2378,
-    SPELL_WEAK_TROLLS_BLOOD_ELIXIR      =  3219,
-    SPELL_ELIXIR_OF_LIONS_STRENGTH      =  2367,
-    SPELL_ELIXIR_OF_MINOR_DEFENSE       =   673
+    SPELL_ELIXIR_OF_MIGHTY_AGILITY = 28497,
+    SPELL_ELIXIR_OF_ACCURACY = 60340,
+    SPELL_ELIXIR_OF_DEADLY_STRIKES = 60341,
+    SPELL_ELIXIR_OF_MIGHTY_DEFENSE = 60343,
+    SPELL_ELIXIR_OF_EXPERTISE = 60344,
+    SPELL_ELIXIR_OF_ARMOR_PIERCING = 60345,
+    SPELL_ELIXIR_OF_LIGHTNING_SPEED = 60346,
+    SPELL_ELIXIR_OF_MIGHTY_FORTITUDE = 53751,
+    SPELL_ELIXIR_OF_MIGHTY_MAGEBLOOD = 53764,
+    SPELL_ELIXIR_OF_MIGHTY_STRENGTH = 53748,
+    SPELL_ELIXIR_OF_MIGHTY_TOUGHTS = 60347,
+    SPELL_ELIXIR_OF_PROTECTION = 53763,
+    SPELL_ELIXIR_OF_SPIRIT = 53747,
+    SPELL_GURUS_ELIXIR = 53749,
+    SPELL_SHADOWPOWER_ELIXIR = 33721,
+    SPELL_WRATH_ELIXIR = 53746,
+    SPELL_ELIXIR_OF_EMPOWERMENT = 28514,
+    SPELL_ELIXIR_OF_MAJOR_MAGEBLOOD = 28509,
+    SPELL_ELIXIR_OF_MAJOR_SHADOW_POWER = 28503,
+    SPELL_ELIXIR_OF_MAJOR_DEFENSE = 28502,
+    SPELL_FEL_STRENGTH_ELIXIR = 38954,
+    SPELL_ELIXIR_OF_IRONSKIN = 39628,
+    SPELL_ELIXIR_OF_MAJOR_AGILITY = 54494,
+    SPELL_ELIXIR_OF_DRAENIC_WISDOM = 39627,
+    SPELL_ELIXIR_OF_MAJOR_FIREPOWER = 28501,
+    SPELL_ELIXIR_OF_MAJOR_FROST_POWER = 28493,
+    SPELL_EARTHEN_ELIXIR = 39626,
+    SPELL_ELIXIR_OF_MASTERY = 33726,
+    SPELL_ELIXIR_OF_HEALING_POWER = 28491,
+    SPELL_ELIXIR_OF_MAJOR_FORTITUDE = 39625,
+    SPELL_ELIXIR_OF_MAJOR_STRENGTH = 28490,
+    SPELL_ADEPTS_ELIXIR = 54452,
+    SPELL_ONSLAUGHT_ELIXIR = 33720,
+    SPELL_MIGHTY_TROLLS_BLOOD_ELIXIR = 24361,
+    SPELL_GREATER_ARCANE_ELIXIR = 17539,
+    SPELL_ELIXIR_OF_THE_MONGOOSE = 17538,
+    SPELL_ELIXIR_OF_BRUTE_FORCE = 17537,
+    SPELL_ELIXIR_OF_SAGES = 17535,
+    SPELL_ELIXIR_OF_SUPERIOR_DEFENSE = 11348,
+    SPELL_ELIXIR_OF_DEMONSLAYING = 11406,
+    SPELL_ELIXIR_OF_GREATER_FIREPOWER = 26276,
+    SPELL_ELIXIR_OF_SHADOW_POWER = 11474,
+    SPELL_MAGEBLOOD_ELIXIR = 24363,
+    SPELL_ELIXIR_OF_GIANTS = 11405,
+    SPELL_ELIXIR_OF_GREATER_AGILITY = 11334,
+    SPELL_ARCANE_ELIXIR = 11390,
+    SPELL_ELIXIR_OF_GREATER_INTELLECT = 11396,
+    SPELL_ELIXIR_OF_GREATER_DEFENSE = 11349,
+    SPELL_ELIXIR_OF_FROST_POWER = 21920,
+    SPELL_ELIXIR_OF_AGILITY = 11328,
+    SPELL_MAJOR_TROLLS_BLLOOD_ELIXIR = 3223,
+    SPELL_ELIXIR_OF_FORTITUDE = 3593,
+    SPELL_ELIXIR_OF_OGRES_STRENGTH = 3164,
+    SPELL_ELIXIR_OF_FIREPOWER = 7844,
+    SPELL_ELIXIR_OF_LESSER_AGILITY = 3160,
+    SPELL_ELIXIR_OF_DEFENSE = 3220,
+    SPELL_STRONG_TROLLS_BLOOD_ELIXIR = 3222,
+    SPELL_ELIXIR_OF_MINOR_ACCURACY = 63729,
+    SPELL_ELIXIR_OF_WISDOM = 3166,
+    SPELL_ELIXIR_OF_GIANTH_GROWTH = 8212,
+    SPELL_ELIXIR_OF_MINOR_AGILITY = 2374,
+    SPELL_ELIXIR_OF_MINOR_FORTITUDE = 2378,
+    SPELL_WEAK_TROLLS_BLOOD_ELIXIR = 3219,
+    SPELL_ELIXIR_OF_LIONS_STRENGTH = 2367,
+    SPELL_ELIXIR_OF_MINOR_DEFENSE = 673
 };
 
 class spell_gen_mixology_bonus : public SpellScriptLoader
@@ -3923,167 +3923,167 @@ public:
             {
                 switch (GetId())
                 {
-                    case SPELL_WEAK_TROLLS_BLOOD_ELIXIR:
-                    case SPELL_MAGEBLOOD_ELIXIR:
-                        bonus = amount;
-                        break;
-                    case SPELL_ELIXIR_OF_FROST_POWER:
-                    case SPELL_LESSER_FLASK_OF_TOUGHNESS:
-                    case SPELL_LESSER_FLASK_OF_RESISTANCE:
-                        bonus = CalculatePct(amount, 80);
-                        break;
-                    case SPELL_ELIXIR_OF_MINOR_DEFENSE:
-                    case SPELL_ELIXIR_OF_LIONS_STRENGTH:
-                    case SPELL_ELIXIR_OF_MINOR_AGILITY:
-                    case SPELL_MAJOR_TROLLS_BLLOOD_ELIXIR:
-                    case SPELL_ELIXIR_OF_SHADOW_POWER:
-                    case SPELL_ELIXIR_OF_BRUTE_FORCE:
-                    case SPELL_MIGHTY_TROLLS_BLOOD_ELIXIR:
-                    case SPELL_ELIXIR_OF_GREATER_FIREPOWER:
-                    case SPELL_ONSLAUGHT_ELIXIR:
-                    case SPELL_EARTHEN_ELIXIR:
-                    case SPELL_ELIXIR_OF_MAJOR_AGILITY:
-                    case SPELL_FLASK_OF_THE_TITANS:
-                    case SPELL_FLASK_OF_RELENTLESS_ASSAULT:
-                    case SPELL_FLASK_OF_STONEBLOOD:
-                    case SPELL_ELIXIR_OF_MINOR_ACCURACY:
-                        bonus = CalculatePct(amount, 50);
-                        break;
-                    case SPELL_ELIXIR_OF_PROTECTION:
-                        bonus = 280;
-                        break;
-                    case SPELL_ELIXIR_OF_MAJOR_DEFENSE:
-                        bonus = 200;
-                        break;
-                    case SPELL_ELIXIR_OF_GREATER_DEFENSE:
-                    case SPELL_ELIXIR_OF_SUPERIOR_DEFENSE:
-                        bonus = 140;
-                        break;
-                    case SPELL_ELIXIR_OF_FORTITUDE:
-                        bonus = 100;
-                        break;
-                    case SPELL_FLASK_OF_ENDLESS_RAGE:
-                        bonus = 82;
-                        break;
-                    case SPELL_ELIXIR_OF_DEFENSE:
-                        bonus = 70;
-                        break;
-                    case SPELL_ELIXIR_OF_DEMONSLAYING:
-                        bonus = 50;
-                        break;
-                    case SPELL_FLASK_OF_THE_FROST_WYRM:
-                        bonus = 47;
-                        break;
-                    case SPELL_WRATH_ELIXIR:
-                        bonus = 32;
-                        break;
-                    case SPELL_ELIXIR_OF_MAJOR_FROST_POWER:
-                    case SPELL_ELIXIR_OF_MAJOR_FIREPOWER:
-                    case SPELL_ELIXIR_OF_MAJOR_SHADOW_POWER:
-                        bonus = 29;
-                        break;
-                    case SPELL_ELIXIR_OF_MIGHTY_TOUGHTS:
-                        bonus = 27;
-                        break;
-                    case SPELL_FLASK_OF_SUPREME_POWER:
-                    case SPELL_FLASK_OF_BLINDING_LIGHT:
-                    case SPELL_FLASK_OF_PURE_DEATH:
-                    case SPELL_SHADOWPOWER_ELIXIR:
-                        bonus = 23;
-                        break;
-                    case SPELL_ELIXIR_OF_MIGHTY_AGILITY:
-                    case SPELL_FLASK_OF_DISTILLED_WISDOM:
-                    case SPELL_ELIXIR_OF_SPIRIT:
-                    case SPELL_ELIXIR_OF_MIGHTY_STRENGTH:
-                    case SPELL_FLASK_OF_PURE_MOJO:
-                    case SPELL_ELIXIR_OF_ACCURACY:
-                    case SPELL_ELIXIR_OF_DEADLY_STRIKES:
-                    case SPELL_ELIXIR_OF_MIGHTY_DEFENSE:
-                    case SPELL_ELIXIR_OF_EXPERTISE:
-                    case SPELL_ELIXIR_OF_ARMOR_PIERCING:
-                    case SPELL_ELIXIR_OF_LIGHTNING_SPEED:
-                        bonus = 20;
-                        break;
-                    case SPELL_FLASK_OF_CHROMATIC_RESISTANCE:
-                        bonus = 17;
-                        break;
-                    case SPELL_ELIXIR_OF_MINOR_FORTITUDE:
-                    case SPELL_ELIXIR_OF_MAJOR_STRENGTH:
-                        bonus = 15;
-                        break;
-                    case SPELL_FLASK_OF_MIGHTY_RESTORATION:
-                        bonus = 13;
-                        break;
-                    case SPELL_ARCANE_ELIXIR:
-                        bonus = 12;
-                        break;
-                    case SPELL_ELIXIR_OF_GREATER_AGILITY:
-                    case SPELL_ELIXIR_OF_GIANTS:
-                        bonus = 11;
-                        break;
-                    case SPELL_ELIXIR_OF_AGILITY:
-                    case SPELL_ELIXIR_OF_GREATER_INTELLECT:
-                    case SPELL_ELIXIR_OF_SAGES:
-                    case SPELL_ELIXIR_OF_IRONSKIN:
-                    case SPELL_ELIXIR_OF_MIGHTY_MAGEBLOOD:
-                        bonus = 10;
-                        break;
-                    case SPELL_ELIXIR_OF_HEALING_POWER:
-                        bonus = 9;
-                        break;
-                    case SPELL_ELIXIR_OF_DRAENIC_WISDOM:
-                    case SPELL_GURUS_ELIXIR:
-                        bonus = 8;
-                        break;
-                    case SPELL_ELIXIR_OF_FIREPOWER:
-                    case SPELL_ELIXIR_OF_MAJOR_MAGEBLOOD:
-                    case SPELL_ELIXIR_OF_MASTERY:
-                        bonus = 6;
-                        break;
-                    case SPELL_ELIXIR_OF_LESSER_AGILITY:
-                    case SPELL_ELIXIR_OF_OGRES_STRENGTH:
-                    case SPELL_ELIXIR_OF_WISDOM:
-                    case SPELL_ELIXIR_OF_THE_MONGOOSE:
-                        bonus = 5;
-                        break;
-                    case SPELL_STRONG_TROLLS_BLOOD_ELIXIR:
-                    case SPELL_FLASK_OF_CHROMATIC_WONDER:
-                        bonus = 4;
-                        break;
-                    case SPELL_ELIXIR_OF_EMPOWERMENT:
-                        bonus = -10;
-                        break;
-                    case SPELL_ADEPTS_ELIXIR:
-                        SetBonusValueForEffect(EFFECT_0, 13, aurEff);
-                        SetBonusValueForEffect(EFFECT_1, 13, aurEff);
-                        SetBonusValueForEffect(EFFECT_2, 8, aurEff);
-                        break;
-                    case SPELL_ELIXIR_OF_MIGHTY_FORTITUDE:
-                        SetBonusValueForEffect(EFFECT_0, 160, aurEff);
-                        break;
-                    case SPELL_ELIXIR_OF_MAJOR_FORTITUDE:
-                        SetBonusValueForEffect(EFFECT_0, 116, aurEff);
-                        SetBonusValueForEffect(EFFECT_1, 6, aurEff);
-                        break;
-                    case SPELL_FEL_STRENGTH_ELIXIR:
-                        SetBonusValueForEffect(EFFECT_0, 40, aurEff);
-                        SetBonusValueForEffect(EFFECT_1, 40, aurEff);
-                        break;
-                    case SPELL_FLASK_OF_FORTIFICATION:
-                        SetBonusValueForEffect(EFFECT_0, 210, aurEff);
-                        SetBonusValueForEffect(EFFECT_1, 5, aurEff);
-                        break;
-                    case SPELL_GREATER_ARCANE_ELIXIR:
-                        SetBonusValueForEffect(EFFECT_0, 19, aurEff);
-                        SetBonusValueForEffect(EFFECT_1, 19, aurEff);
-                        SetBonusValueForEffect(EFFECT_2, 5, aurEff);
-                        break;
-                    case SPELL_ELIXIR_OF_GIANTH_GROWTH:
-                        SetBonusValueForEffect(EFFECT_0, 5, aurEff);
-                        break;
-                    default:
-                        TC_LOG_ERROR("spells", "SpellId %u couldn't be processed in spell_gen_mixology_bonus", GetId());
-                        break;
+                case SPELL_WEAK_TROLLS_BLOOD_ELIXIR:
+                case SPELL_MAGEBLOOD_ELIXIR:
+                    bonus = amount;
+                    break;
+                case SPELL_ELIXIR_OF_FROST_POWER:
+                case SPELL_LESSER_FLASK_OF_TOUGHNESS:
+                case SPELL_LESSER_FLASK_OF_RESISTANCE:
+                    bonus = CalculatePct(amount, 80);
+                    break;
+                case SPELL_ELIXIR_OF_MINOR_DEFENSE:
+                case SPELL_ELIXIR_OF_LIONS_STRENGTH:
+                case SPELL_ELIXIR_OF_MINOR_AGILITY:
+                case SPELL_MAJOR_TROLLS_BLLOOD_ELIXIR:
+                case SPELL_ELIXIR_OF_SHADOW_POWER:
+                case SPELL_ELIXIR_OF_BRUTE_FORCE:
+                case SPELL_MIGHTY_TROLLS_BLOOD_ELIXIR:
+                case SPELL_ELIXIR_OF_GREATER_FIREPOWER:
+                case SPELL_ONSLAUGHT_ELIXIR:
+                case SPELL_EARTHEN_ELIXIR:
+                case SPELL_ELIXIR_OF_MAJOR_AGILITY:
+                case SPELL_FLASK_OF_THE_TITANS:
+                case SPELL_FLASK_OF_RELENTLESS_ASSAULT:
+                case SPELL_FLASK_OF_STONEBLOOD:
+                case SPELL_ELIXIR_OF_MINOR_ACCURACY:
+                    bonus = CalculatePct(amount, 50);
+                    break;
+                case SPELL_ELIXIR_OF_PROTECTION:
+                    bonus = 280;
+                    break;
+                case SPELL_ELIXIR_OF_MAJOR_DEFENSE:
+                    bonus = 200;
+                    break;
+                case SPELL_ELIXIR_OF_GREATER_DEFENSE:
+                case SPELL_ELIXIR_OF_SUPERIOR_DEFENSE:
+                    bonus = 140;
+                    break;
+                case SPELL_ELIXIR_OF_FORTITUDE:
+                    bonus = 100;
+                    break;
+                case SPELL_FLASK_OF_ENDLESS_RAGE:
+                    bonus = 82;
+                    break;
+                case SPELL_ELIXIR_OF_DEFENSE:
+                    bonus = 70;
+                    break;
+                case SPELL_ELIXIR_OF_DEMONSLAYING:
+                    bonus = 50;
+                    break;
+                case SPELL_FLASK_OF_THE_FROST_WYRM:
+                    bonus = 47;
+                    break;
+                case SPELL_WRATH_ELIXIR:
+                    bonus = 32;
+                    break;
+                case SPELL_ELIXIR_OF_MAJOR_FROST_POWER:
+                case SPELL_ELIXIR_OF_MAJOR_FIREPOWER:
+                case SPELL_ELIXIR_OF_MAJOR_SHADOW_POWER:
+                    bonus = 29;
+                    break;
+                case SPELL_ELIXIR_OF_MIGHTY_TOUGHTS:
+                    bonus = 27;
+                    break;
+                case SPELL_FLASK_OF_SUPREME_POWER:
+                case SPELL_FLASK_OF_BLINDING_LIGHT:
+                case SPELL_FLASK_OF_PURE_DEATH:
+                case SPELL_SHADOWPOWER_ELIXIR:
+                    bonus = 23;
+                    break;
+                case SPELL_ELIXIR_OF_MIGHTY_AGILITY:
+                case SPELL_FLASK_OF_DISTILLED_WISDOM:
+                case SPELL_ELIXIR_OF_SPIRIT:
+                case SPELL_ELIXIR_OF_MIGHTY_STRENGTH:
+                case SPELL_FLASK_OF_PURE_MOJO:
+                case SPELL_ELIXIR_OF_ACCURACY:
+                case SPELL_ELIXIR_OF_DEADLY_STRIKES:
+                case SPELL_ELIXIR_OF_MIGHTY_DEFENSE:
+                case SPELL_ELIXIR_OF_EXPERTISE:
+                case SPELL_ELIXIR_OF_ARMOR_PIERCING:
+                case SPELL_ELIXIR_OF_LIGHTNING_SPEED:
+                    bonus = 20;
+                    break;
+                case SPELL_FLASK_OF_CHROMATIC_RESISTANCE:
+                    bonus = 17;
+                    break;
+                case SPELL_ELIXIR_OF_MINOR_FORTITUDE:
+                case SPELL_ELIXIR_OF_MAJOR_STRENGTH:
+                    bonus = 15;
+                    break;
+                case SPELL_FLASK_OF_MIGHTY_RESTORATION:
+                    bonus = 13;
+                    break;
+                case SPELL_ARCANE_ELIXIR:
+                    bonus = 12;
+                    break;
+                case SPELL_ELIXIR_OF_GREATER_AGILITY:
+                case SPELL_ELIXIR_OF_GIANTS:
+                    bonus = 11;
+                    break;
+                case SPELL_ELIXIR_OF_AGILITY:
+                case SPELL_ELIXIR_OF_GREATER_INTELLECT:
+                case SPELL_ELIXIR_OF_SAGES:
+                case SPELL_ELIXIR_OF_IRONSKIN:
+                case SPELL_ELIXIR_OF_MIGHTY_MAGEBLOOD:
+                    bonus = 10;
+                    break;
+                case SPELL_ELIXIR_OF_HEALING_POWER:
+                    bonus = 9;
+                    break;
+                case SPELL_ELIXIR_OF_DRAENIC_WISDOM:
+                case SPELL_GURUS_ELIXIR:
+                    bonus = 8;
+                    break;
+                case SPELL_ELIXIR_OF_FIREPOWER:
+                case SPELL_ELIXIR_OF_MAJOR_MAGEBLOOD:
+                case SPELL_ELIXIR_OF_MASTERY:
+                    bonus = 6;
+                    break;
+                case SPELL_ELIXIR_OF_LESSER_AGILITY:
+                case SPELL_ELIXIR_OF_OGRES_STRENGTH:
+                case SPELL_ELIXIR_OF_WISDOM:
+                case SPELL_ELIXIR_OF_THE_MONGOOSE:
+                    bonus = 5;
+                    break;
+                case SPELL_STRONG_TROLLS_BLOOD_ELIXIR:
+                case SPELL_FLASK_OF_CHROMATIC_WONDER:
+                    bonus = 4;
+                    break;
+                case SPELL_ELIXIR_OF_EMPOWERMENT:
+                    bonus = -10;
+                    break;
+                case SPELL_ADEPTS_ELIXIR:
+                    SetBonusValueForEffect(EFFECT_0, 13, aurEff);
+                    SetBonusValueForEffect(EFFECT_1, 13, aurEff);
+                    SetBonusValueForEffect(EFFECT_2, 8, aurEff);
+                    break;
+                case SPELL_ELIXIR_OF_MIGHTY_FORTITUDE:
+                    SetBonusValueForEffect(EFFECT_0, 160, aurEff);
+                    break;
+                case SPELL_ELIXIR_OF_MAJOR_FORTITUDE:
+                    SetBonusValueForEffect(EFFECT_0, 116, aurEff);
+                    SetBonusValueForEffect(EFFECT_1, 6, aurEff);
+                    break;
+                case SPELL_FEL_STRENGTH_ELIXIR:
+                    SetBonusValueForEffect(EFFECT_0, 40, aurEff);
+                    SetBonusValueForEffect(EFFECT_1, 40, aurEff);
+                    break;
+                case SPELL_FLASK_OF_FORTIFICATION:
+                    SetBonusValueForEffect(EFFECT_0, 210, aurEff);
+                    SetBonusValueForEffect(EFFECT_1, 5, aurEff);
+                    break;
+                case SPELL_GREATER_ARCANE_ELIXIR:
+                    SetBonusValueForEffect(EFFECT_0, 19, aurEff);
+                    SetBonusValueForEffect(EFFECT_1, 19, aurEff);
+                    SetBonusValueForEffect(EFFECT_2, 5, aurEff);
+                    break;
+                case SPELL_ELIXIR_OF_GIANTH_GROWTH:
+                    SetBonusValueForEffect(EFFECT_0, 5, aurEff);
+                    break;
+                default:
+                    TC_LOG_ERROR("spells", "SpellId %u couldn't be processed in spell_gen_mixology_bonus", GetId());
+                    break;
                 }
                 amount += bonus;
             }

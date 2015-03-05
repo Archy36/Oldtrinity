@@ -6,23 +6,49 @@
 #include "WorldSession.h"
 #include "Chat.h"
 
+uint32 vehicleauras[6] = { 65266, 65635, 65636, 66666, 66667, 66668 };
+uint32 vampbite[8] = { 70946, 71475, 71476, 71477, 71726, 71727, 71728, 71729 };
+uint32 vampauras[13] = { 70923, 70924, 73015, 70867, 70879, 70949, 70950, 71473, 71525, 71530, 71531, 71532, 71533 };
+
 class monthly_kills : public PlayerScript
 {
 public:
     monthly_kills() : PlayerScript("monthly_kills") {}
     
-    void OnMapChanged(Player* player)
+    void OnUpdateZone(Player* player, uint32 /*newZone*/, uint32 /*newArea*/)
     {
-        if (player->HasAura(70923))
-            player->RemoveAurasDueToSpell(70923);
+        if (player->getLevel() == 80)
+        {
+            if (player->HasAura(70923))
+                player->RemoveAurasDueToSpell(70923);
+
+            int i;
+            for (i = 0; i < 6; ++i)
+            {
+                if (player->HasAura(vehicleauras[i]))
+                    player->RemoveAurasDueToSpell(vehicleauras[i]);
+            }
+        }
     }
 
     void OnLogin(Player* player, bool /*firstLogin*/)
     {
-        if (player->HasAura(70923))
-            player->RemoveAurasDueToSpell(70923);
-    }
+        if (player->getLevel() == 80)
+        {
+            int j,k;
+            for (j = 0; j < 8; ++j)
+            {
+                if (player->HasActiveSpell(vampbite[j]))
+                    player->RemoveSpell(vampbite[j]);
+            }
 
+            for (k = 0; k < 13; ++k)
+            {
+                if (player->HasAura(vampauras[k]))
+                    player->RemoveAurasDueToSpell(vampauras[k]);
+            }
+        }
+    }
 };
 
 class npc_monthly_kills : public CreatureScript

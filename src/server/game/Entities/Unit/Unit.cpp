@@ -1089,12 +1089,18 @@ void Unit::CalculateSpellDamageTaken(SpellNonMeleeDamage* damageInfo, int32 dama
         switch (spellInfo->SpellIconID)
         {
             // Chaos Bolt - "Chaos Bolt cannot be resisted, and pierces through all absorption effects."
-            case 3178:
+        case 3178:
+            if (damageInfo->target->HasAura(72059))
+            {
+                damage = 100;
                 break;
-            default:
-                CalcAbsorbResist(victim, damageSchoolMask, SPELL_DIRECT_DAMAGE, damage, &damageInfo->absorb, &damageInfo->resist, spellInfo);
-                damage -= damageInfo->absorb + damageInfo->resist;
+            }
+            else
                 break;
+        default:
+            CalcAbsorbResist(victim, damageSchoolMask, SPELL_DIRECT_DAMAGE, damage, &damageInfo->absorb, &damageInfo->resist, spellInfo);
+            damage -= damageInfo->absorb + damageInfo->resist;
+            break;
         }
     }
     else
