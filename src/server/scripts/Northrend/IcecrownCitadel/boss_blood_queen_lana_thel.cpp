@@ -85,6 +85,8 @@ uint32 const vampireAuras[3][MAX_DIFFICULTY] =
     {70877, 71474, 70877, 71474},
 };
 
+uint32 const vampirebite[4] = { 70946, 71475, 71476, 71477 };
+
 #define ESSENCE_OF_BLOOD_QUEEN     RAID_MODE<uint32>(70867, 71473, 71532, 71533)
 #define ESSENCE_OF_BLOOD_QUEEN_PLR RAID_MODE<uint32>(70879, 71525, 71530, 71531)
 #define FRENZIED_BLOODTHIRST       RAID_MODE<uint32>(70877, 71474, 70877, 71474)
@@ -229,6 +231,16 @@ class boss_blood_queen_lana_thel : public CreatureScript
                 instance->DoRemoveAurasDueToSpellOnPlayers(DELIRIOUS_SLASH);
                 instance->DoRemoveAurasDueToSpellOnPlayers(SPELL_PACT_OF_THE_DARKFALLEN);
                 instance->DoRemoveAurasDueToSpellOnPlayers(PRESENCE_OF_THE_DARKFALLEN);
+                Map::PlayerList const &players = instance->instance->GetPlayers();
+                if (!players.isEmpty())
+                {
+                    for (Map::PlayerList::const_iterator i = players.begin(); i != players.end(); ++i)
+                    {
+                        if (Player* player = i->GetSource())
+                            if (player->HasActiveSpell(vampirebite[instance->instance->GetDifficulty()]))
+                                player->RemoveSpell(vampirebite[instance->instance->GetDifficulty()]);
+                    }
+                }   
             }
 
             void DoAction(int32 action) override
