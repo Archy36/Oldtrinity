@@ -1723,8 +1723,7 @@ class npc_gunship_mage : public CreatureScript
             {
                 me->SetReactState(REACT_PASSIVE);
                 me->SetInCombatWithZone();
-                me->ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_KNOCK_BACK, true);
-                me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_GRIP, true);
+                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             }
 
             void EnterEvadeMode() override
@@ -1753,7 +1752,7 @@ class npc_gunship_mage : public CreatureScript
                         default:
                             break;
                     }
-
+                    me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                     me->SetControlled(true, UNIT_STATE_ROOT);
                 }
             }

@@ -237,10 +237,10 @@ class boss_blood_queen_lana_thel : public CreatureScript
                     for (Map::PlayerList::const_iterator i = players.begin(); i != players.end(); ++i)
                     {
                         if (Player* player = i->GetSource())
-                            if (player->HasActiveSpell(vampirebite[instance->instance->GetDifficulty()]))
-                                player->RemoveSpell(vampirebite[instance->instance->GetDifficulty()]);
+                        if (player->HasActiveSpell(vampirebite[instance->instance->GetDifficulty()]))
+                            player->RemoveSpell(vampirebite[instance->instance->GetDifficulty()]);
                     }
-                }   
+                }
             }
 
             void DoAction(int32 action) override
@@ -561,7 +561,25 @@ class spell_blood_queen_vampiric_bite : public SpellScriptLoader
 
             SpellCastResult CheckTarget()
             {
-                if (IsVampire(GetExplTargetUnit()))
+                bool check = false;
+                if (InstanceScript* instance = GetCaster()->GetInstanceScript())
+                {
+                    if ((instance->GetBossState(DATA_BLOOD_QUEEN_LANA_THEL) == IN_PROGRESS) && GetCaster()->GetAreaId() == 4891)
+                        check = true;
+                }
+                
+                if (!check)
+                {
+                    int j;
+                    for (j = 0; j < 4; ++j)
+                    {
+                        Player* player = GetCaster()->ToPlayer();
+                        if (player->HasActiveSpell(vampirebite[j]))
+                            player->RemoveSpell(vampirebite[j]);
+                    }
+                }
+                
+                if (IsVampire(GetExplTargetUnit()) || !check)
                 {
                     SetCustomCastResultMessage(SPELL_CUSTOM_ERROR_CANT_TARGET_VAMPIRES);
                     return SPELL_FAILED_CUSTOM_ERROR;

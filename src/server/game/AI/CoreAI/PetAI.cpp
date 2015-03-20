@@ -437,10 +437,13 @@ void PetAI::HandleReturnMovement()
             float x, y, z;
 
             me->GetCharmInfo()->GetStayPosition(x, y, z);
-            ClearCharmInfoFlags();
-            me->GetCharmInfo()->SetIsReturning(true);
-            me->GetMotionMaster()->Clear();
-            me->GetMotionMaster()->MovePoint(me->GetGUIDLow(), x, y, z);
+            if (me->GetCharmInfo()->HasStayPosition())
+            {
+                ClearCharmInfoFlags();
+                me->GetCharmInfo()->SetIsReturning(true);
+                me->GetMotionMaster()->Clear();
+                me->GetMotionMaster()->MovePoint(me->GetGUIDLow(), x, y, z);
+            }
         }
     }
     else // COMMAND_FOLLOW
