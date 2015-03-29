@@ -39,6 +39,13 @@ class arena_spectator_commands : public CommandScript
                 return false;
             }
 
+            if (player->isDead())
+            {
+                handler->PSendSysMessage("Нельзя сделать это будучи мертвым");
+                handler->SetSentErrorMessage(true);
+                return false;
+            }
+
             if (!target)
             {
                 handler->PSendSysMessage("Игрок не найден");

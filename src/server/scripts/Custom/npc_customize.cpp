@@ -10,7 +10,8 @@ enum ActNpcRename
     ACT_CONFIRM_CUSTOMIZE      = 1005,
     ACT_CONFIRM_CHANGE_FACTION = 1006,
     ACT_CHANGE_RACE            = 1007,
-    ACT_CONFIRM_CHANGE_RACE = 1008
+    ACT_CONFIRM_CHANGE_RACE = 1008,
+    ACT_CLOSE                  = 1009
 };
 
 #define PRISE_RENAME_CHAR_AP 250000000   
@@ -35,6 +36,7 @@ enum ActNpcRename
 #define MSG_COMPLETE_CUSTOMIZE "Готово! Теперь выйди из игры и зайди снова. Тебе будет предложено изменить свой внешний вид и пол!"
 #define MSG_COMPLETE_CHANGE_RACE "Готово! Теперь выйди из игры и зайди снова. Тебе будет предложено сменить рассу!"
 #define MSG_COMPLETE_CHANGE_FACTION "Готово, теперь выйди из игры и зайди снова. Тебе будет предложено сменить фракцию (Альянс/Орда)!"
+#define MSG_PLAYER_HASMUTE "Мои услуги недоступны вам из-за имеющейся у вас блокировки чата (мута)! Приходите после снятия блокировки!"
 
 class npc_customize : public CreatureScript
 {
@@ -42,12 +44,22 @@ public:
     npc_customize() : CreatureScript("npc_customize") { }
     bool OnGossipHello(Player* pPlayer, Creature* pCreature)
     {
-        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_RENAME_HELLO, GOSSIP_SENDER_MAIN, ACT_RENAME);
-        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_CUSTOMIZE_HELLO, GOSSIP_SENDER_MAIN, ACT_CUSTOMIZE);
-        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_CHANGE_RACE_HELLO, GOSSIP_SENDER_MAIN, ACT_CHANGE_RACE);
-        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_CHANGE_FACTION_HELLO, GOSSIP_SENDER_MAIN, ACT_CHANGE_FACTION);		
-        pPlayer->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, pCreature->GetGUID());
-		return true;
+        if (pPlayer->CanSpeak())
+        {
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_RENAME_HELLO, GOSSIP_SENDER_MAIN, ACT_RENAME);
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_CUSTOMIZE_HELLO, GOSSIP_SENDER_MAIN, ACT_CUSTOMIZE);
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_CHANGE_RACE_HELLO, GOSSIP_SENDER_MAIN, ACT_CHANGE_RACE);
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_CHANGE_FACTION_HELLO, GOSSIP_SENDER_MAIN, ACT_CHANGE_FACTION);
+            pPlayer->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, pCreature->GetGUID());
+            return true;
+        }
+        else
+        {
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, MSG_PLAYER_HASMUTE, GOSSIP_SENDER_MAIN, ACT_CLOSE);
+            pPlayer->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, pCreature->GetGUID());
+            return true;
+        }
+
     }
 
     bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 uiSender, uint32 uiAction)
@@ -135,7 +147,10 @@ public:
                 pPlayer->SetAtLoginFlag(AT_LOGIN_CHANGE_FACTION);
             }
             pPlayer->CLOSE_GOSSIP_MENU();
-            break;			
+            break;		
+        case ACT_CLOSE:
+            pPlayer->CLOSE_GOSSIP_MENU();
+            break;
         default:
             pPlayer->CLOSE_GOSSIP_MENU();
         }
