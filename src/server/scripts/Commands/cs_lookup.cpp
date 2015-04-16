@@ -1413,7 +1413,11 @@ public:
                     uint32 guid             = characterFields[0].GetUInt32();
                     std::string name        = characterFields[1].GetString();
 
-                    handler->PSendSysMessage(LANG_LOOKUP_PLAYER_CHARACTER, name.c_str(), guid);
+                    Player* target = sObjectMgr->GetPlayerByLowGUID(guid);
+                    if (target == NULL)
+                        handler->PSendSysMessage(LANG_LOOKUP_PLAYER_CHARACTER, name.c_str(), guid);
+                    else
+                        handler->PSendSysMessage("  %s (GUID %u) |cff00ff00(онлайн)|r", name.c_str(), guid);
                     ++counter;
                 }
                 while (result2->NextRow() && (limit == -1 || counter < limit));

@@ -305,17 +305,152 @@ const uint8  GamesOnPage    = 20;
 
 class npc_arena_spectator : public CreatureScript
 {
-    public:
-        npc_arena_spectator() : CreatureScript("npc_arena_spectator") { }
+public:
+    npc_arena_spectator() : CreatureScript("npc_arena_spectator") { }
 
-        bool OnGossipHello(Player* pPlayer, Creature* pCreature)
+    bool OnGossipHello(Player* pPlayer, Creature* pCreature)
+    {
+        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface/ICONS/Achievement_PVP_A_13:30:30:-18:0|tСмотреть бои 1800+", GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_LIST_TOP_GAMES);
+        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface/ICONS/Achievement_PVP_G_06:30:30:-18:0|tСмотреть бои до 1800", GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_LIST_GAMES);
+        //pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Spectate Specific Player", GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_SELECTED_PLAYER);
+        pPlayer->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, pCreature->GetGUID());
+        return true;
+    }
+
+    bool OnGossipSelect(Player* player, Creature* creature, uint32 /*sender*/, uint32 action)
+    {
+        player->PlayerTalkClass->ClearMenus();
+        if (action >= NPC_SPECTATOR_ACTION_LIST_GAMES && action < NPC_SPECTATOR_ACTION_LIST_TOP_GAMES)
         {
-			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface/ICONS/Achievement_PVP_A_13:30:30:-18:0|tСмотреть бои 1800+", GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_LIST_TOP_GAMES);
-			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "|TInterface/ICONS/Achievement_PVP_G_06:30:30:-18:0|tСмотреть бои до 1800", GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_LIST_GAMES);
-            //pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Spectate Specific Player", GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_SELECTED_PLAYER);
-			pPlayer->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, pCreature->GetGUID());
-            return true;
+            ShowPage(player, action - NPC_SPECTATOR_ACTION_LIST_GAMES, false);
+            player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
         }
+        else if (action >= NPC_SPECTATOR_ACTION_LIST_TOP_GAMES && action < NPC_SPECTATOR_ACTION_LIST_TOP_GAMES)
+        {
+            ShowPage(player, action - NPC_SPECTATOR_ACTION_LIST_TOP_GAMES, true);
+            player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
+        }
+        else
+        {
+            ObjectGuid guid(HIGHGUID_PLAYER, uint32(action - NPC_SPECTATOR_ACTION_SELECTED_PLAYER));
+            if (Player* target = ObjectAccessor::FindPlayer(guid))
+            {
+                ChatHandler handler(player->GetSession());
+                std::string str = target->GetName();
+                char* pTarget;
+                std::strcpy(pTarget, str.c_str());
+                arena_spectator_commands::HandleSpectateCommand(&handler, pTarget);
+            }
+        }
+        return true;
+    }
+
+    std::string GetClassNameById(uint8 id)
+    {
+        std::string sClass = "";
+        switch (id)
+        {
+        case CLASS_WARRIOR:         sClass = "Warrior ";        break;
+        case CLASS_PALADIN:         sClass = "Pala ";           break;
+        case CLASS_HUNTER:          sClass = "Hunt ";           break;
+        case CLASS_ROGUE:           sClass = "Rogue ";          break;
+        case CLASS_PRIEST:          sClass = "Priest ";         break;
+        case CLASS_DEATH_KNIGHT:    sClass = "D.K. ";           break;
+        case CLASS_SHAMAN:          sClass = "Shama ";          break;
+        case CLASS_MAGE:            sClass = "Mage ";           break;
+        case CLASS_WARLOCK:         sClass = "Warlock ";        break;
+        case CLASS_DRUID:           sClass = "Druid ";          break;
+        }
+        return sClass;
+    }
+
+    std::string GetGamesStringData(Battleground* team, uint16 mmr)
+    {
+        std::string teamsMember[BG_TEAMS_COUNT];
+        uint32 firstTeamId = 0;
+        for (Battleground::BattlegroundPlayerMap::const_iterator itr = team->GetPlayers().begin(); itr != team->GetPlayers().end(); ++itr)
+        if (Player* player = ObjectAccessor::FindPlayer(itr->first))
+        {
+            if (player->IsSpectator())
+                continue;
+
+            uint32 team = itr->second.Team;
+            if (!firstTeamId)
+                firstTeamId = team;
+
+            teamsMember[firstTeamId == team] += GetClassNameById(player->getClass());
+        }
+
+        std::string data = teamsMember[0] + "(";
+        std::stringstream ss;
+        ss << mmr;
+        data += ss.str();
+        data += ") - " + teamsMember[1];
+        return data;
+    }
+
+    uint32 GetFirstPlayerGuid(Battleground* team)
+    {
+        for (Battleground::BattlegroundPlayerMap::const_iterator itr = team->GetPlayers().begin(); itr != team->GetPlayers().end(); ++itr)
+        if (Player* player = ObjectAccessor::FindPlayer(itr->first))
+            return itr->first.GetCounter();
+        return 0;
+    }
+
+    void ShowPage(Player* player, uint16 page, bool isTop)
+    {
+        uint16 highGames = 0;
+        uint16 lowGames = 0;
+        bool haveNextPage = false;
+        for (uint8 i = BATTLEGROUND_NA; i <= BATTLEGROUND_RL; ++i)
+        {
+            if (!sBattlegroundMgr->IsArenaType((BattlegroundTypeId)i))
+                continue;
+
+            BattlegroundContainer arenas = sBattlegroundMgr->GetBattlegroundsByType((BattlegroundTypeId)i);
+            for (BattlegroundContainer::const_iterator itr = arenas.begin(); itr != arenas.end(); ++itr)
+            {
+                Battleground* arena = itr->second;
+
+                if (!arena->GetPlayersSize())
+                    continue;
+
+                uint16 mmr = arena->GetArenaMatchmakerRating(arena->GetArenaTeamIdByIndex(0)) + arena->GetArenaMatchmakerRating(arena->GetArenaTeamIdByIndex(1));
+                mmr /= 2;
+
+                if (isTop && mmr >= TopGamesRating)
+                {
+                    highGames++;
+                    if (highGames > (page + 1) * GamesOnPage)
+                    {
+                        haveNextPage = true;
+                        break;
+                    }
+
+                    if (highGames >= page * GamesOnPage)
+                        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, GetGamesStringData(arena, mmr), GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_SELECTED_PLAYER + GetFirstPlayerGuid(arena));
+                }
+                else if (!isTop && mmr < TopGamesRating)
+                {
+                    lowGames++;
+                    if (lowGames >(page + 1) * GamesOnPage)
+                    {
+                        haveNextPage = true;
+                        break;
+                    }
+
+                    if (lowGames >= page * GamesOnPage)
+                        player->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, GetGamesStringData(arena, mmr), GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_SELECTED_PLAYER + GetFirstPlayerGuid(arena));
+                }
+            }
+        }
+
+        if (page > 0)
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, "Prev..", GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_LIST_GAMES + page - 1);
+
+        if (haveNextPage)
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, "Next..", GOSSIP_SENDER_MAIN, NPC_SPECTATOR_ACTION_LIST_GAMES + page + 1);
+    }
 };
 
 

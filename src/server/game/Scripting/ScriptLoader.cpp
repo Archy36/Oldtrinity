@@ -27,6 +27,7 @@ void AddSC_mob_resurrect();
 void AddSC_arena_spectator_script();
 // NPC Vendor
 void AddSC_npc_vendor_script();
+void AddSC_boss_announcer();
 
 // spells
 void AddSC_deathknight_spell_scripts();
@@ -1457,5 +1458,6 @@ void AddCustomScripts()
     AddSC_npc_vendor_script();
     AddSC_monthly_kills();
     AddSC_npc_transfer();
+    AddSC_boss_announcer();
 #endif
 }

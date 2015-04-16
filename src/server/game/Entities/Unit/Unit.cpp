@@ -1086,10 +1086,13 @@ void Unit::CalculateSpellDamageTaken(SpellNonMeleeDamage* damageInfo, int32 dama
     // Calculate absorb resist
     if (damage > 0)
     {
-        switch (spellInfo->SpellIconID)
+        switch (spellInfo->Id)
         {
-            // Chaos Bolt - "Chaos Bolt cannot be resisted, and pierces through all absorption effects."
-        case 3178:
+        // Chaos Bolt - "Chaos Bolt cannot be resisted, and pierces through all absorption effects."
+        case 50796:
+        case 59170:
+        case 59171:
+        case 59172:
             if (damageInfo->target->HasAura(72059))
             {
                 damage = 100;
@@ -2586,7 +2589,8 @@ SpellMissInfo Unit::MagicSpellHitResult(Unit* victim, SpellInfo const* spellInfo
 
         if (hasAura)
         {
-            tmp += victim->GetMaxPositiveAuraModifierByMiscValue(SPELL_AURA_MOD_DEBUFF_RESISTANCE, int32(spellInfo->Dispel)) * 100;
+            //tmp += victim->GetMaxPositiveAuraModifierByMiscValue(SPELL_AURA_MOD_DEBUFF_RESISTANCE, int32(spellInfo->Dispel)) * 100;
+            tmp += victim->GetMaxPositiveAuraModifierByMiscValue(SPELL_AURA_MOD_DEBUFF_RESISTANCE, int32(spellInfo->Dispel), false) * 100;
             tmp += victim->GetMaxNegativeAuraModifierByMiscValue(SPELL_AURA_MOD_DEBUFF_RESISTANCE, int32(spellInfo->Dispel)) * 100;
         }
     }
@@ -4694,14 +4698,16 @@ float Unit::GetTotalAuraMultiplierByMiscValue(AuraType auratype, int32 miscValue
     return multiplier;
 }
 
-int32 Unit::GetMaxPositiveAuraModifierByMiscValue(AuraType auratype, int32 miscValue) const
+//int32 Unit::GetMaxPositiveAuraModifierByMiscValue(AuraType auratype, int32 miscValue) const
+int32 Unit::GetMaxPositiveAuraModifierByMiscValue(AuraType auratype, int32 miscValue, bool debuffResist) const
 {
     int32 modifier = 0;
 
     AuraEffectList const& mTotalAuraList = GetAuraEffectsByType(auratype);
     for (AuraEffectList::const_iterator i = mTotalAuraList.begin(); i != mTotalAuraList.end(); ++i)
     {
-        if ((*i)->GetMiscValue() == miscValue && (*i)->GetAmount() > modifier)
+        //if ((*i)->GetMiscValue() == miscValue && (*i)->GetAmount() > modifier)
+        if ((*i)->GetMiscValue() == miscValue && (*i)->GetAmount() > modifier && (debuffResist || (!debuffResist && (*i)->GetId() != 53659)))
             modifier = (*i)->GetAmount();
     }
 
@@ -9658,7 +9664,7 @@ Unit* Unit::GetMagicHitRedirectTarget(Unit* victim, SpellInfo const* spellInfo)
     for (Unit::AuraEffectList::const_iterator itr = magnetAuras.begin(); itr != magnetAuras.end(); ++itr)
     {
         if (Unit* magnet = (*itr)->GetBase()->GetCaster())
-            if ((spellInfo->CheckExplicitTarget(this, magnet) == SPELL_CAST_OK && spellInfo->CheckTarget(this, magnet, false) == SPELL_CAST_OK && _IsValidAttackTarget(magnet, spellInfo))||(spellInfo->SpellIconID == 2939 && spellInfo->SpellVisual[0] == 9963))
+            if ((spellInfo->CheckExplicitTarget(this, magnet) == SPELL_CAST_OK && spellInfo->CheckTarget(this, magnet, false) == SPELL_CAST_OK && _IsValidAttackTarget(magnet, spellInfo))||(spellInfo->SpellIconID == 2939 && spellInfo->SpellVisual[0] == 9963)||(spellInfo->Id == 60210)||(spellInfo->Id == 14309))
             {
                 /// @todo handle this charge drop by proc in cast phase on explicit target
                 if (victim && spellInfo->Speed > 0.0f)
