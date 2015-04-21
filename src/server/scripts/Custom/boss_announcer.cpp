@@ -20,37 +20,52 @@ public:
                     uint32 diff = instance->instance->GetDifficulty();
                     std::string rdiff = "";
                     std::string nameLink = ChatHandler(player->GetSession()).playerLink(player->GetGroup()->GetLeaderName());
+                    std::string bname;
                     switch (diff)
                     {
-                    case 0:
-                    {
-                        rdiff = "10об";
-                        maxcount = 10;
-                        break;
+                        case 0:
+                        {
+                            rdiff = "10об";
+                            maxcount = 10;
+                            break;
+                        }
+                        case 1:
+                        {
+                            rdiff = "25об";
+                            maxcount = 25;
+                            break;
+                        }
+                        case 2:
+                        {
+                            rdiff = "10г";
+                            maxcount = 10;
+                            break;
+                        }
+                        case 3:
+                        {
+                            rdiff = "25г";
+                            maxcount = 25;
+                            break;
+                        }
+                        default:
+                            break;
                     }
-                    case 1:
+                    switch (boss->GetEntry())
                     {
-                        rdiff = "25об";
-                        maxcount = 25;
-                        break;
-                    }
-                    case 2:
-                    {
-                        rdiff = "10г";
-                        maxcount = 10;
-                        break;
-                    }
-                    case 3:
-                    {
-                        rdiff = "25г";
-                        maxcount = 25;
-                        break;
-                    }
-                    default:
-                        break;
+                        case 37972:
+                        case 37973:
+                        case 37970:
+                            return;
+                            break;
+                        case 38008:
+                            bname = "Совет Принцев Крови";
+                            break;
+                        default:
+                            bname = boss->GetNameForLocaleIdx(LOCALE_ruRU).c_str();
+                            break;
                     }
                     char msg[250];
-                    snprintf(msg, 250, "|cFFFF0000[Сервер]:|r Рейд [%u/%u] во главе с %s одержал победу над |CFF18BE00[%s] [%s]|r", count, maxcount, nameLink.c_str(), boss->GetNameForLocaleIdx(LOCALE_ruRU).c_str(), rdiff.c_str());
+                    snprintf(msg, 250, "|cFFFF0000[Сервер]:|r Рейд [%u/%u] во главе с %s одержал победу над |CFF18BE00[%s] [%s]|r", count, maxcount, nameLink.c_str(), bname.c_str(), rdiff.c_str());
                     sWorld->SendServerMessage(SERVER_MSG_STRING, msg);
                 }
             }
