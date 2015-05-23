@@ -1443,7 +1443,7 @@ public:
                 break;
             }
             break;
-            /*case 105: thrown weapon case
+        /*case 105: thrown weapon case
                 player->PlayerTalkClass->ClearMenus();
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, "|cffff0000[ === Метательное оружие === ]|h|r", GOSSIP_SENDER_MAIN, 99);
                 if ((player->getClass() == CLASS_WARRIOR) || (player->getClass() == CLASS_ROGUE))
@@ -1451,7 +1451,7 @@ public:
                 else
                 player->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_1, "[ Я такое не ношу, дальше...]", GOSSIP_SENDER_MAIN, 62);
                 player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
-                break;*/
+            break;*/
         case 110:
             LearnProfession(player, creature, SKILL_ALCHEMY);
             break;

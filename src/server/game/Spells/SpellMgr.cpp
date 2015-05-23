@@ -3779,6 +3779,9 @@ void SpellMgr::LoadSpellInfoCorrections()
             case 70498: // Vile Spirits
                 spellInfo->ChannelInterruptFlags = 0;
                 break;
+            /*case 44441: //Fiery Payback
+                spellInfo->AttributesEx3 &= ~SPELL_ATTR3_DISABLE_PROC;
+                break;*/
             default:
                 break;
         }
